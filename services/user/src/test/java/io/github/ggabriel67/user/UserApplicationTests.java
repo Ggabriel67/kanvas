@@ -1,4 +1,4 @@
-package io.github.ggabriel67.kanvas.user;
+package io.github.ggabriel67.user;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
