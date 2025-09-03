@@ -1,6 +1,6 @@
 services:
-  users_db:
-    container_name: pgsql_users
+  user-service-db:
+    container_name: user-service-db
     image: postgres
     environment:
       POSTGRES_USER: gabriel
@@ -16,7 +16,7 @@ services:
     restart: unless-stopped
 
   pgadmin:
-    container_name: kanvas_pgadmin
+    container_name: kanvas-pgadmin
     image: dpage/pgadmin4
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin@pgadmin.org}
