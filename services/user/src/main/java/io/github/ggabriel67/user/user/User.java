@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 @Getter
@@ -49,7 +50,7 @@ public class User implements UserDetails, Principal
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        return Collections.emptyList();
     }
 
     @Override
@@ -64,7 +65,7 @@ public class User implements UserDetails, Principal
 
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return true;
     }
 
     @Override

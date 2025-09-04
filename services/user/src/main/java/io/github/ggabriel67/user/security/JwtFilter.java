@@ -21,7 +21,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter
 {
-    private JwtService jwtService;
+    private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
 
     @Override
@@ -34,9 +34,12 @@ public class JwtFilter extends OncePerRequestFilter
         final String userEmail;
         String jwtToken = null;
 
-        for (Cookie cookie : request.getCookies())
-            if (cookie.getName().equals("jwtToken"))
+        for (Cookie cookie : request.getCookies()) {
+            if (cookie.getName().equals("jwt")) {
                 jwtToken = cookie.getValue();
+                break;
+            }
+        }
 
         if (jwtToken == null) {
             filterChain.doFilter(request, response);
@@ -44,11 +47,12 @@ public class JwtFilter extends OncePerRequestFilter
         }
 
         userEmail = jwtService.extractUsername(jwtToken);
+        System.out.println(userEmail);
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
             if (jwtService.isTokenValid(jwtToken, userDetails)) {
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                        userDetails, null
+                        userDetails, null, userDetails.getAuthorities()
                 );
                 authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
