@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -15,10 +16,18 @@ import java.util.function.Function;
 @Service
 public class JwtService
 {
-    @Value("${application.security.jwt.expiration}")
-    private long jwtExpiration;
+    @Getter
+    private final long accessTokenExpiration;
+    @Getter
+    private final long refreshTokenExpiration;
     @Value("${application.security.jwt.secret-key}")
     private String secretKey;
+
+    public JwtService(@Value("${application.security.jwt.access-expiration}") long accessTokenExpiration,
+                      @Value("${application.security.jwt.refresh-expiration}")long refreshTokenExpiration) {
+        this.accessTokenExpiration = accessTokenExpiration;
+        this.refreshTokenExpiration = refreshTokenExpiration;
+    }
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -39,15 +48,19 @@ public class JwtService
     }
 
     public String generateToken(UserDetails userDetails) {
-        return buildToken(userDetails, jwtExpiration);
+        return buildToken(userDetails, accessTokenExpiration);
     }
 
-    private String buildToken(UserDetails userDetails, long jwtExpiration) {
+    public String generateRefreshToken(UserDetails userDetails) {
+        return buildToken(userDetails, refreshTokenExpiration);
+    }
+
+    private String buildToken(UserDetails userDetails, long tokenExpiration) {
         return Jwts
                 .builder()
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + jwtExpiration))
+                .expiration(new Date(System.currentTimeMillis() + tokenExpiration))
                 .signWith(getSignInKey())
                 .compact();
     }

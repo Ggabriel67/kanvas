@@ -2,6 +2,7 @@ package io.github.ggabriel67.user.security;
 
 import io.github.ggabriel67.user.token.Token;
 import io.github.ggabriel67.user.token.TokenRepository;
+import io.github.ggabriel67.user.token.TokenType;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -19,16 +20,16 @@ public class CustomLogoutHandler implements LogoutHandler
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
 
-        String jwtToken = null;
+        String accessToken = null;
 
         for (Cookie cookie : request.getCookies()) {
-            if (cookie.getName().equals("jwt")) {
-                jwtToken = cookie.getValue();
+            if (cookie.getName().equals(TokenType.ACCESS.getName())) {
+                accessToken = cookie.getValue();
                 break;
             }
         }
 
-        Token storedToken = tokenRepository.findByToken(jwtToken)
+        Token storedToken = tokenRepository.findByToken(accessToken)
                 .orElse(null);
         if (storedToken != null) {
             storedToken.setExpired(true);

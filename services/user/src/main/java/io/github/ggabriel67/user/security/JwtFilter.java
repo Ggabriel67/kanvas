@@ -1,6 +1,7 @@
 package io.github.ggabriel67.user.security;
 
 import io.github.ggabriel67.user.token.TokenRepository;
+import io.github.ggabriel67.user.token.TokenType;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -34,30 +35,29 @@ public class JwtFilter extends OncePerRequestFilter
             return;
         }
         final String userEmail;
-        String jwtToken = null;
+        String accessToken = null;
 
         for (Cookie cookie : request.getCookies()) {
-            if (cookie.getName().equals("jwt")) {
-                jwtToken = cookie.getValue();
+            if (cookie.getName().equals(TokenType.ACCESS.getName())) {
+                accessToken = cookie.getValue();
                 break;
             }
         }
 
-        if (jwtToken == null) {
+        if (accessToken == null) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        userEmail = jwtService.extractUsername(jwtToken);
-        System.out.println(userEmail);
+        userEmail = jwtService.extractUsername(accessToken);
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
 
-            boolean isTokenValid = tokenRepository.findByToken(jwtToken)
+            boolean isTokenValid = tokenRepository.findByToken(accessToken)
                        .map(token -> !token.isExpired() && !token.isRevoked())
                        .orElse(false);
 
-            if (jwtService.isTokenValid(jwtToken, userDetails) && isTokenValid) {
+            if (jwtService.isTokenValid(accessToken, userDetails) && isTokenValid) {
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities()
                 );

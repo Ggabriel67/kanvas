@@ -1,5 +1,6 @@
 package io.github.ggabriel67.user.auth;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.ggabriel67.user.exception.CredentialAlreadyTakenException;
 import io.github.ggabriel67.user.security.JwtService;
 import io.github.ggabriel67.user.token.Token;
@@ -7,12 +8,16 @@ import io.github.ggabriel67.user.token.TokenRepository;
 import io.github.ggabriel67.user.token.TokenType;
 import io.github.ggabriel67.user.user.User;
 import io.github.ggabriel67.user.user.UserRepository;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -45,7 +50,7 @@ public class AuthenticationService
         userRepository.save(user);
     }
 
-    public String authenticate(AuthenticationRequest request) {
+    public AuthenticationResponse authenticate(AuthenticationRequest request, HttpServletResponse response) {
         var auth = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.email(), request.password()
@@ -53,11 +58,19 @@ public class AuthenticationService
         );
         var user = ((User)auth.getPrincipal());
 
-        String jwtToken = jwtService.generateToken(user);
+        String accessToken = jwtService.generateToken(user);
+        String refreshToken = jwtService.generateRefreshToken(user);
         revokeAllUserTokens(user);
-        saveUserToken(user, jwtToken);
+        saveUserToken(user, accessToken);
 
-        return jwtToken;
+        Cookie accessTokenCookie = generateCookie(TokenType.ACCESS, accessToken, jwtService.getAccessTokenExpiration());
+        Cookie refreshTokenCookie = generateCookie(TokenType.REFRESH, refreshToken, jwtService.getRefreshTokenExpiration());
+        response.addCookie(accessTokenCookie);
+        response.addCookie(refreshTokenCookie);
+
+        return AuthenticationResponse.builder()
+                .accessToken(accessToken)
+                .build();
     }
 
     private void revokeAllUserTokens(User user) {
@@ -71,14 +84,61 @@ public class AuthenticationService
         tokenRepository.saveAll(validUserTokens);
     }
 
-    private void saveUserToken(User user, String jwtToken) {
+    private void saveUserToken(User user, String accessToken) {
         var token = Token.builder()
                 .user(user)
-                .token(jwtToken)
-                .tokenType(TokenType.BEARER)
+                .token(accessToken)
+                .tokenType(TokenType.ACCESS)
                 .revoked(false)
                 .expired(false)
                 .build();
         tokenRepository.save(token);
+    }
+
+    public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        final String userEmail;
+        String refreshToken = null;
+
+        for (Cookie cookie : request.getCookies()) {
+            if (cookie.getName().equals(TokenType.REFRESH.getName())) {
+                refreshToken = cookie.getValue();
+                break;
+            }
+        }
+
+        if (refreshToken == null) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
+
+        userEmail = jwtService.extractUsername(refreshToken);
+        if (userEmail != null) {
+            User user = userRepository.findByEmail(userEmail)
+                    .orElseThrow();
+
+            if (jwtService.isTokenValid(refreshToken, user)) {
+                String accessToken = jwtService.generateToken(user);
+                revokeAllUserTokens(user);
+                saveUserToken(user, accessToken);
+                AuthenticationResponse authResponse = AuthenticationResponse.builder()
+                        .accessToken(accessToken)
+                        .build();
+
+                Cookie accessTokenCookie = generateCookie(TokenType.ACCESS, accessToken, jwtService.getAccessTokenExpiration());
+                Cookie refreshTokenCookie = generateCookie(TokenType.REFRESH, refreshToken, jwtService.getRefreshTokenExpiration());
+                response.addCookie(accessTokenCookie);
+                response.addCookie(refreshTokenCookie);
+                new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
+            }
+        }
+    }
+
+    private Cookie generateCookie(TokenType tokenType, String token, long expiration) {
+        Cookie cookie = new Cookie(tokenType.getName(), token);
+        cookie.setMaxAge((int) expiration / 1000);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setAttribute("SameSite", "Strict");
+        return cookie;
     }
 }
