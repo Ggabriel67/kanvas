@@ -1,5 +1,6 @@
 package io.github.ggabriel67.user.auth;
 
+import io.github.ggabriel67.user.exception.CredentialAlreadyTakenException;
 import io.github.ggabriel67.user.security.JwtService;
 import io.github.ggabriel67.user.user.User;
 import io.github.ggabriel67.user.user.UserRepository;
@@ -18,7 +19,15 @@ public class AuthenticationService
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
 
-    public void register(RegistrationRequest request) {
+    public void register(RegistrationRequest request) throws RuntimeException{
+
+        if (userRepository.findByEmail(request.email()).isPresent()) {
+            throw new CredentialAlreadyTakenException("This email is already taken");
+        }
+
+        if (userRepository.findByUsername(request.username()).isPresent()){
+            throw new CredentialAlreadyTakenException("This username is already taken");
+        }
 
         User user = User.builder()
                 .firstname(request.firstname())
