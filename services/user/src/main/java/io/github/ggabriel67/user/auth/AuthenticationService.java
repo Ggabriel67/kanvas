@@ -6,6 +6,7 @@ import io.github.ggabriel67.user.security.JwtService;
 import io.github.ggabriel67.user.token.Token;
 import io.github.ggabriel67.user.token.TokenRepository;
 import io.github.ggabriel67.user.token.TokenType;
+import io.github.ggabriel67.user.user.AvatarColorGenerator;
 import io.github.ggabriel67.user.user.User;
 import io.github.ggabriel67.user.user.UserRepository;
 import jakarta.servlet.http.Cookie;
@@ -46,6 +47,7 @@ public class AuthenticationService
                 .email(request.email())
                 .username(request.username())
                 .password(passwordEncoder.encode(request.password()))
+                .avatarColor(AvatarColorGenerator.generateColor(request.username()))
                 .build();
         userRepository.save(user);
     }

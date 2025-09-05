@@ -37,6 +37,8 @@ public class User implements UserDetails, Principal
     private String username;
     private String password;
 
+    private String avatarColor;
+
     @OneToMany(mappedBy = "user")
     private List<Token> tokens;
 
