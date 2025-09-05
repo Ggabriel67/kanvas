@@ -3,7 +3,6 @@ package io.github.ggabriel67.user.auth;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Size;
 
 public record AuthenticationRequest(
         @Email(message = "Incorrect email")

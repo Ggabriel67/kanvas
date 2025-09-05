@@ -1,6 +1,7 @@
 package io.github.ggabriel67.user.user;
 
 
+import io.github.ggabriel67.user.token.Token;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -35,6 +36,9 @@ public class User implements UserDetails, Principal
     @Column(unique = true)
     private String username;
     private String password;
+
+    @OneToMany(mappedBy = "user")
+    private List<Token> tokens;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
