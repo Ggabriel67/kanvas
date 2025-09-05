@@ -2,12 +2,14 @@ package io.github.ggabriel67.user.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.ggabriel67.user.exception.CredentialAlreadyTakenException;
+import io.github.ggabriel67.user.kafka.UserProducer;
 import io.github.ggabriel67.user.security.JwtService;
 import io.github.ggabriel67.user.token.Token;
 import io.github.ggabriel67.user.token.TokenRepository;
 import io.github.ggabriel67.user.token.TokenType;
 import io.github.ggabriel67.user.user.AvatarColorGenerator;
 import io.github.ggabriel67.user.user.User;
+import io.github.ggabriel67.user.user.UserMapper;
 import io.github.ggabriel67.user.user.UserRepository;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,8 +32,10 @@ public class AuthenticationService
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final TokenRepository tokenRepository;
+    private final UserProducer userProducer;
+    private final UserMapper userMapper;
 
-    public void register(RegistrationRequest request) throws RuntimeException{
+    public void register(RegistrationRequest request) throws RuntimeException {
 
         if (userRepository.findByEmail(request.email()).isPresent()) {
             throw new CredentialAlreadyTakenException("This email is already taken");
@@ -50,6 +54,7 @@ public class AuthenticationService
                 .avatarColor(AvatarColorGenerator.generateColor(request.username()))
                 .build();
         userRepository.save(user);
+        userProducer.sendUserReplica(userMapper.toUserDto(user));
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request, HttpServletResponse response) {
