@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 import static org.springframework.http.HttpStatus.*;
 
 @Getter
-public enum ErrorCodes {
+public enum ErrorCode {
     NO_CODE(501, NOT_IMPLEMENTED, "No code"),
     INCORRECT_CURRENT_PASSWORD(300, BAD_REQUEST, "Current password is incorrect"),
     NEW_PASSWORD_DOES_NOT_MATCH(301, BAD_REQUEST, "New password does not match"),
@@ -17,7 +17,7 @@ public enum ErrorCodes {
     private final String description;
     private final HttpStatus httpStatus;
 
-    ErrorCodes(int code, HttpStatus httpStatus, String description) {
+    ErrorCode(int code, HttpStatus httpStatus, String description) {
         this.code = code;
         this.httpStatus = httpStatus;
         this.description = description;

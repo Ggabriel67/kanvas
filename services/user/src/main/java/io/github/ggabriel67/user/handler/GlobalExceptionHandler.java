@@ -20,9 +20,9 @@ public class GlobalExceptionHandler
                 .status(HttpStatus.UNAUTHORIZED)
                 .body(
                         ExceptionResponse.builder()
-                                .errorCode(ErrorCodes.BAD_CREDENTIALS.getCode())
-                                .errorDescription(ErrorCodes.BAD_CREDENTIALS.getDescription())
-                                .error(ErrorCodes.BAD_CREDENTIALS.getDescription())
+                                .errorCode(ErrorCode.BAD_CREDENTIALS.getCode())
+                                .errorDescription(ErrorCode.BAD_CREDENTIALS.getDescription())
+                                .error(ErrorCode.BAD_CREDENTIALS.getDescription())
                                 .build()
                 );
     }
