@@ -1,0 +1,17 @@
+spring:
+  cloud:
+    gateway:
+      server:
+        webflux:
+          discovery:
+            locator:
+              enabled: true
+          routes:
+            - id: user-service
+              uri: lb:http://USER-SERVICE
+              predicates:
+                - Path=/api/v1/auth/**
+                - Path=/api/v1/users/**
+
+server:
+  port: 8222
