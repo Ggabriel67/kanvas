@@ -20,7 +20,7 @@ public class UserProducer
         log.info("Sending user replica");
         Message<UserDto> message = MessageBuilder
                 .withPayload(userDto)
-                .setHeader(KafkaHeaders.TOPIC, "user-topic")
+                .setHeader(KafkaHeaders.TOPIC, "user.created")
                 .build();
         kafkaTemplate.send(message);
     }
