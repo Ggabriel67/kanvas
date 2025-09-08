@@ -16,7 +16,7 @@ spring:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       properties:
-        spring.json.type.mapping: userDto:io.github.ggabriel67.user.user.UserDto
+        spring.json.type.mapping: userDto:io.github.ggabriel67.kanvas.user.UserDto
 
 server:
   port: 8090
