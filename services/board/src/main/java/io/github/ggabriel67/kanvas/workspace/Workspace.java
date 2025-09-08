@@ -1,0 +1,32 @@
+package io.github.ggabriel67.kanvas.workspace;
+
+import io.github.ggabriel67.kanvas.user.User;
+import jakarta.persistence.*;
+import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import java.time.LocalDateTime;
+
+@Getter
+@Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "workspaces")
+@EntityListeners(AuditingEntityListener.class)
+public class Workspace
+{
+    @Id
+    @GeneratedValue
+    private Integer id;
+    @ManyToOne
+    @JoinColumn(name = "owner_id")
+    private User owner;
+    private String name;
+    private String description;
+    @CreatedDate
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+}
