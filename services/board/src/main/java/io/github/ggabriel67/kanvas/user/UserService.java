@@ -1,5 +1,6 @@
 package io.github.ggabriel67.kanvas.user;
 
+import io.github.ggabriel67.kanvas.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,5 +20,10 @@ public class UserService
                         .username(userDto.username())
                         .avatarColor(userDto.avatarColor())
                         .build());
+    }
+
+    public User getUserById(Integer id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
     }
 }
