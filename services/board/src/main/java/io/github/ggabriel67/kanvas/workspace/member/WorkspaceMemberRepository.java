@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface WorkspaceMemberRepository extends JpaRepository<WorkspaceMember, Integer>
 {
@@ -22,4 +23,6 @@ WHERE wm.user = :user
     List<WorkspaceDtoProjection> findWorkspacesByUser(@Param("user") User user);
 
     List<WorkspaceMember> findAllByWorkspace(@Param("workspace") Workspace workspace);
+
+    Optional<WorkspaceMember> findByUserIdAndWorkspaceId(Integer userId, Integer workspaceId);
 }
