@@ -4,13 +4,9 @@ import io.github.ggabriel67.kanvas.exception.NameAlreadyInUseException;
 import io.github.ggabriel67.kanvas.exception.WorkspaceNotFoundException;
 import io.github.ggabriel67.kanvas.user.User;
 import io.github.ggabriel67.kanvas.user.UserService;
-import io.github.ggabriel67.kanvas.workspace.member.WorkspaceMemberDto;
-import io.github.ggabriel67.kanvas.workspace.member.WorkspaceMemberRepository;
 import io.github.ggabriel67.kanvas.workspace.member.WorkspaceMemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -23,7 +19,7 @@ public class WorkspaceService
     public void createWorkspace(WorkspaceRequest request) {
         User owner = userService.getUserById(request.ownerId());
 
-        if (workspaceRepository.findByNameAndOwner(request.name(), owner).isPresent()) {
+        if (workspaceRepository.findByNameAndCreatedBy(request.name(), owner).isPresent()) {
             throw new NameAlreadyInUseException("Workspace with name '" + request.name() + "' already exists");
         }
 
@@ -41,7 +37,7 @@ public class WorkspaceService
     public void updateWorkspace(WorkspaceRequest request) {
         User owner = userService.getUserById(request.ownerId());
 
-        if (workspaceRepository.findByNameAndOwner(request.name(), owner).isPresent()) {
+        if (workspaceRepository.findByNameAndCreatedBy(request.name(), owner).isPresent()) {
             throw new NameAlreadyInUseException("Workspace with name " + request.name() + " already exists");
         }
 

@@ -9,5 +9,5 @@ import java.util.Optional;
 @Repository
 public interface WorkspaceRepository extends JpaRepository<Workspace, Integer>
 {
-    Optional<Workspace> findByNameAndOwner(String name, User user);
+    Optional<Workspace> findByNameAndCreatedBy(String name, User user);
 }
