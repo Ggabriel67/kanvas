@@ -4,9 +4,13 @@ import io.github.ggabriel67.kanvas.exception.NameAlreadyInUseException;
 import io.github.ggabriel67.kanvas.exception.WorkspaceNotFoundException;
 import io.github.ggabriel67.kanvas.user.User;
 import io.github.ggabriel67.kanvas.user.UserService;
+import io.github.ggabriel67.kanvas.workspace.member.WorkspaceMemberDto;
+import io.github.ggabriel67.kanvas.workspace.member.WorkspaceMemberRepository;
 import io.github.ggabriel67.kanvas.workspace.member.WorkspaceMemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +29,7 @@ public class WorkspaceService
 
         Workspace workspace = workspaceRepository.save(
                 Workspace.builder()
-                        .owner(owner)
+                        .createdBy(owner)
                         .name(request.name())
                         .description(request.description())
                         .build()

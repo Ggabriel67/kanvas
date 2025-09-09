@@ -8,7 +8,7 @@ public class WorkspaceMapper
     public WorkspaceDto toWorkspaceDto(Workspace workspace) {
         return new WorkspaceDto(
                 workspace.getId(),
-                workspace.getOwner().getId(),
+                workspace.getCreatedBy().getId(),
                 workspace.getName(),
                 workspace.getDescription(),
                 workspace.getCreatedAt()
