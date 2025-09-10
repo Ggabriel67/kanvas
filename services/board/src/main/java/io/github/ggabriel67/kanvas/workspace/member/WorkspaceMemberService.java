@@ -23,7 +23,7 @@ public class WorkspaceMemberService
     private final WorkspaceRepository workspaceRepository;
     private final WorkspaceMemberMapper memberMapper;
 
-    public void addWorkspaceMember(WorkspaceMemberRequest request) {
+    public void addWorkspaceMember(Workspace workspace, User invitee, WorkspaceRole role) {
         User user = userService.getUserById(request.userId());
         Workspace workspace =  workspaceRepository.findById(request.workspaceId())
                 .orElseThrow(() -> new WorkspaceNotFoundException("Workspace not found"));
@@ -33,16 +33,6 @@ public class WorkspaceMemberService
                         .user(user)
                         .workspace(workspace)
                         .role(request.role())
-                        .build()
-        );
-    }
-
-    public void addWorkspaceOwner(User user, Workspace workspace) {
-        memberRepository.save(
-                WorkspaceMember.builder()
-                        .user(user)
-                        .workspace(workspace)
-                        .role(WorkspaceRole.OWNER)
                         .build()
         );
     }

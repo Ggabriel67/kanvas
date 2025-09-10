@@ -30,12 +30,6 @@ public class WorkspaceController
         return ResponseEntity.accepted().build();
     }
 
-    @PostMapping("/members")
-    public ResponseEntity<Void> addWorkspaceMember(@RequestBody WorkspaceMemberRequest request) {
-        memberService.addWorkspaceMember(request);
-        return ResponseEntity.accepted().build();
-    }
-
     @GetMapping("/{userId}")
     public ResponseEntity<List<WorkspaceDtoProjection>> getAllUserWorkspaces(@PathVariable("userId") Integer userId) {
         return ResponseEntity.ok(memberService.getAllUserWorkspaces(userId));
