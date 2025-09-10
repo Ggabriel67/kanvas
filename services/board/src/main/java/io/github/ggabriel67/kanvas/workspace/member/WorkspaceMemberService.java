@@ -1,10 +1,12 @@
 package io.github.ggabriel67.kanvas.workspace.member;
 
 import io.github.ggabriel67.kanvas.authorization.workspace.WorkspaceRole;
+import io.github.ggabriel67.kanvas.exception.WorkspaceNotFoundException;
 import io.github.ggabriel67.kanvas.user.User;
 import io.github.ggabriel67.kanvas.user.UserService;
 import io.github.ggabriel67.kanvas.workspace.Workspace;
 import io.github.ggabriel67.kanvas.workspace.WorkspaceDtoProjection;
+import io.github.ggabriel67.kanvas.workspace.WorkspaceRepository;
 import io.github.ggabriel67.kanvas.workspace.WorkspaceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,12 +20,13 @@ public class WorkspaceMemberService
 {
     private final WorkspaceMemberRepository memberRepository;
     private final UserService userService;
-    private final WorkspaceService workspaceService;
+    private final WorkspaceRepository workspaceRepository;
     private final WorkspaceMemberMapper memberMapper;
 
     public void addWorkspaceMember(WorkspaceMemberRequest request) {
         User user = userService.getUserById(request.userId());
-        Workspace workspace =  workspaceService.getWorkspaceById(request.workspaceId());
+        Workspace workspace =  workspaceRepository.findById(request.workspaceId())
+                .orElseThrow(() -> new WorkspaceNotFoundException("Workspace not found"));
 
         memberRepository.save(
                 WorkspaceMember.builder()
@@ -51,7 +54,8 @@ public class WorkspaceMemberService
     }
 
     public List<WorkspaceMemberDto> getAllWorkspaceMembers(Integer workspaceId) {
-        Workspace workspace = workspaceService.getWorkspaceById(workspaceId);
+        Workspace workspace = workspaceRepository.findById(workspaceId)
+                .orElseThrow(() -> new WorkspaceNotFoundException("Workspace not found"));
 
         List<WorkspaceMember> members = memberRepository.findAllByWorkspace(workspace);
         return members.stream()

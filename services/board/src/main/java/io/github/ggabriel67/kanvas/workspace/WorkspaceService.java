@@ -34,14 +34,14 @@ public class WorkspaceService
         memberService.addWorkspaceOwner(owner, workspace);
     }
 
-    public void updateWorkspace(WorkspaceRequest request) {
+    public void updateWorkspace(WorkspaceRequest request, Integer workspaceId) {
         User owner = userService.getUserById(request.ownerId());
 
         if (workspaceRepository.findByNameAndCreatedBy(request.name(), owner).isPresent()) {
             throw new NameAlreadyInUseException("Workspace with name " + request.name() + " already exists");
         }
 
-        Workspace workspace = workspaceRepository.findById(request.workspaceId())
+        Workspace workspace = workspaceRepository.findById(workspaceId)
                         .orElseThrow(() -> new WorkspaceNotFoundException("Workspace not found"));
 
         mergeWorkspace(workspace, request);

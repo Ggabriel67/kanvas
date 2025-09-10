@@ -24,9 +24,9 @@ public class WorkspaceController
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PatchMapping
-    public ResponseEntity<Void> updateWorkspace(@RequestBody WorkspaceRequest request) {
-        workspaceService.updateWorkspace(request);
+    @PatchMapping("{workspaceId}")
+    public ResponseEntity<Void> updateWorkspace(@RequestBody WorkspaceRequest request, @PathVariable("workspaceId") Integer workspaceId) {
+        workspaceService.updateWorkspace(request, workspaceId);
         return ResponseEntity.accepted().build();
     }
 
