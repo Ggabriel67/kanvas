@@ -4,6 +4,7 @@ import io.github.ggabriel67.kanvas.workspace.invitation.WorkspaceInvitationReque
 import io.github.ggabriel67.kanvas.workspace.invitation.WorkspaceInvitationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -14,7 +15,11 @@ public class InvitationController
     private final WorkspaceInvitationService workspaceInvitationService;
 
     @PostMapping("/workspaces")
-    public ResponseEntity<Void> sendWorkspaceInvitation(@RequestBody WorkspaceInvitationRequest request) {
+    @PreAuthorize("@workspaceAuth.isAdminOrOwner(#userId, #request.workspaceId())")
+    public ResponseEntity<Void> sendWorkspaceInvitation(
+            @RequestBody WorkspaceInvitationRequest request,
+            @RequestHeader("X-User-Id") Integer userId
+    ) {
         workspaceInvitationService.sendInvitation(request);
         return ResponseEntity.ok().build();
     }

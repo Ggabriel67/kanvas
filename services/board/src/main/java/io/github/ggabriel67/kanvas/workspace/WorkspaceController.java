@@ -1,11 +1,13 @@
 package io.github.ggabriel67.kanvas.workspace;
 
+import io.github.ggabriel67.kanvas.workspace.member.WorkspaceMemberRemoveRequest;
 import io.github.ggabriel67.kanvas.workspace.member.WorkspaceRoleChangeRequest;
 import io.github.ggabriel67.kanvas.workspace.member.WorkspaceMemberDto;
 import io.github.ggabriel67.kanvas.workspace.member.WorkspaceMemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,7 +27,11 @@ public class WorkspaceController
     }
 
     @PatchMapping("/{workspaceId}")
-    public ResponseEntity<Void> updateWorkspace(@RequestBody WorkspaceRequest request, @PathVariable("workspaceId") Integer workspaceId) {
+    @PreAuthorize("@workspaceAuth.isAdminOrOwner(#userId, #workspaceId)")
+    public ResponseEntity<Void> updateWorkspace(
+            @RequestBody WorkspaceRequest request,
+            @RequestHeader("X-User-Id") Integer userId,
+            @PathVariable("workspaceId") Integer workspaceId) {
         workspaceService.updateWorkspace(request, workspaceId);
         return ResponseEntity.accepted().build();
     }
@@ -36,18 +42,30 @@ public class WorkspaceController
     }
 
     @GetMapping("/{workspaceId}/members")
-    public ResponseEntity<List<WorkspaceMemberDto>> getAllWorkspaceMembers(@PathVariable("workspaceId") Integer workspaceId) {
+    @PreAuthorize("@workspaceAuth.isAdminOrOwner(#userId, #workspaceId)")
+    public ResponseEntity<List<WorkspaceMemberDto>> getAllWorkspaceMembers(
+            @PathVariable("workspaceId") Integer workspaceId,
+            @RequestHeader("X-User-Id") Integer userId
+    ) {
         return ResponseEntity.ok(memberService.getAllWorkspaceMembers(workspaceId));
     }
 
     @PatchMapping("/members")
-    public ResponseEntity<Void> changeWorkspaceMemberRole(@RequestBody WorkspaceRoleChangeRequest request) {
+    @PreAuthorize("@workspaceAuth.canModerate(#userId, #request.workspaceId(), #request.targetMemberId())")
+    public ResponseEntity<Void> changeWorkspaceMemberRole(
+            @RequestBody WorkspaceRoleChangeRequest request,
+            @RequestHeader("X-User-Id") Integer userId
+    ) {
         memberService.changeWorkspaceMemberRole(request);
         return ResponseEntity.accepted().build();
     }
 
     @DeleteMapping("/members")
-    public ResponseEntity<Void> removeWorkspaceMember(@RequestBody WorkspaceRoleChangeRequest request) {
+    @PreAuthorize("@workspaceAuth.canModerate(#userId, #request.workspaceId(), #request.targetMemberId())")
+    public ResponseEntity<Void> removeWorkspaceMember(
+            @RequestBody WorkspaceMemberRemoveRequest request,
+            @RequestHeader("X-User-Id") Integer userId
+    ) {
         memberService.removeMember(request);
         return ResponseEntity.accepted().build();
     }

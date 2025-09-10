@@ -34,13 +34,13 @@ public class WorkspaceMemberService
     }
 
     public void changeWorkspaceMemberRole(WorkspaceRoleChangeRequest request) {
-        WorkspaceMember member = getMemberById(request.memberId());
+        WorkspaceMember member = getMemberById(request.targetMemberId());
 
         member.setRole(request.newRole());
     }
 
-    public void removeMember(WorkspaceRoleChangeRequest request) {
-        WorkspaceMember member = getMemberById(request.memberId());
+    public void removeMember(WorkspaceMemberRemoveRequest request) {
+        WorkspaceMember member = getMemberById(request.targetMemberId());
         memberRepository.delete(member);
     }
 

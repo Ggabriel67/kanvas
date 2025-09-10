@@ -1,5 +1,6 @@
 package io.github.ggabriel67.kanvas.authorization.workspace;
 
+import io.github.ggabriel67.kanvas.workspace.member.WorkspaceMember;
 import io.github.ggabriel67.kanvas.workspace.member.WorkspaceMemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -30,5 +31,25 @@ public class WorkspaceAuthorization
 
     public boolean isMember(Integer userId, Integer workspaceId) {
         return hasRole(userId, workspaceId, WorkspaceRole.MEMBER);
+    }
+
+    public boolean canModerate(Integer callerId, Integer workspaceId, Integer targetMemberId) {
+        WorkspaceRole callerRole = memberRepository.findByUserIdAndWorkspaceId(callerId, workspaceId)
+                .map(WorkspaceMember::getRole)
+                .orElse(null);
+
+        WorkspaceRole targetRole = memberRepository.findById(targetMemberId)
+                .map(WorkspaceMember::getRole)
+                .orElse(null);
+
+        if (callerRole == null || targetRole == null) {
+            return false;
+        }
+
+        return switch (callerRole) {
+            case OWNER -> true;
+            case ADMIN -> targetRole == WorkspaceRole.MEMBER;
+            default -> false;
+        };
     }
 }
