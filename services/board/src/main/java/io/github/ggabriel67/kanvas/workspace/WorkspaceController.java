@@ -24,7 +24,7 @@ public class WorkspaceController
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PatchMapping("{workspaceId}")
+    @PatchMapping("/{workspaceId}")
     public ResponseEntity<Void> updateWorkspace(@RequestBody WorkspaceRequest request, @PathVariable("workspaceId") Integer workspaceId) {
         workspaceService.updateWorkspace(request, workspaceId);
         return ResponseEntity.accepted().build();
@@ -41,7 +41,7 @@ public class WorkspaceController
         return ResponseEntity.ok(memberService.getAllUserWorkspaces(userId));
     }
 
-    @GetMapping("{workspaceId}/members")
+    @GetMapping("/{workspaceId}/members")
     public ResponseEntity<List<WorkspaceMemberDto>> getAllWorkspaceMembers(@PathVariable("workspaceId") Integer workspaceId) {
         return ResponseEntity.ok(memberService.getAllWorkspaceMembers(workspaceId));
     }
