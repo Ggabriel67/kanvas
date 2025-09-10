@@ -1,7 +1,7 @@
 package io.github.ggabriel67.kanvas.workspace;
 
+import io.github.ggabriel67.kanvas.workspace.member.WorkspaceRoleChangeRequest;
 import io.github.ggabriel67.kanvas.workspace.member.WorkspaceMemberDto;
-import io.github.ggabriel67.kanvas.workspace.member.WorkspaceMemberRequest;
 import io.github.ggabriel67.kanvas.workspace.member.WorkspaceMemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -38,5 +38,17 @@ public class WorkspaceController
     @GetMapping("/{workspaceId}/members")
     public ResponseEntity<List<WorkspaceMemberDto>> getAllWorkspaceMembers(@PathVariable("workspaceId") Integer workspaceId) {
         return ResponseEntity.ok(memberService.getAllWorkspaceMembers(workspaceId));
+    }
+
+    @PatchMapping("/members")
+    public ResponseEntity<Void> changeWorkspaceMemberRole(@RequestBody WorkspaceRoleChangeRequest request) {
+        memberService.changeWorkspaceMemberRole(request);
+        return ResponseEntity.accepted().build();
+    }
+
+    @DeleteMapping("/members")
+    public ResponseEntity<Void> removeWorkspaceMember(@RequestBody WorkspaceRoleChangeRequest request) {
+        memberService.removeMember(request);
+        return ResponseEntity.accepted().build();
     }
 }

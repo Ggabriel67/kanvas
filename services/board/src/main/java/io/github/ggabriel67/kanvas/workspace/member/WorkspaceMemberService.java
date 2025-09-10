@@ -1,6 +1,7 @@
 package io.github.ggabriel67.kanvas.workspace.member;
 
 import io.github.ggabriel67.kanvas.authorization.workspace.WorkspaceRole;
+import io.github.ggabriel67.kanvas.exception.UserNotFoundException;
 import io.github.ggabriel67.kanvas.exception.WorkspaceNotFoundException;
 import io.github.ggabriel67.kanvas.user.User;
 import io.github.ggabriel67.kanvas.user.UserService;
@@ -32,6 +33,17 @@ public class WorkspaceMemberService
         );
     }
 
+    public void changeWorkspaceMemberRole(WorkspaceRoleChangeRequest request) {
+        WorkspaceMember member = getMemberById(request.memberId());
+
+        member.setRole(request.newRole());
+    }
+
+    public void removeMember(WorkspaceRoleChangeRequest request) {
+        WorkspaceMember member = getMemberById(request.memberId());
+        memberRepository.delete(member);
+    }
+
     public List<WorkspaceDtoProjection> getAllUserWorkspaces(Integer userId) {
         User user = userService.getUserById(userId);
 
@@ -46,5 +58,10 @@ public class WorkspaceMemberService
         return members.stream()
                 .map(memberMapper::toWorkspaceMemberDto)
                 .collect(Collectors.toList());
+    }
+
+    private WorkspaceMember getMemberById(Integer memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
     }
 }
