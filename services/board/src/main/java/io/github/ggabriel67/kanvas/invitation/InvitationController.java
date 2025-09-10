@@ -1,15 +1,10 @@
 package io.github.ggabriel67.kanvas.invitation;
 
-import io.github.ggabriel67.kanvas.workspace.invitation.WorkspaceInvitationRepository;
 import io.github.ggabriel67.kanvas.workspace.invitation.WorkspaceInvitationRequest;
 import io.github.ggabriel67.kanvas.workspace.invitation.WorkspaceInvitationService;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/invitations")
@@ -21,6 +16,18 @@ public class InvitationController
     @PostMapping("/workspaces")
     public ResponseEntity<Void> sendWorkspaceInvitation(@RequestBody WorkspaceInvitationRequest request) {
         workspaceInvitationService.sendInvitation(request);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/workspaces/{invitationId}/accept")
+    public ResponseEntity<Void> acceptWorkspaceInvitation(@PathVariable("invitationId") Integer invitationId) {
+        workspaceInvitationService.acceptInvitation(invitationId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/workspaces/{invitationId}/decline")
+    public ResponseEntity<Void> declineWorkspaceInvitation(@PathVariable("invitationId") Integer invitationId) {
+        workspaceInvitationService.declineInvitation(invitationId);
         return ResponseEntity.ok().build();
     }
 }
