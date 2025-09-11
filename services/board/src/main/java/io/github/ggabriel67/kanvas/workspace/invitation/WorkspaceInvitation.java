@@ -23,12 +23,15 @@ public class WorkspaceInvitation
     private Integer id;
 
     @ManyToOne
+    @JoinColumn(name = "inviter_id")
     private User inviter;
 
     @ManyToOne
+    @JoinColumn(name = "invitee_id")
     private User invitee;
 
     @ManyToOne
+    @JoinColumn(name = "workspace_id")
     private Workspace workspace;
 
     @Enumerated(EnumType.STRING)
