@@ -3,6 +3,7 @@ package io.github.ggabriel67.kanvas.board;
 import io.github.ggabriel67.kanvas.authorization.board.BoardRole;
 import io.github.ggabriel67.kanvas.board.member.BoardMember;
 import io.github.ggabriel67.kanvas.board.member.BoardMemberRepository;
+import io.github.ggabriel67.kanvas.exception.BoardNotFoundException;
 import io.github.ggabriel67.kanvas.exception.NameAlreadyInUseException;
 import io.github.ggabriel67.kanvas.exception.WorkspaceNotFoundException;
 import io.github.ggabriel67.kanvas.user.User;
@@ -47,5 +48,10 @@ public class BoardService
                         .role(BoardRole.ADMIN)
                         .build()
         );
+    }
+
+    public Board getBoardById(Integer id) {
+        return boardRepository.findById(id)
+                .orElseThrow(() -> new BoardNotFoundException("Board not found"));
     }
 }
