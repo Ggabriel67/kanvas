@@ -27,11 +27,8 @@ public class WorkspaceController
     }
 
     @PatchMapping("/{workspaceId}")
-    @PreAuthorize("@workspaceAuth.isAdminOrOwner(#userId, #workspaceId)")
-    public ResponseEntity<Void> updateWorkspace(
-            @RequestBody WorkspaceRequest request,
-            @RequestHeader("X-User-Id") Integer userId,
-            @PathVariable("workspaceId") Integer workspaceId) {
+    @PreAuthorize("@workspaceAuth.isAdminOrOwner(#workspaceId)")
+    public ResponseEntity<Void> updateWorkspace(@RequestBody WorkspaceRequest request, @PathVariable("workspaceId") Integer workspaceId) {
         workspaceService.updateWorkspace(request, workspaceId);
         return ResponseEntity.accepted().build();
     }
@@ -42,30 +39,21 @@ public class WorkspaceController
     }
 
     @GetMapping("/{workspaceId}/members")
-    @PreAuthorize("@workspaceAuth.isAdminOrOwner(#userId, #workspaceId)")
-    public ResponseEntity<List<WorkspaceMemberDto>> getAllWorkspaceMembers(
-            @PathVariable("workspaceId") Integer workspaceId,
-            @RequestHeader("X-User-Id") Integer userId
-    ) {
+    @PreAuthorize("@workspaceAuth.isMember(#workspaceId)")
+    public ResponseEntity<List<WorkspaceMemberDto>> getAllWorkspaceMembers(@PathVariable("workspaceId") Integer workspaceId) {
         return ResponseEntity.ok(memberService.getAllWorkspaceMembers(workspaceId));
     }
 
     @PatchMapping("/members")
-    @PreAuthorize("@workspaceAuth.canModerate(#userId, #request.workspaceId(), #request.targetMemberId())")
-    public ResponseEntity<Void> changeWorkspaceMemberRole(
-            @RequestBody WorkspaceRoleChangeRequest request,
-            @RequestHeader("X-User-Id") Integer userId
-    ) {
+    @PreAuthorize("@workspaceAuth.canModerate(#request.workspaceId(), #request.targetMemberId())")
+    public ResponseEntity<Void> changeWorkspaceMemberRole(@RequestBody WorkspaceRoleChangeRequest request) {
         memberService.changeWorkspaceMemberRole(request);
         return ResponseEntity.accepted().build();
     }
 
     @DeleteMapping("/members")
-    @PreAuthorize("@workspaceAuth.canModerate(#userId, #request.workspaceId(), #request.targetMemberId())")
-    public ResponseEntity<Void> removeWorkspaceMember(
-            @RequestBody WorkspaceMemberRemoveRequest request,
-            @RequestHeader("X-User-Id") Integer userId
-    ) {
+    @PreAuthorize("@workspaceAuth.canModerate(#request.workspaceId(), #request.targetMemberId())")
+    public ResponseEntity<Void> removeWorkspaceMember(@RequestBody WorkspaceMemberRemoveRequest request) {
         memberService.removeMember(request);
         return ResponseEntity.accepted().build();
     }

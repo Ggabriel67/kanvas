@@ -15,11 +15,8 @@ public class InvitationController
     private final WorkspaceInvitationService workspaceInvitationService;
 
     @PostMapping("/workspaces")
-    @PreAuthorize("@workspaceAuth.isAdminOrOwner(#userId, #request.workspaceId())")
-    public ResponseEntity<Void> sendWorkspaceInvitation(
-            @RequestBody WorkspaceInvitationRequest request,
-            @RequestHeader("X-User-Id") Integer userId
-    ) {
+    @PreAuthorize("@workspaceAuth.isAdminOrOwner(#request.workspaceId())")
+    public ResponseEntity<Void> sendWorkspaceInvitation(@RequestBody WorkspaceInvitationRequest request) {
         workspaceInvitationService.sendInvitation(request);
         return ResponseEntity.ok().build();
     }

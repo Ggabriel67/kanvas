@@ -3,11 +3,9 @@ package io.github.ggabriel67.kanvas.handler;
 import io.github.ggabriel67.kanvas.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.servlet.View;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -63,5 +61,10 @@ public class GlobalExceptionHandler
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ExceptionResponse(errors));
+    }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<String> handle(IllegalStateException exp) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exp.getMessage());
     }
 }

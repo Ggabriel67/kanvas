@@ -36,6 +36,6 @@ public class WorkspaceMember
     private WorkspaceRole role;
 
     @CreatedDate
-    @Column(insertable = false, updatable = false)
+    @Column(nullable = false, updatable = false)
     private LocalDateTime joinedAt;
 }

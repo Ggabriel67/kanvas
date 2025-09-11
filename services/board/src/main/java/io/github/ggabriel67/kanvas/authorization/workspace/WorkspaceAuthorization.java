@@ -3,6 +3,8 @@ package io.github.ggabriel67.kanvas.authorization.workspace;
 import io.github.ggabriel67.kanvas.workspace.member.WorkspaceMember;
 import io.github.ggabriel67.kanvas.workspace.member.WorkspaceMemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 @Component("workspaceAuth")
@@ -10,6 +12,14 @@ import org.springframework.stereotype.Component;
 public class WorkspaceAuthorization
 {
     private final WorkspaceMemberRepository memberRepository;
+
+    private Integer getCurrentUserId() throws IllegalStateException {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.getPrincipal() instanceof Integer userId) {
+            return  userId;
+        }
+         throw new IllegalStateException("No user ID in SecurityContext");
+    }
 
     public boolean hasRole(Integer userId, Integer workspaceId, WorkspaceRole requiredRole) {
         return memberRepository.findByUserIdAndWorkspaceId(userId, workspaceId)
@@ -21,19 +31,20 @@ public class WorkspaceAuthorization
                 .orElse(false);
     }
 
-    public boolean isOwner(Integer userId, Integer workspaceId) {
-        return hasRole(userId, workspaceId, WorkspaceRole.OWNER);
+    public boolean isOwner(Integer workspaceId) {
+        return hasRole(getCurrentUserId(), workspaceId, WorkspaceRole.OWNER);
     }
 
-    public boolean isAdminOrOwner(Integer userId, Integer workspaceId) {
-        return hasRole(userId, workspaceId, WorkspaceRole.ADMIN);
+    public boolean isAdminOrOwner(Integer workspaceId) {
+        return hasRole(getCurrentUserId(), workspaceId, WorkspaceRole.ADMIN);
     }
 
-    public boolean isMember(Integer userId, Integer workspaceId) {
-        return hasRole(userId, workspaceId, WorkspaceRole.MEMBER);
+    public boolean isMember(Integer workspaceId) {
+        return hasRole(getCurrentUserId(), workspaceId, WorkspaceRole.MEMBER);
     }
 
-    public boolean canModerate(Integer callerId, Integer workspaceId, Integer targetMemberId) {
+    public boolean canModerate(Integer workspaceId, Integer targetMemberId) {
+        Integer callerId = getCurrentUserId();
         WorkspaceRole callerRole = memberRepository.findByUserIdAndWorkspaceId(callerId, workspaceId)
                 .map(WorkspaceMember::getRole)
                 .orElse(null);

@@ -34,9 +34,14 @@ public class WorkspaceMemberService
     }
 
     public void changeWorkspaceMemberRole(WorkspaceRoleChangeRequest request) {
+        if (workspaceRepository.findById(request.workspaceId()).isEmpty()) {
+            throw new WorkspaceNotFoundException("Workspace not found");
+        }
+
         WorkspaceMember member = getMemberById(request.targetMemberId());
 
         member.setRole(request.newRole());
+        memberRepository.save(member);
     }
 
     public void removeMember(WorkspaceMemberRemoveRequest request) {
