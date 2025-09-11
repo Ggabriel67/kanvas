@@ -1,13 +1,11 @@
 package io.github.ggabriel67.kanvas.workspace;
 
 import io.github.ggabriel67.kanvas.authorization.workspace.WorkspaceRole;
-import io.github.ggabriel67.kanvas.exception.NameAlreadyInUseException;
 import io.github.ggabriel67.kanvas.exception.WorkspaceNotFoundException;
 import io.github.ggabriel67.kanvas.user.User;
 import io.github.ggabriel67.kanvas.user.UserService;
 import io.github.ggabriel67.kanvas.workspace.member.WorkspaceMember;
 import io.github.ggabriel67.kanvas.workspace.member.WorkspaceMemberRepository;
-import io.github.ggabriel67.kanvas.workspace.member.WorkspaceMemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,15 +18,11 @@ public class WorkspaceService
     private final UserService userService;
 
     public void createWorkspace(WorkspaceRequest request) {
-        User owner = userService.getUserById(request.ownerId());
-
-        if (workspaceRepository.findByNameAndCreatedBy(request.name(), owner).isPresent()) {
-            throw new NameAlreadyInUseException("Workspace with name '" + request.name() + "' already exists");
-        }
+        User user = userService.getUserById(request.ownerId());
 
         Workspace workspace = workspaceRepository.save(
                 Workspace.builder()
-                        .createdBy(owner)
+                        .createdBy(user)
                         .name(request.name())
                         .description(request.description())
                         .build()
@@ -36,7 +30,7 @@ public class WorkspaceService
 
         memberRepository.save(
                 WorkspaceMember.builder()
-                        .user(owner)
+                        .user(user)
                         .workspace(workspace)
                         .role(WorkspaceRole.OWNER)
                         .build()
@@ -44,14 +38,7 @@ public class WorkspaceService
     }
 
     public void updateWorkspace(WorkspaceRequest request, Integer workspaceId) {
-        User owner = userService.getUserById(request.ownerId());
-
-        if (workspaceRepository.findByNameAndCreatedBy(request.name(), owner).isPresent()) {
-            throw new NameAlreadyInUseException("Workspace with name " + request.name() + " already exists");
-        }
-
-        Workspace workspace = workspaceRepository.findById(workspaceId)
-                        .orElseThrow(() -> new WorkspaceNotFoundException("Workspace not found"));
+        Workspace workspace = this.getWorkspaceById(workspaceId);
 
         mergeWorkspace(workspace, request);
         workspaceRepository.save(workspace);
