@@ -18,7 +18,7 @@ import java.util.List;
 public class WorkspaceController
 {
     private final WorkspaceService workspaceService;
-    private final WorkspaceMemberService memberService;
+    private final WorkspaceMemberService workspaceMemberService;
 
     @PostMapping
     public ResponseEntity<?> createWorkspace(@RequestBody WorkspaceRequest request) {
@@ -33,28 +33,34 @@ public class WorkspaceController
         return ResponseEntity.accepted().build();
     }
 
+    @GetMapping("/{workspaceId}")
+    @PreAuthorize("@workspaceAuth.isMember(#workspaceId)")
+    public ResponseEntity<WorkspaceDto> getWorkspace(@PathVariable("workspaceId") Integer workspaceId) {
+        return ResponseEntity.ok(workspaceService.getWorkspace(workspaceId));
+    }
+
     @GetMapping("/{userId}")
     public ResponseEntity<List<WorkspaceDtoProjection>> getAllUserWorkspaces(@PathVariable("userId") Integer userId) {
-        return ResponseEntity.ok(memberService.getAllUserWorkspaces(userId));
+        return ResponseEntity.ok(workspaceMemberService.getAllUserWorkspaces(userId));
     }
 
     @GetMapping("/{workspaceId}/members")
     @PreAuthorize("@workspaceAuth.isMember(#workspaceId)")
     public ResponseEntity<List<WorkspaceMemberDto>> getAllWorkspaceMembers(@PathVariable("workspaceId") Integer workspaceId) {
-        return ResponseEntity.ok(memberService.getAllWorkspaceMembers(workspaceId));
+        return ResponseEntity.ok(workspaceMemberService.getAllWorkspaceMembers(workspaceId));
     }
 
     @PatchMapping("/members")
     @PreAuthorize("@workspaceAuth.canModerate(#request.workspaceId(), #request.targetMemberId())")
     public ResponseEntity<Void> changeWorkspaceMemberRole(@RequestBody WorkspaceRoleChangeRequest request) {
-        memberService.changeWorkspaceMemberRole(request);
+        workspaceMemberService.changeWorkspaceMemberRole(request);
         return ResponseEntity.accepted().build();
     }
 
     @DeleteMapping("/members")
     @PreAuthorize("@workspaceAuth.canModerate(#request.workspaceId(), #request.targetMemberId())")
     public ResponseEntity<Void> removeWorkspaceMember(@RequestBody WorkspaceMemberRemoveRequest request) {
-        memberService.removeMember(request);
+        workspaceMemberService.removeMember(request);
         return ResponseEntity.accepted().build();
     }
 }

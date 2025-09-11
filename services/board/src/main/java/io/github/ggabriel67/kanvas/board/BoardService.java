@@ -13,11 +13,13 @@ import io.github.ggabriel67.kanvas.workspace.WorkspaceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class BoardService
 {
-    private final BoardRepository boardRepository;
+    private final BoardRepository boardMemberRepository;
     private final UserService userService;
     private final WorkspaceRepository workspaceRepository;
     private final BoardMemberRepository memberRepository;
@@ -28,11 +30,11 @@ public class BoardService
         Workspace workspace = workspaceRepository.findById(request.workspaceId())
                 .orElseThrow(() -> new WorkspaceNotFoundException("Workspace not found"));
 
-        if (boardRepository.findByNameAndWorkspace(request.name(), workspace).isPresent()) {
+        if (boardMemberRepository.findByNameAndWorkspace(request.name(), workspace).isPresent()) {
             throw new NameAlreadyInUseException("Board with name " +  request.name() + " already exists in this workspace");
         }
 
-        Board board = boardRepository.save(Board.builder()
+        Board board = boardMemberRepository.save(Board.builder()
                         .createdBy(user)
                         .workspace(workspace)
                         .name(request.name())
@@ -51,7 +53,15 @@ public class BoardService
     }
 
     public Board getBoardById(Integer id) {
-        return boardRepository.findById(id)
+        return boardMemberRepository.findById(id)
                 .orElseThrow(() -> new BoardNotFoundException("Board not found"));
+    }
+
+    public List<BoardDtoProjection> getBoardsByWorkspace(Workspace workspace) {
+        return boardMemberRepository.findByWorkspace(workspace);
+    }
+
+    public List<BoardDtoProjection> getVisibleBoardsForMember(Integer userId, Workspace workspace) {
+        return memberRepository.findByUserIdAndWorkspace(userId, workspace, BoardVisibility.WORKSPACE_PUBLIC);
     }
 }

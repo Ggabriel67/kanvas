@@ -13,12 +13,12 @@ public class WorkspaceAuthorization
 {
     private final WorkspaceMemberRepository memberRepository;
 
-    private Integer getCurrentUserId() throws IllegalStateException {
+    public Integer getCurrentUserId() throws IllegalStateException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.getPrincipal() instanceof Integer userId) {
             return  userId;
         }
-         throw new IllegalStateException("No user ID in SecurityContext");
+        throw new IllegalStateException("No user ID in SecurityContext");
     }
 
     public boolean hasRole(Integer userId, Integer workspaceId, WorkspaceRole requiredRole) {
