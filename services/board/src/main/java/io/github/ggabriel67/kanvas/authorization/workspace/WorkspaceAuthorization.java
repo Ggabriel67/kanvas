@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class WorkspaceAuthorization
 {
-    private final WorkspaceMemberRepository memberRepository;
+    private final WorkspaceMemberRepository workspaceMemberRepository;
 
     public Integer getCurrentUserId() throws IllegalStateException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -22,7 +22,7 @@ public class WorkspaceAuthorization
     }
 
     public boolean hasRole(Integer userId, Integer workspaceId, WorkspaceRole requiredRole) {
-        return memberRepository.findByUserIdAndWorkspaceId(userId, workspaceId)
+        return workspaceMemberRepository.findByUserIdAndWorkspaceId(userId, workspaceId)
                 .map(member -> switch (requiredRole) {
                     case OWNER -> member.getRole() == WorkspaceRole.OWNER;
                     case ADMIN -> member.getRole() == WorkspaceRole.OWNER || member.getRole() == WorkspaceRole.ADMIN;
@@ -45,11 +45,11 @@ public class WorkspaceAuthorization
 
     public boolean canModerate(Integer workspaceId, Integer targetMemberId) {
         Integer callerId = getCurrentUserId();
-        WorkspaceRole callerRole = memberRepository.findByUserIdAndWorkspaceId(callerId, workspaceId)
+        WorkspaceRole callerRole = workspaceMemberRepository.findByUserIdAndWorkspaceId(callerId, workspaceId)
                 .map(WorkspaceMember::getRole)
                 .orElse(null);
 
-        WorkspaceRole targetRole = memberRepository.findById(targetMemberId)
+        WorkspaceRole targetRole = workspaceMemberRepository.findById(targetMemberId)
                 .map(WorkspaceMember::getRole)
                 .orElse(null);
 
