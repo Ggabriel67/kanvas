@@ -3,6 +3,7 @@ package io.github.ggabriel67.kanvas.workspace;
 import io.github.ggabriel67.kanvas.authorization.workspace.WorkspaceAuthorization;
 import io.github.ggabriel67.kanvas.authorization.workspace.WorkspaceRole;
 import io.github.ggabriel67.kanvas.board.BoardDtoProjection;
+import io.github.ggabriel67.kanvas.board.BoardRepository;
 import io.github.ggabriel67.kanvas.board.BoardService;
 import io.github.ggabriel67.kanvas.exception.WorkspaceNotFoundException;
 import io.github.ggabriel67.kanvas.user.User;
@@ -13,7 +14,10 @@ import jakarta.ws.rs.ForbiddenException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +28,7 @@ public class WorkspaceService
     private final WorkspaceMemberRepository workspaceMemberRepository;
     private final UserService userService;
     private final BoardService boardService;
+    private final BoardRepository boardRepository;
 
     public void createWorkspace(WorkspaceRequest request) {
         User user = userService.getUserById(request.ownerId());
@@ -92,5 +97,26 @@ public class WorkspaceService
         User user = userService.getUserById(userId);
 
         return workspaceRepository.findWorkspacesByUser(user);
+    }
+
+    public List<GuestWorkspaceDto> getGuestWorkspaces(Integer userId) {
+        User user = userService.getUserById(userId);
+        var flatResults = boardRepository.findGuestWorkspacesBoardData(user);
+        Map<Integer, List<WorkspaceBoardFlatDto>> grouped = flatResults.stream()
+                .collect(Collectors.groupingBy(WorkspaceBoardFlatDto::workspaceId));
+
+        return grouped.entrySet().stream()
+                .map(entry -> {
+                    Integer workspaceId = entry.getKey();
+                    var flatRes = entry.getValue();
+                    String workspaceName = flatRes.getFirst().workspaceName();
+
+                    var boardProjections = flatRes.stream()
+                            .map(res -> new BoardDtoProjection(res.boardId(), res.boardName()))
+                            .toList();
+
+                    return new GuestWorkspaceDto(workspaceId, workspaceName, boardProjections);
+                })
+                .toList();
     }
 }

@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -24,17 +25,20 @@ public class BoardController
     }
 
     @GetMapping("/{boardId}")
+    @PreAuthorize("@boardAuth.canView(#boardId)")
     public ResponseEntity<BoardDto> getBoard(@PathVariable("boardId") Integer boardId) {
         return ResponseEntity.ok(boardService.getBoard(boardId));
     }
 
     @PatchMapping("/members")
+    @PreAuthorize("@boardAuth.canModerate(#request.boardId(), #request.targetMemberId())")
     public ResponseEntity<Void> changeBoardMemberRole(BoardRoleChangeRequest request) {
         boardMemberService.changeBoardMemberRole(request);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/members")
+    @PreAuthorize("@boardAuth.canModerate(#request.boardId(), #request.targetMemberId())")
     public ResponseEntity<Void> removeBoardMember(@RequestBody BoardMemberRemoveRequest request) {
         boardMemberService.removeMember(request);
         return ResponseEntity.ok().build();

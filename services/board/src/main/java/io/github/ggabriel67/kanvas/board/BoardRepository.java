@@ -1,6 +1,8 @@
 package io.github.ggabriel67.kanvas.board;
 
+import io.github.ggabriel67.kanvas.user.User;
 import io.github.ggabriel67.kanvas.workspace.Workspace;
+import io.github.ggabriel67.kanvas.workspace.WorkspaceBoardFlatDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -37,4 +39,20 @@ AND (b.visibility = :visibility OR bm.user.id IS NOT NULL)
             @Param("workspace") Workspace workspace,
             @Param("visibility") BoardVisibility visibility
     );
+
+
+    @Query("""
+SELECT new io.github.ggabriel67.kanvas.workspace.WorkspaceBoardFlatDto(
+    b.workspace.id, b.workspace.name, bm.board.id, bm.board.name
+)
+FROM BoardMember bm
+JOIN bm.board b
+WHERE bm.user = :user
+AND NOT EXISTS (
+    SELECT 1
+    FROM WorkspaceMember wm
+    WHERE wm.user = :user AND wm.workspace = b.workspace
+)
+""")
+    List<WorkspaceBoardFlatDto> findGuestWorkspacesBoardData(@Param("user") User user);
 }

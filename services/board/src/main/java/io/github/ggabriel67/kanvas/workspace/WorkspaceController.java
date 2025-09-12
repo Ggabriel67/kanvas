@@ -1,9 +1,6 @@
 package io.github.ggabriel67.kanvas.workspace;
 
-import io.github.ggabriel67.kanvas.workspace.member.WorkspaceMemberRemoveRequest;
-import io.github.ggabriel67.kanvas.workspace.member.WorkspaceRoleChangeRequest;
-import io.github.ggabriel67.kanvas.workspace.member.WorkspaceMemberDto;
-import io.github.ggabriel67.kanvas.workspace.member.WorkspaceMemberService;
+import io.github.ggabriel67.kanvas.workspace.member.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -63,5 +60,10 @@ public class WorkspaceController
     public ResponseEntity<Void> removeWorkspaceMember(@RequestBody WorkspaceMemberRemoveRequest request) {
         workspaceMemberService.removeMember(request);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/guests/{userId}")
+    public ResponseEntity<List<GuestWorkspaceDto>> getGuestWorkspaces(@PathVariable("userId") Integer userId) {
+        return ResponseEntity.ok(workspaceService.getGuestWorkspaces(userId));
     }
 }

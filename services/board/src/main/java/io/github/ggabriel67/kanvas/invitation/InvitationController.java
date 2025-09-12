@@ -37,6 +37,7 @@ public class InvitationController
     }
 
     @PostMapping("/boards")
+    @PreAuthorize("@boardAuth.isAdmin(#request.boardId())")
     public ResponseEntity<Void> sendBoardInvitation(@RequestBody BoardInvitationRequest request) {
         boardInvitationService.sendInvitation(request);
         return ResponseEntity.ok().build();
