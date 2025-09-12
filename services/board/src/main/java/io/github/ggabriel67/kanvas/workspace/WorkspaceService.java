@@ -83,6 +83,7 @@ public class WorkspaceService
                 workspace.getName(),
                 workspace.getDescription(),
                 workspace.getCreatedAt(),
+                workspaceRole,
                 boardProjections
         );
     }

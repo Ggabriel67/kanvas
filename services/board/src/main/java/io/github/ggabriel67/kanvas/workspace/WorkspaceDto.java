@@ -1,5 +1,6 @@
 package io.github.ggabriel67.kanvas.workspace;
 
+import io.github.ggabriel67.kanvas.authorization.workspace.WorkspaceRole;
 import io.github.ggabriel67.kanvas.board.BoardDtoProjection;
 
 import java.time.LocalDateTime;
@@ -10,6 +11,7 @@ public record WorkspaceDto(
     String name,
     String description,
     LocalDateTime createdAt,
+    WorkspaceRole workspaceRole,
     List<BoardDtoProjection> boardProjections
 )
 {
