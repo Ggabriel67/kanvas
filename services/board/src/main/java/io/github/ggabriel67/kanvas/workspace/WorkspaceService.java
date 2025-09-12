@@ -86,4 +86,10 @@ public class WorkspaceService
                 boardProjections
         );
     }
+
+    public List<WorkspaceDtoProjection> getAllUserWorkspaces(Integer userId) {
+        User user = userService.getUserById(userId);
+
+        return workspaceRepository.findWorkspacesByUser(user);
+    }
 }

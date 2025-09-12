@@ -19,10 +19,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BoardService
 {
-    private final BoardRepository boardMemberRepository;
+    private final BoardRepository boardRepository;
     private final UserService userService;
     private final WorkspaceRepository workspaceRepository;
-    private final BoardMemberRepository memberRepository;
+    private final BoardMemberRepository boardMemberRepository;
 
     public void createBoard(BoardRequest request) {
         User user = userService.getUserById(request.createdById());
@@ -30,11 +30,11 @@ public class BoardService
         Workspace workspace = workspaceRepository.findById(request.workspaceId())
                 .orElseThrow(() -> new WorkspaceNotFoundException("Workspace not found"));
 
-        if (boardMemberRepository.findByNameAndWorkspace(request.name(), workspace).isPresent()) {
+        if (boardRepository.findByNameAndWorkspace(request.name(), workspace).isPresent()) {
             throw new NameAlreadyInUseException("Board with name " +  request.name() + " already exists in this workspace");
         }
 
-        Board board = boardMemberRepository.save(Board.builder()
+        Board board = boardRepository.save(Board.builder()
                         .createdBy(user)
                         .workspace(workspace)
                         .name(request.name())
@@ -43,7 +43,7 @@ public class BoardService
                         .build()
         );
 
-        memberRepository.save(
+        boardMemberRepository.save(
                 BoardMember.builder()
                         .user(user)
                         .board(board)
@@ -53,15 +53,15 @@ public class BoardService
     }
 
     public Board getBoardById(Integer id) {
-        return boardMemberRepository.findById(id)
+        return boardRepository.findById(id)
                 .orElseThrow(() -> new BoardNotFoundException("Board not found"));
     }
 
     public List<BoardDtoProjection> getBoardsByWorkspace(Workspace workspace) {
-        return boardMemberRepository.findByWorkspace(workspace);
+        return boardRepository.findByWorkspace(workspace);
     }
 
     public List<BoardDtoProjection> getVisibleBoardsForMember(Integer userId, Workspace workspace) {
-        return memberRepository.findByUserIdAndWorkspace(userId, workspace, BoardVisibility.WORKSPACE_PUBLIC);
+        return boardRepository.findBoardsForMemberByVisibility(userId, workspace, BoardVisibility.WORKSPACE_PUBLIC);
     }
 }

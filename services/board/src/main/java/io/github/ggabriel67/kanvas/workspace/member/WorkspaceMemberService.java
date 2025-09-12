@@ -49,12 +49,6 @@ public class WorkspaceMemberService
         memberRepository.delete(member);
     }
 
-    public List<WorkspaceDtoProjection> getAllUserWorkspaces(Integer userId) {
-        User user = userService.getUserById(userId);
-
-        return memberRepository.findWorkspacesByUser(user);
-    }
-
     public List<WorkspaceMemberDto> getAllWorkspaceMembers(Integer workspaceId) {
         Workspace workspace = workspaceRepository.findById(workspaceId)
                 .orElseThrow(() -> new WorkspaceNotFoundException("Workspace not found"));

@@ -1,6 +1,5 @@
 package io.github.ggabriel67.kanvas.board;
 
-import io.github.ggabriel67.kanvas.user.User;
 import io.github.ggabriel67.kanvas.workspace.Workspace;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -23,4 +22,19 @@ FROM Board b
 WHERE b.workspace = :workspace
 """)
     List<BoardDtoProjection> findByWorkspace(@Param("workspace") Workspace workspace);
+
+    @Query("""
+SELECT NEW io.github.ggabriel67.kanvas.board.BoardDtoProjection(
+    b.id, b.name
+)
+FROM Board b
+LEFT JOIN BoardMember bm ON bm.board = b AND bm.user.id = :userId
+WHERE b.workspace = :workspace
+AND (b.visibility = :visibility OR bm.user.id IS NOT NULL)
+""")
+    List<BoardDtoProjection> findBoardsForMemberByVisibility(
+            @Param("userId") Integer userId,
+            @Param("workspace") Workspace workspace,
+            @Param("visibility") BoardVisibility visibility
+    );
 }
