@@ -2,6 +2,8 @@ package io.github.ggabriel67.kanvas.board;
 
 import io.github.ggabriel67.kanvas.authorization.board.BoardRole;
 import io.github.ggabriel67.kanvas.board.member.BoardMember;
+import io.github.ggabriel67.kanvas.board.member.BoardMemberDto;
+import io.github.ggabriel67.kanvas.board.member.BoardMemberMapper;
 import io.github.ggabriel67.kanvas.board.member.BoardMemberRepository;
 import io.github.ggabriel67.kanvas.exception.BoardNotFoundException;
 import io.github.ggabriel67.kanvas.exception.NameAlreadyInUseException;
@@ -23,6 +25,7 @@ public class BoardService
     private final UserService userService;
     private final WorkspaceRepository workspaceRepository;
     private final BoardMemberRepository boardMemberRepository;
+    private final BoardMemberMapper boardMemberMapper;
 
     public void createBoard(BoardRequest request) {
         User user = userService.getUserById(request.createdById());
@@ -64,4 +67,21 @@ public class BoardService
     public List<BoardDtoProjection> getVisibleBoardsForMember(Integer userId, Workspace workspace) {
         return boardRepository.findBoardsForMemberByVisibility(userId, workspace, BoardVisibility.WORKSPACE_PUBLIC);
     }
+
+    public BoardDto getBoard(Integer boardId) {
+        Board board = getBoardById(boardId);
+
+        List<BoardMemberDto> boardMembers= boardMemberRepository.findByBoard(board).stream()
+                .map(boardMemberMapper::toBoardMemberDto)
+                .toList();
+
+        return new BoardDto(
+                board.getId(),
+                board.getName(),
+                board.getDescription(),
+                board.getCreatedAt(),
+                board.getVisibility(),
+                boardMembers
+        );
+   }
 }
