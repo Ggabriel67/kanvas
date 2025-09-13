@@ -1,6 +1,5 @@
 package io.github.ggabriel67.kanvas.board;
 
-import io.github.ggabriel67.kanvas.user.User;
 import io.github.ggabriel67.kanvas.workspace.Workspace;
 import jakarta.persistence.*;
 import lombok.*;

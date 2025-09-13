@@ -37,7 +37,7 @@ public class WorkspaceController
         return ResponseEntity.ok(workspaceService.getWorkspace(workspaceId));
     }
 
-    @GetMapping("/{userId}")
+    @GetMapping("/{userId}/workspaces")
     public ResponseEntity<List<WorkspaceDtoProjection>> getAllUserWorkspaces(@PathVariable("userId") Integer userId) {
         return ResponseEntity.ok(workspaceService.getAllUserWorkspaces(userId));
     }

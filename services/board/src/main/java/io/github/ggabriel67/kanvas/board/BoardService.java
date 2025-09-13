@@ -1,5 +1,6 @@
 package io.github.ggabriel67.kanvas.board;
 
+import io.github.ggabriel67.kanvas.authorization.board.BoardAuthorization;
 import io.github.ggabriel67.kanvas.authorization.board.BoardRole;
 import io.github.ggabriel67.kanvas.board.member.BoardMember;
 import io.github.ggabriel67.kanvas.board.member.BoardMemberDto;
@@ -26,6 +27,7 @@ public class BoardService
     private final WorkspaceRepository workspaceRepository;
     private final BoardMemberRepository boardMemberRepository;
     private final BoardMemberMapper boardMemberMapper;
+    private final BoardAuthorization boardAuth;
 
     public void createBoard(BoardRequest request) {
         User user = userService.getUserById(request.creatorId());
@@ -74,12 +76,16 @@ public class BoardService
                 .map(boardMemberMapper::toBoardMemberDto)
                 .toList();
 
+        Integer userId = boardAuth.getCurrentUserId();
+        boolean readonly = boardMemberRepository.findByUserIdAndBoardId(userId, boardId).isEmpty();
+
         return new BoardDto(
                 board.getId(),
                 board.getName(),
                 board.getDescription(),
                 board.getCreatedAt(),
                 board.getVisibility(),
+                readonly,
                 boardMembers
         );
    }

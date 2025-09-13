@@ -52,8 +52,12 @@ public class BoardAuthorization
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new BoardNotFoundException("Board not found"));
 
-        return hasRole(getCurrentUserId(), boardId, BoardRole.VIEWER) ||
-                board.getVisibility() == BoardVisibility.WORKSPACE_PUBLIC;
+        Integer userId = getCurrentUserId();
+        boolean isWorkspaceMember = workspaceMemberRepository.findByUserIdAndWorkspaceId(userId, board.getWorkspace().getId())
+                .isPresent();
+
+        return hasRole(userId, boardId, BoardRole.VIEWER) ||
+                (board.getVisibility() == BoardVisibility.WORKSPACE_PUBLIC && isWorkspaceMember);
     }
 
     public boolean canModerate(Integer boardId, Integer targetMemberId) {

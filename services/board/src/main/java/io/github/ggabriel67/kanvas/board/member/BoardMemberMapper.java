@@ -5,6 +5,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class BoardMemberMapper {
     public BoardMemberDto toBoardMemberDto(BoardMember boardMember) {
-        return null;
+        return new BoardMemberDto(
+                boardMember.getId(),
+                boardMember.getUser().getFirstname(),
+                boardMember.getUser().getLastname(),
+                boardMember.getUser().getUsername(),
+                boardMember.getUser().getAvatarColor(),
+                boardMember.getRole()
+        );
     }
 }

@@ -11,6 +11,7 @@ public record BoardDto(
         String description,
         LocalDateTime createdAt,
         BoardVisibility visibility,
+        boolean readonly,
         List<BoardMemberDto> boardMembers
 ) {
 }
