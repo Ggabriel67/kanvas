@@ -31,11 +31,10 @@ public class WorkspaceService
     private final BoardRepository boardRepository;
 
     public void createWorkspace(WorkspaceRequest request) {
-        User user = userService.getUserById(request.ownerId());
+        User user = userService.getUserById(request.creatorId());
 
         Workspace workspace = workspaceRepository.save(
                 Workspace.builder()
-                        .createdBy(user)
                         .name(request.name())
                         .description(request.description())
                         .build()

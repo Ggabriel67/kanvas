@@ -28,7 +28,7 @@ public class BoardService
     private final BoardMemberMapper boardMemberMapper;
 
     public void createBoard(BoardRequest request) {
-        User user = userService.getUserById(request.createdById());
+        User user = userService.getUserById(request.creatorId());
 
         Workspace workspace = workspaceRepository.findById(request.workspaceId())
                 .orElseThrow(() -> new WorkspaceNotFoundException("Workspace not found"));
@@ -38,7 +38,6 @@ public class BoardService
         }
 
         Board board = boardRepository.save(Board.builder()
-                        .createdBy(user)
                         .workspace(workspace)
                         .name(request.name())
                         .description(request.description())

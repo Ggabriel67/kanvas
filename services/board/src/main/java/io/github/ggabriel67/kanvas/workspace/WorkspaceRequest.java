@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 
 public record WorkspaceRequest(
-        Integer ownerId,
+        Integer creatorId,
         @NotEmpty(message = "Name cannot be empty")
         @NotBlank(message = "Name cannot be empty")
         @Size(max = 255, message = "Name is too long")

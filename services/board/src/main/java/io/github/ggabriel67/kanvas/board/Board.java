@@ -22,9 +22,6 @@ public class Board {
     @GeneratedValue
     private Integer id;
     @ManyToOne
-    @JoinColumn(name = "created_by_id")
-    private User createdBy;
-    @ManyToOne
     @JoinColumn(name = "workspace_id")
     private Workspace workspace;
     private String name;

@@ -21,9 +21,6 @@ public class Workspace
     @Id
     @GeneratedValue
     private Integer id;
-    @ManyToOne
-    @JoinColumn(name = "created_by_id")
-    private User createdBy;
     private String name;
     private String description;
     @CreatedDate
