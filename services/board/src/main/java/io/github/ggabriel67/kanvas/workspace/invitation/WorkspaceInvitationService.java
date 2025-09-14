@@ -1,7 +1,11 @@
 package io.github.ggabriel67.kanvas.workspace.invitation;
 
 import io.github.ggabriel67.kanvas.exception.*;
+import io.github.ggabriel67.kanvas.invitation.InvitationScope;
 import io.github.ggabriel67.kanvas.invitation.InvitationStatus;
+import io.github.ggabriel67.kanvas.kafka.producer.invitation.InvitationCreated;
+import io.github.ggabriel67.kanvas.kafka.producer.invitation.InvitationEventProducer;
+import io.github.ggabriel67.kanvas.kafka.producer.invitation.InvitationUpdate;
 import io.github.ggabriel67.kanvas.user.User;
 import io.github.ggabriel67.kanvas.user.UserService;
 import io.github.ggabriel67.kanvas.workspace.Workspace;
@@ -24,6 +28,7 @@ public class WorkspaceInvitationService
     private final UserService userService;
     private final WorkspaceService workspaceService;
     private final WorkspaceMemberService memberService;
+    private final InvitationEventProducer invitationEventProducer;
 
     public void sendInvitation(WorkspaceInvitationRequest request) {
         if (memberRepository.findByUserIdAndWorkspaceId(request.inviteeId(), request.workspaceId())
@@ -31,9 +36,9 @@ public class WorkspaceInvitationService
             throw new MemberAlreadyExistsException("This user is already a member of the workspace");
         }
 
-        Optional<WorkspaceInvitation> invitation = invitationRepository.findByInviteeIdAndWorkspaceId(request.inviteeId(), request.workspaceId());
-        if (invitation.isPresent()) {
-            if (invitation.get().getStatus() == InvitationStatus.PENDING) {
+        Optional<WorkspaceInvitation> existingInvitation = invitationRepository.findByInviteeIdAndWorkspaceId(request.inviteeId(), request.workspaceId());
+        if (existingInvitation.isPresent()) {
+            if (existingInvitation.get().getStatus() == InvitationStatus.PENDING) {
                 throw new InvitationPendingException("Invitation already pending");
             }
         }
@@ -42,7 +47,7 @@ public class WorkspaceInvitationService
         User invitee = userService.getUserById(request.inviteeId());
         Workspace workspace = workspaceService.getWorkspaceById(request.workspaceId());
 
-        invitationRepository.save(
+        WorkspaceInvitation invitation = invitationRepository.save(
                 WorkspaceInvitation.builder()
                         .inviter(inviter)
                         .invitee(invitee)
@@ -51,6 +56,10 @@ public class WorkspaceInvitationService
                         .status(InvitationStatus.PENDING)
                         .expirationTime(Instant.now().plus(14, ChronoUnit.DAYS))
                         .build()
+        );
+
+        invitationEventProducer.sendInvitationCreated(new InvitationCreated(
+                invitation.getId(), invitee.getId(), inviter.getUsername(), workspace.getName(), InvitationScope.WORKSPACE)
         );
     }
 
@@ -63,6 +72,10 @@ public class WorkspaceInvitationService
         invitation.setStatus(InvitationStatus.ACCEPTED);
         invitationRepository.save(invitation);
         memberService.addWorkspaceMember(invitation.getWorkspace(), invitation.getInvitee(), invitation.getRole());
+
+        invitationEventProducer.sendInvitationUpdated(new InvitationUpdate(
+                invitation.getId(), invitation.getInvitee().getId(), InvitationStatus.ACCEPTED)
+        );
     }
 
     public void declineInvitation(Integer invitationId) {
@@ -72,6 +85,10 @@ public class WorkspaceInvitationService
         validate(invitation);
         invitation.setStatus(InvitationStatus.DECLINED);
         invitationRepository.save(invitation);
+
+        invitationEventProducer.sendInvitationUpdated(new InvitationUpdate(
+                invitation.getId(), invitation.getInvitee().getId(), InvitationStatus.ACCEPTED)
+        );
     }
 
     private void validate(WorkspaceInvitation invitation) {
@@ -79,6 +96,10 @@ public class WorkspaceInvitationService
         if (invitation.getExpirationTime().isBefore(Instant.now())) {
             invitation.setStatus(InvitationStatus.EXPIRED);
             invitationRepository.save(invitation);
+
+            invitationEventProducer.sendInvitationUpdated(new InvitationUpdate(
+                    invitation.getId(), invitation.getInvitee().getId(), InvitationStatus.EXPIRED)
+            );
 
             throw new InvitationExpiredException("Invitation has expired");
         }

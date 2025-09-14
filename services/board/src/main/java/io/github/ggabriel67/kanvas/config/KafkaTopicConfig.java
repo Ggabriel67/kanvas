@@ -12,9 +12,4 @@ public class KafkaTopicConfig
     public NewTopic invitationEventsTopic() {
         return TopicBuilder.name("invitation.events").build();
     }
-
-    @Bean
-    public NewTopic boardEventsTopic() {
-        return TopicBuilder.name("board.events").build();
-    }
 }
