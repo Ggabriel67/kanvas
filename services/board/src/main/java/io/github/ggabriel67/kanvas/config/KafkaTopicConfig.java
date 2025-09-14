@@ -17,9 +17,4 @@ public class KafkaTopicConfig
     public NewTopic boardEventsTopic() {
         return TopicBuilder.name("board.events").build();
     }
-
-    @Bean
-    public NewTopic boardPresenceEventsTopic() {
-        return TopicBuilder.name("board.presence.events").build();
-    }
 }

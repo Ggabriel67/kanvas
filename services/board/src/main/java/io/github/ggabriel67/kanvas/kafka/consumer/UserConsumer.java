@@ -1,4 +1,4 @@
-package io.github.ggabriel67.kanvas.kafka.user;
+package io.github.ggabriel67.kanvas.kafka.consumer;
 
 import io.github.ggabriel67.kanvas.user.UserDto;
 import io.github.ggabriel67.kanvas.user.UserService;
