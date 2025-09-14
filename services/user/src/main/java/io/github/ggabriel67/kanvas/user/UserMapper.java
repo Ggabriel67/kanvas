@@ -11,7 +11,7 @@ public class UserMapper
                 user.getFirstname(),
                 user.getLastname(),
                 user.getEmail(),
-                user.getUsername(),
+                user.getDisplayUsername(),
                 user.getAvatarColor()
         );
     }
