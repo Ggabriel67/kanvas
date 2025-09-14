@@ -27,4 +27,16 @@ public class BoardEventProducer
                 .build();
         kafkaTemplate.send(message);
     }
+
+    public void sendRoleChanged(RoleChanged roleChanged) {
+        log.info("Sending role changed");
+        Message<Event<Object>> message = MessageBuilder
+                .withPayload(Event.builder()
+                        .eventType(String.valueOf(BoardEventType.DELETED))
+                        .payload(roleChanged)
+                        .build())
+                .setHeader(KafkaHeaders.TOPIC, "board.events")
+                .build();
+        kafkaTemplate.send(message);
+    }
 }

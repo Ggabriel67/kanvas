@@ -6,6 +6,8 @@ import io.github.ggabriel67.kanvas.board.BoardRepository;
 import io.github.ggabriel67.kanvas.exception.BoardNotFoundException;
 import io.github.ggabriel67.kanvas.exception.UserNotFoundException;
 import io.github.ggabriel67.kanvas.exception.WorkspaceNotFoundException;
+import io.github.ggabriel67.kanvas.kafka.producer.board.BoardEventProducer;
+import io.github.ggabriel67.kanvas.kafka.producer.board.RoleChanged;
 import io.github.ggabriel67.kanvas.user.User;
 import io.github.ggabriel67.kanvas.workspace.member.WorkspaceMember;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +19,7 @@ public class BoardMemberService
 {
     private final BoardMemberRepository memberRepository;
     private final BoardRepository boardRepository;
+    private final BoardEventProducer boardEventProducer;
 
     public void addBoardMember(Board board, User invitee, BoardRole role) {
         memberRepository.save(
@@ -36,6 +39,10 @@ public class BoardMemberService
         BoardMember member = getMemberById(request.targetMemberId());
         member.setRole(request.newRole());
         memberRepository.save(member);
+
+        boardEventProducer.sendRoleChanged(new RoleChanged(
+                member.getId(), request.newRole()
+        ));
     }
 
     public void removeMember(BoardMemberRemoveRequest request) {
