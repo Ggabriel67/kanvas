@@ -13,4 +13,6 @@ public interface BoardMemberRepository extends JpaRepository<BoardMember, Intege
     Optional<BoardMember> findByUserIdAndBoardId(Integer userId, Integer boardId);
 
     List<BoardMember> findByBoard(Board board);
+
+    void deleteAllByBoard(Board board);
 }

@@ -2,6 +2,7 @@ package io.github.ggabriel67.kanvas.board;
 
 import io.github.ggabriel67.kanvas.authorization.board.BoardAuthorization;
 import io.github.ggabriel67.kanvas.authorization.board.BoardRole;
+import io.github.ggabriel67.kanvas.board.invitation.BoardInvitationRepository;
 import io.github.ggabriel67.kanvas.board.member.BoardMember;
 import io.github.ggabriel67.kanvas.board.member.BoardMemberDto;
 import io.github.ggabriel67.kanvas.board.member.BoardMemberMapper;
@@ -9,6 +10,7 @@ import io.github.ggabriel67.kanvas.board.member.BoardMemberRepository;
 import io.github.ggabriel67.kanvas.exception.BoardNotFoundException;
 import io.github.ggabriel67.kanvas.exception.NameAlreadyInUseException;
 import io.github.ggabriel67.kanvas.exception.WorkspaceNotFoundException;
+import io.github.ggabriel67.kanvas.kafka.producer.board.BoardEventProducer;
 import io.github.ggabriel67.kanvas.user.User;
 import io.github.ggabriel67.kanvas.user.UserService;
 import io.github.ggabriel67.kanvas.workspace.Workspace;
@@ -28,6 +30,8 @@ public class BoardService
     private final BoardMemberRepository boardMemberRepository;
     private final BoardMemberMapper boardMemberMapper;
     private final BoardAuthorization boardAuth;
+    private final BoardInvitationRepository boardInvitationRepository;
+    private final BoardEventProducer boardEventProducer;
 
     public void createBoard(BoardRequest request) {
         User user = userService.getUserById(request.creatorId());
@@ -89,4 +93,13 @@ public class BoardService
                 boardMembers
         );
    }
+
+    public void deleteBoard(Integer boardId) {
+        Board board = getBoardById(boardId);
+
+        boardMemberRepository.deleteAllByBoard(board);
+        boardInvitationRepository.deleteAllByBoard(board);
+
+        boardEventProducer.sendBoardDeleted(boardId);
+    }
 }

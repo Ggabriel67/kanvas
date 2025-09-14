@@ -44,4 +44,11 @@ public class BoardController
         boardMemberService.removeMember(request);
         return ResponseEntity.ok().build();
     }
+
+    @DeleteMapping("/{boardId}")
+    @PreAuthorize("@boardAuth.canDelete(#boardId)")
+    public ResponseEntity<Void> deleteBoard(@PathVariable("boardId") Integer boardId) {
+        boardService.deleteBoard(boardId);
+        return ResponseEntity.ok().build();
+    }
 }
