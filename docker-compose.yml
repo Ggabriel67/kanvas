@@ -34,7 +34,7 @@ services:
     container_name: task-service-db
     image: postgres
     environment:
-      POSTGRES_DB: board_service_db
+      POSTGRES_DB: task_service_db
       POSTGRES_USER: gabriel
       POSTGRES_PASSWORD: gabriel
       PGDATA: /var/lib/postgresql/data

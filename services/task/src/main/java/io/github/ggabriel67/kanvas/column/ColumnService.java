@@ -13,7 +13,7 @@ public class ColumnService
     private final ColumnRepository columnRepository;
     private final ColumnMapper columnMapper;
 
-    @Value("${application.column.step}")
+    @Value("${application.ordering.step.column}")
     private Double step;
 
     private Column getColumnById(Integer id) {
@@ -23,7 +23,6 @@ public class ColumnService
 
     public ColumnResponse createColumn(ColumnRequest request) {
         Double maxOrderIndex = columnRepository.findMaxOrderIndexByBoardId(request.boardId());
-
         if (maxOrderIndex == null) {
             maxOrderIndex = 0d;
         }
