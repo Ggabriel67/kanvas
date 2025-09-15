@@ -7,6 +7,7 @@ public class BoardMemberMapper {
     public BoardMemberDto toBoardMemberDto(BoardMember boardMember) {
         return new BoardMemberDto(
                 boardMember.getId(),
+                boardMember.getUser().getId(),
                 boardMember.getUser().getFirstname(),
                 boardMember.getUser().getLastname(),
                 boardMember.getUser().getUsername(),

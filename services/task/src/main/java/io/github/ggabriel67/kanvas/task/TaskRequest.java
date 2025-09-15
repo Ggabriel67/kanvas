@@ -17,6 +17,7 @@ public record TaskRequest(
         String description,
         Instant deadline,
         TaskPriority priority,
-        List<Integer> assigneeIds
+        List<Integer> assigneeIds,
+        List<Integer> userIds
 ) {
 }
