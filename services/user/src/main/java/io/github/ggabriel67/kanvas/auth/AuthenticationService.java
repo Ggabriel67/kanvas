@@ -21,7 +21,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -64,14 +66,14 @@ public class AuthenticationService
                 )
         );
         var user = ((User)auth.getPrincipal());
-
-        String accessToken = jwtService.generateToken(user);
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("userId", user.getId());
+        String accessToken = jwtService.generateAccessToken(claims, user);
         String refreshToken = jwtService.generateRefreshToken(user);
-        revokeAllUserTokens(user);
-        saveUserToken(user, accessToken);
+        saveUserRefreshToken(user, refreshToken);
 
-        Cookie accessTokenCookie = generateCookie(TokenType.ACCESS, accessToken, jwtService.getAccessTokenExpiration());
-        Cookie refreshTokenCookie = generateCookie(TokenType.REFRESH, refreshToken, jwtService.getRefreshTokenExpiration());
+        Cookie accessTokenCookie = generateCookie(TokenType.ACCESS.getName(), accessToken, jwtService.getAccessTokenExpiration());
+        Cookie refreshTokenCookie = generateCookie(TokenType.REFRESH.getName(), refreshToken, jwtService.getRefreshTokenExpiration());
         response.addCookie(accessTokenCookie);
         response.addCookie(refreshTokenCookie);
 
@@ -80,22 +82,11 @@ public class AuthenticationService
                 .build();
     }
 
-    private void revokeAllUserTokens(User user) {
-        List<Token> validUserTokens = tokenRepository.findAllValidTokensByUser(user.getId());
-        if (validUserTokens.isEmpty())
-            return;
-        validUserTokens.forEach(token -> {
-            token.setRevoked(true);
-            token.setExpired(true);
-        });
-        tokenRepository.saveAll(validUserTokens);
-    }
-
-    private void saveUserToken(User user, String accessToken) {
+    private void saveUserRefreshToken(User user, String jwt) {
         var token = Token.builder()
                 .user(user)
-                .token(accessToken)
-                .tokenType(TokenType.ACCESS)
+                .token(jwt)
+                .tokenType(TokenType.REFRESH)
                 .revoked(false)
                 .expired(false)
                 .build();
@@ -123,16 +114,20 @@ public class AuthenticationService
             User user = userRepository.findByEmail(userEmail)
                     .orElseThrow();
 
-            if (jwtService.isTokenValid(refreshToken, user)) {
-                String accessToken = jwtService.generateToken(user);
-                revokeAllUserTokens(user);
-                saveUserToken(user, accessToken);
+            boolean isTokenValid = tokenRepository.findByToken(refreshToken)
+                    .map(token -> !token.isExpired() && !token.isRevoked())
+                    .orElse(false);
+
+            if (jwtService.isTokenValid(refreshToken, user) && isTokenValid) {
+                Map<String, Object> extraClaims = new HashMap<>();
+                extraClaims.put("userId", user.getId());
+                String accessToken = jwtService.generateAccessToken(extraClaims, user);
                 AuthenticationResponse authResponse = AuthenticationResponse.builder()
                         .accessToken(accessToken)
                         .build();
 
-                Cookie accessTokenCookie = generateCookie(TokenType.ACCESS, accessToken, jwtService.getAccessTokenExpiration());
-                Cookie refreshTokenCookie = generateCookie(TokenType.REFRESH, refreshToken, jwtService.getRefreshTokenExpiration());
+                Cookie accessTokenCookie = generateCookie(TokenType.ACCESS.getName(), accessToken, jwtService.getAccessTokenExpiration());
+                Cookie refreshTokenCookie = generateCookie(TokenType.REFRESH.getName(), refreshToken, jwtService.getRefreshTokenExpiration());
                 response.addCookie(accessTokenCookie);
                 response.addCookie(refreshTokenCookie);
                 new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
@@ -140,8 +135,8 @@ public class AuthenticationService
         }
     }
 
-    private Cookie generateCookie(TokenType tokenType, String token, long expiration) {
-        Cookie cookie = new Cookie(tokenType.getName(), token);
+    private Cookie generateCookie(String name, String token, long expiration) {
+        Cookie cookie = new Cookie(name, token);
         cookie.setMaxAge((int) expiration / 1000);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
