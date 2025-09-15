@@ -17,6 +17,7 @@ import io.github.ggabriel67.kanvas.workspace.Workspace;
 import io.github.ggabriel67.kanvas.workspace.WorkspaceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -94,11 +95,13 @@ public class BoardService
         );
    }
 
+    @Transactional
     public void deleteBoard(Integer boardId) {
         Board board = getBoardById(boardId);
 
         boardMemberRepository.deleteAllByBoard(board);
         boardInvitationRepository.deleteAllByBoard(board);
+        boardRepository.delete(board);
 
         boardEventProducer.sendBoardDeleted(boardId);
     }
