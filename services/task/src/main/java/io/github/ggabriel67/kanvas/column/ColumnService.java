@@ -40,22 +40,18 @@ public class ColumnService
     @Transactional
     public ColumnResponse moveColumn(MoveColumnRequest request) {
         double newOrderIndex;
-        Column preceding;
-        Column following;
+        Column preceding, following;
         if (request.precedingColumnId() == null) {
             following = getColumnById(request.followingColumnId());
-
             newOrderIndex = following.getOrderIndex() - step;
         }
         else if (request.followingColumnId() == null) {
             preceding = getColumnById(request.precedingColumnId());
-
-            newOrderIndex = preceding.getOrderIndex() - step;
+            newOrderIndex = preceding.getOrderIndex() + step;
         }
         else {
             preceding = getColumnById(request.precedingColumnId());
             following = getColumnById(request.followingColumnId());
-
             newOrderIndex = (preceding.getOrderIndex() + following.getOrderIndex()) / 2;
         }
 

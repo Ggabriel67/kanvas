@@ -3,11 +3,13 @@ package io.github.ggabriel67.kanvas.task;
 import io.github.ggabriel67.kanvas.column.Column;
 import io.github.ggabriel67.kanvas.column.ColumnRepository;
 import io.github.ggabriel67.kanvas.exception.ColumnNotFoundException;
+import io.github.ggabriel67.kanvas.exception.TaskNotFoundException;
 import io.github.ggabriel67.kanvas.task.assignee.TaskAssignee;
 import io.github.ggabriel67.kanvas.task.assignee.TaskAssigneeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -23,7 +25,12 @@ public class TaskService
     @Value("${application.ordering.step.task}")
     private Double step;
 
-    public TaskDtoProjection createTask(TaskRequest request) {
+    private Task getTaskById(Integer id) {
+        return taskRepository.findById(id)
+                .orElseThrow(() -> new TaskNotFoundException("Task not found"));
+    }
+
+    public TaskResponse createTask(TaskRequest request) {
         Column column = columnRepository.findById(request.columnId())
                 .orElseThrow(() -> new ColumnNotFoundException("Column not found"));
 
@@ -55,6 +62,36 @@ public class TaskService
             taskAssigneeRepository.saveAll(taskAssignees);
         }
 
-        return taskMapper.toTaskDtoProjection(task, request.assigneeIds());
+        return new TaskResponse(task.getId(), task.getOrderIndex());
+    }
+
+    @Transactional
+    public TaskResponse moveTask(MoveTaskRequest request) {
+        double newOrderIndex;
+        Column targetColumn = columnRepository.findById(request.targetColumnId())
+                .orElseThrow(() -> new ColumnNotFoundException("Column not found"));
+
+        Task preceding, following;
+        if (request.precedingTaskId() == null) {
+            following = getTaskById(request.followingTaskId());
+            newOrderIndex = following.getOrderIndex() - step;
+        }
+        else if (request.followingTaskId() == null) {
+            preceding = getTaskById(request.precedingTaskId());
+            newOrderIndex = preceding.getOrderIndex() + step;
+        }
+
+        else {
+            preceding = getTaskById(request.precedingTaskId());
+            following = getTaskById(request.followingTaskId());
+            newOrderIndex = (preceding.getOrderIndex() + following.getOrderIndex()) / 2;
+        }
+
+        Task task = getTaskById(request.taskId());
+
+        task.setOrderIndex(newOrderIndex);
+        if (!task.getColumn().equals(targetColumn)) task.setColumn(targetColumn);
+        taskRepository.save(task);
+        return new TaskResponse(task.getId(), task.getOrderIndex());
     }
 }
