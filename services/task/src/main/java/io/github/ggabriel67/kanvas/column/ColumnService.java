@@ -2,8 +2,10 @@ package io.github.ggabriel67.kanvas.column;
 
 import io.github.ggabriel67.kanvas.exception.ColumnNotFoundException;
 import io.github.ggabriel67.kanvas.task.TaskDtoProjection;
+import io.github.ggabriel67.kanvas.task.TaskRepository;
 import io.github.ggabriel67.kanvas.task.TaskService;
 import io.github.ggabriel67.kanvas.task.TaskStatus;
+import io.github.ggabriel67.kanvas.task.assignee.TaskAssigneeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,8 @@ public class ColumnService
     private final ColumnRepository columnRepository;
     private final ColumnMapper columnMapper;
     private final TaskService taskService;
+    private final TaskRepository taskRepository;
+    private final TaskAssigneeRepository taskAssigneeRepository;
 
     @Value("${application.ordering.step.column}")
     private Double step;
@@ -118,5 +122,12 @@ public class ColumnService
                 ))
                 .sorted(Comparator.comparingDouble(ColumnDto::orderIndex))
                 .toList();
+    }
+
+    @Transactional
+    public void deleteTask(Integer columnId) {
+        taskAssigneeRepository.deleteAllByColumnId(columnId);
+        taskRepository.deleteAllByColumnId(columnId);
+        columnRepository.deleteById(columnId);
     }
 }

@@ -13,4 +13,6 @@ public interface TaskRepository extends JpaRepository<Task, Integer>
 SELECT MAX(t.orderIndex) FROM Task t WHERE t.column = :column
 """)
     Double findMaxOrderIndexByColumn(@Param("column") Column column);
+
+    void deleteAllByColumnId(Integer columnId);
 }

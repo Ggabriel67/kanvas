@@ -100,4 +100,10 @@ public class TaskService
         return status != TaskStatus.DONE && deadline != null &&
                 deadline.isBefore(Instant.from(LocalDateTime.now()));
     }
+
+    @Transactional
+    public void deleteTask(Integer taskId) {
+        taskAssigneeRepository.deleteAllByTaskId(taskId);
+        taskRepository.deleteById(taskId);
+    }
 }

@@ -22,4 +22,10 @@ public class TaskController
     public ResponseEntity<TaskResponse> moveTask(@RequestBody MoveTaskRequest request) {
         return ResponseEntity.ok(taskService.moveTask(request));
     }
+
+    @DeleteMapping("/{taskId}")
+    public ResponseEntity<Void> deleteTask(@PathVariable("taskId") Integer taskId) {
+        taskService.deleteTask(taskId);
+        return ResponseEntity.ok().build();
+    }
 }

@@ -36,4 +36,10 @@ public class ColumnController
     public ResponseEntity<List<ColumnDto>> getAllBoardColumns(@PathVariable("boardId") Integer boardId) {
         return ResponseEntity.ok(columnService.getAllBoardColumns(boardId));
     }
+
+    @DeleteMapping("/{columnId}")
+    public ResponseEntity<Void> deleteColumn(@PathVariable("columnId") Integer columnId) {
+        columnService.deleteTask(columnId);
+        return ResponseEntity.ok().build();
+    }
 }
