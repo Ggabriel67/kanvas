@@ -7,6 +7,7 @@ import io.github.ggabriel67.kanvas.exception.BoardNotFoundException;
 import io.github.ggabriel67.kanvas.exception.UserNotFoundException;
 import io.github.ggabriel67.kanvas.exception.WorkspaceNotFoundException;
 import io.github.ggabriel67.kanvas.kafka.producer.board.BoardEventProducer;
+import io.github.ggabriel67.kanvas.kafka.producer.board.MemberRemoved;
 import io.github.ggabriel67.kanvas.kafka.producer.board.RoleChanged;
 import io.github.ggabriel67.kanvas.user.User;
 import io.github.ggabriel67.kanvas.workspace.member.WorkspaceMember;
@@ -48,6 +49,10 @@ public class BoardMemberService
     public void removeMember(BoardMemberRemoveRequest request) {
         BoardMember member = getMemberById(request.targetMemberId());
         memberRepository.delete(member);
+
+        boardEventProducer.sendMemberRemoved(new MemberRemoved(
+
+        ));
     }
 
     private BoardMember getMemberById(Integer memberId) {
