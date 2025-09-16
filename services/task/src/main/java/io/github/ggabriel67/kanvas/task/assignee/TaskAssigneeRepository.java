@@ -8,6 +8,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Repository
 public interface TaskAssigneeRepository extends JpaRepository<TaskAssignee, Integer>
 {
@@ -20,4 +22,6 @@ DELETE FROM TaskAssignee ta
 WHERE ta.task.column.id = :columnId
 """)
     void deleteAllByColumnId(@Param("columnId") Integer columnId);
+
+    Optional<TaskAssignee> findByBoardMemberIdAndTaskId(Integer boardMemberId, Integer taskId);
 }

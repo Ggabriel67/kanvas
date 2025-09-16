@@ -7,6 +7,7 @@ import io.github.ggabriel67.kanvas.exception.TaskNotFoundException;
 import io.github.ggabriel67.kanvas.task.assignee.TaskAssignee;
 import io.github.ggabriel67.kanvas.task.assignee.TaskAssigneeRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,15 +53,16 @@ public class TaskService
                         .status(TaskStatus.ACTIVE)
                         .build()
         );
-        List<TaskAssignee> taskAssignees = request.assigneeIds()
-                .stream()
-                .map(memberId -> TaskAssignee.builder()
-                        .task(task)
-                        .boardMemberId(memberId)
-                        .build())
-                .toList();
 
-        if (!taskAssignees.isEmpty()) {
+
+        if (!request.assigneeIds().isEmpty()) {
+            List<TaskAssignee> taskAssignees = request.assigneeIds()
+                    .stream()
+                    .map(memberId -> TaskAssignee.builder()
+                            .task(task)
+                            .boardMemberId(memberId)
+                            .build())
+                    .toList();
             taskAssigneeRepository.saveAll(taskAssignees);
         }
 
@@ -105,5 +107,20 @@ public class TaskService
     public void deleteTask(Integer taskId) {
         taskAssigneeRepository.deleteAllByTaskId(taskId);
         taskRepository.deleteById(taskId);
+    }
+
+    public void updateTask(TaskUpdateRequest request) {
+        Task task = getTaskById(request.taskId());
+
+        mergeTask(task, request);
+        taskRepository.save(task);
+    }
+
+    private void mergeTask(Task task, TaskUpdateRequest request) {
+        if (StringUtils.isNotBlank(request.title())) task.setTitle(request.title());
+        if (StringUtils.isNotBlank(request.description())) task.setTitle(request.description());
+        if (request.deadline() != null) task.setDeadline(request.deadline());
+        if (request.priority() != null) task.setPriority(request.priority());
+        if (request.status() != null) task.setStatus(request.status());
     }
 }

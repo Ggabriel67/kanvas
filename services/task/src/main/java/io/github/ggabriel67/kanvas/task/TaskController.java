@@ -1,5 +1,7 @@
 package io.github.ggabriel67.kanvas.task;
 
+import io.github.ggabriel67.kanvas.task.assignee.TaskAssigneeService;
+import io.github.ggabriel67.kanvas.task.assignee.AssignmentRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 public class TaskController
 {
     private final TaskService taskService;
+    private final TaskAssigneeService taskAssigneeService;
 
     @PostMapping
     public ResponseEntity<TaskResponse> createTask(@RequestBody @Valid TaskRequest request) {
@@ -26,6 +29,24 @@ public class TaskController
     @DeleteMapping("/{taskId}")
     public ResponseEntity<Void> deleteTask(@PathVariable("taskId") Integer taskId) {
         taskService.deleteTask(taskId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping
+    public ResponseEntity<Void> updateTask(@RequestBody TaskUpdateRequest request) {
+        taskService.updateTask(request);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/assignees")
+    public ResponseEntity<Void> assignTask(@RequestBody AssignmentRequest request) {
+        taskAssigneeService.assignTask(request);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/assignees")
+    public ResponseEntity<Void> unassignTask(@RequestBody AssignmentRequest request) {
+        taskAssigneeService.unassignTask(request);
         return ResponseEntity.ok().build();
     }
 }

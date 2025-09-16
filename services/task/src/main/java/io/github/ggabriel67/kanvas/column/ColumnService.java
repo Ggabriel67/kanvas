@@ -93,8 +93,6 @@ public class ColumnService
                     var assigneeIds = flatResultValue.stream()
                             .map(ColumnTaskFlatDto::assigneeId)
                             .filter(Objects::nonNull)
-                            .collect(Collectors.toSet())
-                            .stream()
                             .toList();
                     return new TaskDtoProjection(flatTask.taskId(), flatTask.taskOrderIndex(), flatTask.columnId(), flatTask.taskTitle(), flatTask.deadline(),
                             flatTask.status(), assigneeIds, taskService.isTaskExpired(flatTask.status(), flatTask.deadline())
