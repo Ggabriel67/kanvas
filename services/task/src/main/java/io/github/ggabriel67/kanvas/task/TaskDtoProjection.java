@@ -5,8 +5,9 @@ import java.util.List;
 
 public record TaskDtoProjection(
     Integer taskId,
+    double orderIndex,
     Integer columnId,
-    String name,
+    String title,
     Instant deadline,
     TaskStatus status,
     List<Integer> assigneeIds,

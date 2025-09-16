@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -62,7 +64,7 @@ public class TaskService
             taskAssigneeRepository.saveAll(taskAssignees);
         }
 
-        return new TaskResponse(task.getId(), task.getOrderIndex());
+        return new TaskResponse(task.getId(), column.getId(), task.getOrderIndex());
     }
 
     @Transactional
@@ -80,7 +82,6 @@ public class TaskService
             preceding = getTaskById(request.precedingTaskId());
             newOrderIndex = preceding.getOrderIndex() + step;
         }
-
         else {
             preceding = getTaskById(request.precedingTaskId());
             following = getTaskById(request.followingTaskId());
@@ -92,6 +93,11 @@ public class TaskService
         task.setOrderIndex(newOrderIndex);
         if (!task.getColumn().equals(targetColumn)) task.setColumn(targetColumn);
         taskRepository.save(task);
-        return new TaskResponse(task.getId(), task.getOrderIndex());
+        return new TaskResponse(task.getId(), targetColumn.getId(), newOrderIndex);
+    }
+
+    public boolean isTaskExpired(TaskStatus status, Instant deadline) {
+        return status != TaskStatus.DONE && deadline != null &&
+                deadline.isBefore(Instant.from(LocalDateTime.now()));
     }
 }

@@ -1,10 +1,18 @@
 package io.github.ggabriel67.kanvas.column;
 
 import io.github.ggabriel67.kanvas.exception.ColumnNotFoundException;
+import io.github.ggabriel67.kanvas.task.TaskDtoProjection;
+import io.github.ggabriel67.kanvas.task.TaskService;
+import io.github.ggabriel67.kanvas.task.TaskStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -12,6 +20,7 @@ public class ColumnService
 {
     private final ColumnRepository columnRepository;
     private final ColumnMapper columnMapper;
+    private final TaskService taskService;
 
     @Value("${application.ordering.step.column}")
     private Double step;
@@ -66,5 +75,48 @@ public class ColumnService
         Column column = getColumnById(columnId);
         column.setName(request.columnName());
         columnRepository.save(column);
+    }
+
+    public List<ColumnDto> getAllBoardColumns(Integer boardId) {
+        List<ColumnTaskFlatDto> flatResults = columnRepository.findColumnDataByBoardId(boardId);
+        Map<Integer, List<ColumnTaskFlatDto>> groupedByTask = flatResults.stream()
+                .filter(r -> r.taskId() != null)
+                .collect(Collectors.groupingBy(ColumnTaskFlatDto::taskId));
+
+        List<TaskDtoProjection> taskProjections = groupedByTask.values().stream()
+                .map(flatResultValue -> {
+                    var flatTask = flatResultValue.getFirst();
+                    var assigneeIds = flatResultValue.stream()
+                            .map(ColumnTaskFlatDto::assigneeId)
+                            .filter(Objects::nonNull)
+                            .collect(Collectors.toSet())
+                            .stream()
+                            .toList();
+                    return new TaskDtoProjection(flatTask.taskId(), flatTask.taskOrderIndex(), flatTask.columnId(), flatTask.taskTitle(), flatTask.deadline(),
+                            flatTask.status(), assigneeIds, taskService.isTaskExpired(flatTask.status(), flatTask.deadline())
+                    );
+                })
+                .toList();
+
+        Map<Integer, ColumnDto> groupedColumns = new HashMap<>();
+        for (ColumnTaskFlatDto flat : flatResults) {
+            groupedColumns.computeIfAbsent(flat.columnId(),
+                    columnId -> new ColumnDto(columnId, flat.columnOrderIndex(), flat.columnName(), new ArrayList<>())
+            );
+        }
+
+        for (TaskDtoProjection task : taskProjections) {
+            groupedColumns.get(task.columnId()).taskProjections().add(task);
+        }
+
+        List<ColumnDto> columns = groupedColumns.values().stream().toList();
+        return columns.stream()
+                .map(column -> new ColumnDto(column.columnId(), column.orderIndex(), column.name(),
+                        column.taskProjections().stream()
+                                .sorted(Comparator.comparingDouble(TaskDtoProjection::orderIndex))
+                                .toList()
+                ))
+                .sorted(Comparator.comparingDouble(ColumnDto::orderIndex))
+                .toList();
     }
 }

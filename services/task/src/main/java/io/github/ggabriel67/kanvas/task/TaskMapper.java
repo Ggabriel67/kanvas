@@ -10,6 +10,7 @@ public class TaskMapper
     public TaskDtoProjection toTaskDtoProjection(Task task, List<Integer> assigneeIds) {
         return new TaskDtoProjection(
                 task.getId(),
+                task.getOrderIndex(),
                 task.getColumn().getId(),
                 task.getTitle(),
                 task.getDeadline(),

@@ -6,6 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/columns")
 @RequiredArgsConstructor
@@ -28,5 +30,10 @@ public class ColumnController
     @PatchMapping("/move")
     public ResponseEntity<ColumnResponse> moveColumn(@RequestBody MoveColumnRequest request) {
         return ResponseEntity.ok(columnService.moveColumn(request));
+    }
+
+    @GetMapping("/{boardId}")
+    public ResponseEntity<List<ColumnDto>> getAllBoardColumns(@PathVariable("boardId") Integer boardId) {
+        return ResponseEntity.ok(columnService.getAllBoardColumns(boardId));
     }
 }
