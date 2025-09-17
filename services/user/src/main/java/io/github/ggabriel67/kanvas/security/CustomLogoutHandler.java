@@ -20,7 +20,6 @@ import java.util.List;
 public class CustomLogoutHandler implements LogoutHandler
 {
     private final TokenRepository tokenRepository;
-    private final AuthenticationService authenticationService;
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {

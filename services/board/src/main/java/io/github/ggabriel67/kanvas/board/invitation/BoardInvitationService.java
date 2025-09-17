@@ -5,14 +5,13 @@ import io.github.ggabriel67.kanvas.board.BoardService;
 import io.github.ggabriel67.kanvas.board.member.BoardMemberRepository;
 import io.github.ggabriel67.kanvas.board.member.BoardMemberService;
 import io.github.ggabriel67.kanvas.exception.*;
+import io.github.ggabriel67.kanvas.event.invitation.InvitationCreated;
+import io.github.ggabriel67.kanvas.event.invitation.InvitationUpdate;
 import io.github.ggabriel67.kanvas.invitation.InvitationScope;
 import io.github.ggabriel67.kanvas.invitation.InvitationStatus;
-import io.github.ggabriel67.kanvas.kafka.producer.invitation.InvitationCreated;
-import io.github.ggabriel67.kanvas.kafka.producer.invitation.InvitationEventProducer;
-import io.github.ggabriel67.kanvas.kafka.producer.invitation.InvitationUpdate;
+import io.github.ggabriel67.kanvas.kafka.producer.InvitationEventProducer;
 import io.github.ggabriel67.kanvas.user.User;
 import io.github.ggabriel67.kanvas.user.UserService;
-import io.github.ggabriel67.kanvas.workspace.invitation.WorkspaceInvitation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -60,7 +59,7 @@ public class BoardInvitationService
         );
 
         invitationEventProducer.sendInvitationCreated(new InvitationCreated(
-                invitation.getId(), invitee.getId(), inviter.getUsername(), board.getName(), InvitationScope.BOARD)
+                invitation.getId(), invitee.getId(), inviter.getUsername(), board.getName(), InvitationScope.BOARD.name())
         );
     }
 
@@ -75,7 +74,7 @@ public class BoardInvitationService
         memberService.addBoardMember(invitation.getBoard(), invitation.getInvitee(), invitation.getRole());
 
         invitationEventProducer.sendInvitationUpdated(new InvitationUpdate(
-                invitation.getId(), invitation.getInvitee().getId(), InvitationStatus.ACCEPTED)
+                invitation.getId(), invitation.getInvitee().getId(), InvitationStatus.ACCEPTED.name())
         );
     }
 
@@ -88,7 +87,7 @@ public class BoardInvitationService
         invitationRepository.save(invitation);
 
         invitationEventProducer.sendInvitationUpdated(new InvitationUpdate(
-                invitation.getId(), invitation.getInvitee().getId(), InvitationStatus.DECLINED)
+                invitation.getId(), invitation.getInvitee().getId(), InvitationStatus.DECLINED.name())
         );
     }
 
@@ -99,7 +98,7 @@ public class BoardInvitationService
             invitationRepository.save(invitation);
 
             invitationEventProducer.sendInvitationUpdated(new InvitationUpdate(
-                    invitation.getId(), invitation.getInvitee().getId(), InvitationStatus.EXPIRED)
+                    invitation.getId(), invitation.getInvitee().getId(), InvitationStatus.EXPIRED.name())
             );
 
             throw new InvitationExpiredException("Invitation has expired");

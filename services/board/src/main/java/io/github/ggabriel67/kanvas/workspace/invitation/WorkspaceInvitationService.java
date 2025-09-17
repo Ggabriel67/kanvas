@@ -1,11 +1,11 @@
 package io.github.ggabriel67.kanvas.workspace.invitation;
 
+import io.github.ggabriel67.kanvas.event.invitation.InvitationCreated;
+import io.github.ggabriel67.kanvas.event.invitation.InvitationUpdate;
 import io.github.ggabriel67.kanvas.exception.*;
-import io.github.ggabriel67.kanvas.invitation.InvitationScope;
-import io.github.ggabriel67.kanvas.invitation.InvitationStatus;
-import io.github.ggabriel67.kanvas.kafka.producer.invitation.InvitationCreated;
-import io.github.ggabriel67.kanvas.kafka.producer.invitation.InvitationEventProducer;
-import io.github.ggabriel67.kanvas.kafka.producer.invitation.InvitationUpdate;
+import io.github.ggabriel67.kanvas.event.invitation.InvitationScope;
+import io.github.ggabriel67.kanvas.event.invitation.InvitationStatus;
+import io.github.ggabriel67.kanvas.kafka.producer.InvitationEventProducer;
 import io.github.ggabriel67.kanvas.user.User;
 import io.github.ggabriel67.kanvas.user.UserService;
 import io.github.ggabriel67.kanvas.workspace.Workspace;
@@ -59,7 +59,7 @@ public class WorkspaceInvitationService
         );
 
         invitationEventProducer.sendInvitationCreated(new InvitationCreated(
-                invitation.getId(), invitee.getId(), inviter.getUsername(), workspace.getName(), InvitationScope.WORKSPACE)
+                invitation.getId(), invitee.getId(), inviter.getUsername(), workspace.getName(), InvitationScope.WORKSPACE.name())
         );
     }
 
@@ -74,7 +74,7 @@ public class WorkspaceInvitationService
         memberService.addWorkspaceMember(invitation.getWorkspace(), invitation.getInvitee(), invitation.getRole());
 
         invitationEventProducer.sendInvitationUpdated(new InvitationUpdate(
-                invitation.getId(), invitation.getInvitee().getId(), InvitationStatus.ACCEPTED)
+                invitation.getId(), invitation.getInvitee().getId(), InvitationStatus.ACCEPTED.name())
         );
     }
 
@@ -87,7 +87,7 @@ public class WorkspaceInvitationService
         invitationRepository.save(invitation);
 
         invitationEventProducer.sendInvitationUpdated(new InvitationUpdate(
-                invitation.getId(), invitation.getInvitee().getId(), InvitationStatus.ACCEPTED)
+                invitation.getId(), invitation.getInvitee().getId(), InvitationStatus.ACCEPTED.name())
         );
     }
 
@@ -98,7 +98,7 @@ public class WorkspaceInvitationService
             invitationRepository.save(invitation);
 
             invitationEventProducer.sendInvitationUpdated(new InvitationUpdate(
-                    invitation.getId(), invitation.getInvitee().getId(), InvitationStatus.EXPIRED)
+                    invitation.getId(), invitation.getInvitee().getId(), InvitationStatus.EXPIRED.name())
             );
 
             throw new InvitationExpiredException("Invitation has expired");

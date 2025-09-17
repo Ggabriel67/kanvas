@@ -6,10 +6,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.TopicBuilder;
 
 @Configuration
-public class KafkaUserTopicConfig
+public class KafkaTopicConfig
 {
     @Bean
     public NewTopic userCreatedTopic() {
-        return TopicBuilder.name("user.created").build();
+        return TopicBuilder.name("user.events").build();
     }
 }

@@ -1,16 +1,14 @@
 package io.github.ggabriel67.kanvas.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.ggabriel67.kanvas.event.user.UserCreated;
 import io.github.ggabriel67.kanvas.exception.CredentialAlreadyTakenException;
-import io.github.ggabriel67.kanvas.kafka.UserProducer;
+import io.github.ggabriel67.kanvas.kafka.UserEventProducer;
 import io.github.ggabriel67.kanvas.security.JwtService;
-import io.github.ggabriel67.kanvas.user.AvatarColorGenerator;
-import io.github.ggabriel67.kanvas.user.User;
 import io.github.ggabriel67.kanvas.token.Token;
 import io.github.ggabriel67.kanvas.token.TokenRepository;
 import io.github.ggabriel67.kanvas.token.TokenType;
-import io.github.ggabriel67.kanvas.user.UserMapper;
-import io.github.ggabriel67.kanvas.user.UserRepository;
+import io.github.ggabriel67.kanvas.user.*;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -22,7 +20,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Service
@@ -34,8 +31,7 @@ public class AuthenticationService
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final TokenRepository tokenRepository;
-    private final UserProducer userProducer;
-    private final UserMapper userMapper;
+    private final UserEventProducer userEventProducer;
 
     public void register(RegistrationRequest request) throws RuntimeException {
 
@@ -56,7 +52,10 @@ public class AuthenticationService
                 .avatarColor(AvatarColorGenerator.generateColor(request.username()))
                 .build();
         userRepository.save(user);
-        userProducer.sendUserReplica(userMapper.toUserDto(user));
+
+        userEventProducer.sendUserCreated(new UserCreated(
+            user.getId(), user.getFirstname(), user.getLastname(), user.getEmail(), user.getDisplayUsername(), user.getAvatarColor()
+        ));
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request, HttpServletResponse response) {

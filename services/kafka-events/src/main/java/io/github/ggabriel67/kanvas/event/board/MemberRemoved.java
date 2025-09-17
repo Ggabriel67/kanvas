@@ -1,4 +1,4 @@
-package io.github.ggabriel67.kanvas.kafka.producer.board;
+package io.github.ggabriel67.kanvas.event.board;
 
 public record MemberRemoved(
         Integer memberId,

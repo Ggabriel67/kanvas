@@ -1,7 +1,7 @@
 package io.github.ggabriel67.kanvas.workspace.invitation;
 
 import io.github.ggabriel67.kanvas.authorization.workspace.WorkspaceRole;
-import io.github.ggabriel67.kanvas.invitation.InvitationStatus;
+import io.github.ggabriel67.kanvas.event.invitation.InvitationStatus;
 import io.github.ggabriel67.kanvas.user.User;
 import io.github.ggabriel67.kanvas.workspace.Workspace;
 import jakarta.persistence.*;

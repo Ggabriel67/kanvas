@@ -1,6 +1,9 @@
-package io.github.ggabriel67.kanvas.kafka.producer.board;
+package io.github.ggabriel67.kanvas.kafka.producer;
 
-import io.github.ggabriel67.kanvas.kafka.event.Event;
+import io.github.ggabriel67.kanvas.event.board.BoardEventType;
+import io.github.ggabriel67.kanvas.event.board.MemberRemoved;
+import io.github.ggabriel67.kanvas.event.board.RoleChanged;
+import io.github.ggabriel67.kanvas.event.Event;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -18,11 +21,8 @@ public class BoardEventProducer
 
     public void sendBoardDeleted(Integer boardId) {
         log.info("Sending board deleted");
-        Message<Event<Object>> message = MessageBuilder
-                .withPayload(Event.builder()
-                        .eventType(String.valueOf(BoardEventType.DELETED))
-                        .payload(boardId)
-                        .build())
+        Message<Event<Integer>> message = MessageBuilder
+                .withPayload(new Event<>(BoardEventType.DELETED.name(), boardId))
                 .setHeader(KafkaHeaders.TOPIC, "board.events")
                 .build();
         kafkaTemplate.send(message);
@@ -30,11 +30,8 @@ public class BoardEventProducer
 
     public void sendRoleChanged(RoleChanged roleChanged) {
         log.info("Sending role changed");
-        Message<Event<Object>> message = MessageBuilder
-                .withPayload(Event.builder()
-                        .eventType(String.valueOf(BoardEventType.ROLE_CHANGED))
-                        .payload(roleChanged)
-                        .build())
+        Message<Event<RoleChanged>> message = MessageBuilder
+                .withPayload(new Event<>(BoardEventType.ROLE_CHANGED.name(), roleChanged))
                 .setHeader(KafkaHeaders.TOPIC, "board.events")
                 .build();
         kafkaTemplate.send(message);
@@ -42,11 +39,8 @@ public class BoardEventProducer
 
     public void sendMemberRemoved(MemberRemoved memberRemoved) {
         log.info("Sending member removed");
-        Message<Event<Object>> message = MessageBuilder
-                .withPayload(Event.builder()
-                        .eventType(String.valueOf(BoardEventType.MEMBER_REMOVED))
-                        .payload(memberRemoved)
-                        .build())
+        Message<Event<MemberRemoved>> message = MessageBuilder
+                .withPayload(new Event<>(BoardEventType.MEMBER_REMOVED.name(), memberRemoved))
                 .setHeader(KafkaHeaders.TOPIC, "board.events")
                 .build();
         kafkaTemplate.send(message);

@@ -1,6 +1,9 @@
-package io.github.ggabriel67.kanvas.kafka.producer.invitation;
+package io.github.ggabriel67.kanvas.kafka.producer;
 
-import io.github.ggabriel67.kanvas.kafka.event.Event;
+import io.github.ggabriel67.kanvas.event.Event;
+import io.github.ggabriel67.kanvas.event.invitation.InvitationCreated;
+import io.github.ggabriel67.kanvas.event.invitation.InvitationEventType;
+import io.github.ggabriel67.kanvas.event.invitation.InvitationUpdate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -18,11 +21,8 @@ public class InvitationEventProducer
 
     public void sendInvitationCreated(InvitationCreated invitation) {
         log.info("Sending new invitation");
-        Message<Event<Object>> message = MessageBuilder
-                .withPayload(Event.builder()
-                        .eventType(String.valueOf(InvitationEventType.SENT))
-                        .payload(invitation)
-                        .build())
+        Message<Event<InvitationCreated>> message = MessageBuilder
+                .withPayload(new Event<>(InvitationEventType.SENT.name(), invitation))
                 .setHeader(KafkaHeaders.TOPIC, "invitation.events")
                 .build();
         kafkaTemplate.send(message);
@@ -30,11 +30,9 @@ public class InvitationEventProducer
 
     public void sendInvitationUpdated(InvitationUpdate invitationUpdate) {
         log.info("Sending invitation updated");
-        Message<Event<Object>> message = MessageBuilder
-                .withPayload(Event.builder()
-                        .eventType(String.valueOf(InvitationEventType.UPDATED))
-                        .payload(invitationUpdate)
-                        .build()).setHeader(KafkaHeaders.TOPIC, "invitation.events")
+        Message<Event<InvitationUpdate>> message = MessageBuilder
+                .withPayload(new Event<>(InvitationEventType.UPDATED.name(), invitationUpdate))
+                .setHeader(KafkaHeaders.TOPIC, "invitation.events")
                 .build();
         kafkaTemplate.send(message);
     }

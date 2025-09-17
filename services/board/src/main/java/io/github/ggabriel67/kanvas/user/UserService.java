@@ -1,5 +1,6 @@
 package io.github.ggabriel67.kanvas.user;
 
+import io.github.ggabriel67.kanvas.event.user.UserCreated;
 import io.github.ggabriel67.kanvas.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -10,15 +11,15 @@ public class UserService
 {
     private final UserRepository userRepository;
 
-    public void saveUser(UserDto userDto) {
+    public void saveUser(UserCreated user) {
         userRepository.save(
                 User.builder()
-                        .id(userDto.id())
-                        .firstname(userDto.firstname())
-                        .lastname(userDto.lastname())
-                        .email(userDto.email())
-                        .username(userDto.username())
-                        .avatarColor(userDto.avatarColor())
+                        .id(user.id())
+                        .firstname(user.firstname())
+                        .lastname(user.lastname())
+                        .email(user.email())
+                        .username(user.username())
+                        .avatarColor(user.avatarColor())
                         .build());
     }
 

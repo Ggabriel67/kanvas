@@ -10,7 +10,7 @@ import io.github.ggabriel67.kanvas.board.member.BoardMemberRepository;
 import io.github.ggabriel67.kanvas.exception.BoardNotFoundException;
 import io.github.ggabriel67.kanvas.exception.NameAlreadyInUseException;
 import io.github.ggabriel67.kanvas.exception.WorkspaceNotFoundException;
-import io.github.ggabriel67.kanvas.kafka.producer.board.BoardEventProducer;
+import io.github.ggabriel67.kanvas.kafka.producer.BoardEventProducer;
 import io.github.ggabriel67.kanvas.user.User;
 import io.github.ggabriel67.kanvas.user.UserService;
 import io.github.ggabriel67.kanvas.workspace.Workspace;

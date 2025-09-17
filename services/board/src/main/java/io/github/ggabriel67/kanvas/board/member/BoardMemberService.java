@@ -3,14 +3,12 @@ package io.github.ggabriel67.kanvas.board.member;
 import io.github.ggabriel67.kanvas.authorization.board.BoardRole;
 import io.github.ggabriel67.kanvas.board.Board;
 import io.github.ggabriel67.kanvas.board.BoardRepository;
+import io.github.ggabriel67.kanvas.event.board.MemberRemoved;
+import io.github.ggabriel67.kanvas.event.board.RoleChanged;
 import io.github.ggabriel67.kanvas.exception.BoardNotFoundException;
 import io.github.ggabriel67.kanvas.exception.UserNotFoundException;
-import io.github.ggabriel67.kanvas.exception.WorkspaceNotFoundException;
-import io.github.ggabriel67.kanvas.kafka.producer.board.BoardEventProducer;
-import io.github.ggabriel67.kanvas.kafka.producer.board.MemberRemoved;
-import io.github.ggabriel67.kanvas.kafka.producer.board.RoleChanged;
+import io.github.ggabriel67.kanvas.kafka.producer.BoardEventProducer;
 import io.github.ggabriel67.kanvas.user.User;
-import io.github.ggabriel67.kanvas.workspace.member.WorkspaceMember;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -42,7 +40,7 @@ public class BoardMemberService
         memberRepository.save(member);
 
         boardEventProducer.sendRoleChanged(new RoleChanged(
-                member.getId(), request.newRole()
+                member.getId(), request.newRole().name()
         ));
     }
 
@@ -51,7 +49,7 @@ public class BoardMemberService
         memberRepository.delete(member);
 
         boardEventProducer.sendMemberRemoved(new MemberRemoved(
-
+                member.getId(), member.getUser().getId(), member.getBoard().getId()
         ));
     }
 
