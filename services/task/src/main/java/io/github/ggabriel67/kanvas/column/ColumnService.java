@@ -1,6 +1,11 @@
 package io.github.ggabriel67.kanvas.column;
 
+import io.github.ggabriel67.kanvas.event.column.ColumnCreated;
+import io.github.ggabriel67.kanvas.event.column.ColumnDeleted;
+import io.github.ggabriel67.kanvas.event.column.ColumnMoved;
+import io.github.ggabriel67.kanvas.event.column.ColumnUpdated;
 import io.github.ggabriel67.kanvas.exception.ColumnNotFoundException;
+import io.github.ggabriel67.kanvas.kafka.producer.ColumnEventProducer;
 import io.github.ggabriel67.kanvas.task.TaskDtoProjection;
 import io.github.ggabriel67.kanvas.task.TaskRepository;
 import io.github.ggabriel67.kanvas.task.TaskService;
@@ -22,6 +27,7 @@ public class ColumnService
     private final TaskService taskService;
     private final TaskRepository taskRepository;
     private final TaskAssigneeRepository taskAssigneeRepository;
+    private final ColumnEventProducer columnEventProducer;
 
     @Value("${application.ordering.step.column}")
     private Double step;
@@ -44,7 +50,20 @@ public class ColumnService
                         .build()
         );
 
+        columnEventProducer.sendColumnCreated(new ColumnCreated(
+                column.getId(), column.getOrderIndex(), column.getName(), column.getBoardId())
+        );
         return columnMapper.toColumnResponse(column);
+    }
+
+    public void updateColumnName(Integer columnId, ColumnRequest request) {
+        Column column = getColumnById(columnId);
+        column.setName(request.columnName());
+        columnRepository.save(column);
+
+        columnEventProducer.sendColumnUpdated(new ColumnUpdated(
+               column.getBoardId(), column.getId() , column.getName())
+        );
     }
 
     @Transactional
@@ -69,13 +88,12 @@ public class ColumnService
 
         column.setOrderIndex(newOrderIndex);
         columnRepository.save(column);
-        return columnMapper.toColumnResponse(column);
-    }
 
-    public void updateColumnName(Integer columnId, ColumnRequest request) {
-        Column column = getColumnById(columnId);
-        column.setName(request.columnName());
-        columnRepository.save(column);
+        columnEventProducer.sendColumnMoved(new ColumnMoved(
+                column.getBoardId(), column.getId(), newOrderIndex)
+        );
+
+        return columnMapper.toColumnResponse(column);
     }
 
     public List<ColumnDto> getAllBoardColumns(Integer boardId) {
@@ -121,9 +139,14 @@ public class ColumnService
 
     @Transactional
     public void deleteColumn(Integer columnId) {
+        Column column = getColumnById(columnId);
+        ColumnDeleted columnDeleted = new ColumnDeleted(columnId, column.getBoardId());
+
         taskAssigneeRepository.deleteAllByColumnId(columnId);
         taskRepository.deleteAllByColumnId(columnId);
-        columnRepository.deleteById(columnId);
+        columnRepository.delete(column);
+
+        columnEventProducer.sendColumnDeleted(columnDeleted);
     }
 
     @Transactional

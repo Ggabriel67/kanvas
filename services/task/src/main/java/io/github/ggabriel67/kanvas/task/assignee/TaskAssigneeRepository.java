@@ -1,7 +1,6 @@
 package io.github.ggabriel67.kanvas.task.assignee;
 
 import io.github.ggabriel67.kanvas.column.Column;
-import io.github.ggabriel67.kanvas.task.Task;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
