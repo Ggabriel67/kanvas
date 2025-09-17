@@ -1,5 +1,6 @@
 package io.github.ggabriel67.kanvas.task.assignee;
 
+import io.github.ggabriel67.kanvas.event.board.BoardMemberRemoved;
 import io.github.ggabriel67.kanvas.exception.AssigneeNotFoundException;
 import io.github.ggabriel67.kanvas.exception.MemberAlreadyAssignedException;
 import io.github.ggabriel67.kanvas.exception.TaskNotFoundException;
@@ -36,5 +37,9 @@ public class TaskAssigneeService
                 .orElseThrow(() -> new AssigneeNotFoundException("User is not assigned"));
 
         taskAssigneeRepository.delete(assignee);
+    }
+
+    public void deleteMemberAssignments(BoardMemberRemoved memberRemoved) {
+        taskAssigneeRepository.deleteByBoardMemberId(memberRemoved.memberId());
     }
 }

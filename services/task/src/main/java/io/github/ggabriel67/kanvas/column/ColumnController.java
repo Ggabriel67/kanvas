@@ -45,7 +45,7 @@ public class ColumnController
     @DeleteMapping("/{columnId}")
     @PreAuthorize("@boardAuth.canEdit()")
     public ResponseEntity<Void> deleteColumn(@PathVariable("columnId") Integer columnId) {
-        columnService.deleteTask(columnId);
+        columnService.deleteColumn(columnId);
         return ResponseEntity.ok().build();
     }
 }

@@ -25,4 +25,9 @@ LEFT JOIN TaskAssignee ta ON ta.task = t
 WHERE c.boardId = :boardId
 """)
     List<ColumnTaskFlatDto> findColumnDataByBoardId(@Param("boardId") Integer boardId);
+
+    
+    void deleteAllByBoardId(Integer boardId);
+
+    List<Column> findAllByBoardId(Integer boardId);
 }

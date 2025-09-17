@@ -1,7 +1,8 @@
 package io.github.ggabriel67.kanvas.kafka.producer;
 
+import io.github.ggabriel67.kanvas.event.board.BoardDeleted;
 import io.github.ggabriel67.kanvas.event.board.BoardEventType;
-import io.github.ggabriel67.kanvas.event.board.MemberRemoved;
+import io.github.ggabriel67.kanvas.event.board.BoardMemberRemoved;
 import io.github.ggabriel67.kanvas.event.board.RoleChanged;
 import io.github.ggabriel67.kanvas.event.Event;
 import lombok.RequiredArgsConstructor;
@@ -17,12 +18,12 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class BoardEventProducer
 {
-    private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final KafkaTemplate<String, Event<?>> kafkaTemplate;
 
-    public void sendBoardDeleted(Integer boardId) {
+    public void sendBoardDeleted(BoardDeleted boardDeleted) {
         log.info("Sending board deleted");
-        Message<Event<Integer>> message = MessageBuilder
-                .withPayload(new Event<>(BoardEventType.DELETED.name(), boardId))
+        Message<Event<BoardDeleted>> message = MessageBuilder
+                .withPayload(new Event<>(BoardEventType.DELETED.name(), boardDeleted))
                 .setHeader(KafkaHeaders.TOPIC, "board.events")
                 .build();
         kafkaTemplate.send(message);
@@ -37,9 +38,9 @@ public class BoardEventProducer
         kafkaTemplate.send(message);
     }
 
-    public void sendMemberRemoved(MemberRemoved memberRemoved) {
+    public void sendMemberRemoved(BoardMemberRemoved memberRemoved) {
         log.info("Sending member removed");
-        Message<Event<MemberRemoved>> message = MessageBuilder
+        Message<Event<BoardMemberRemoved>> message = MessageBuilder
                 .withPayload(new Event<>(BoardEventType.MEMBER_REMOVED.name(), memberRemoved))
                 .setHeader(KafkaHeaders.TOPIC, "board.events")
                 .build();

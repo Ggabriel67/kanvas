@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class UserEventProducer
 {
-    private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final KafkaTemplate<String, Event<?>> kafkaTemplate;
 
     public void sendUserCreated(UserCreated userCreated) {
         log.info("Sending user created");

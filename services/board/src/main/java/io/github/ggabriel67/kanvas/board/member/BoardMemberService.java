@@ -3,7 +3,7 @@ package io.github.ggabriel67.kanvas.board.member;
 import io.github.ggabriel67.kanvas.authorization.board.BoardRole;
 import io.github.ggabriel67.kanvas.board.Board;
 import io.github.ggabriel67.kanvas.board.BoardRepository;
-import io.github.ggabriel67.kanvas.event.board.MemberRemoved;
+import io.github.ggabriel67.kanvas.event.board.BoardMemberRemoved;
 import io.github.ggabriel67.kanvas.event.board.RoleChanged;
 import io.github.ggabriel67.kanvas.exception.BoardNotFoundException;
 import io.github.ggabriel67.kanvas.exception.UserNotFoundException;
@@ -46,11 +46,12 @@ public class BoardMemberService
 
     public void removeMember(BoardMemberRemoveRequest request) {
         BoardMember member = getMemberById(request.targetMemberId());
+        BoardMemberRemoved memberRemoved = new BoardMemberRemoved(
+                member.getId(), member.getUser().getId(), member.getBoard().getId(), member.getBoard().getName()
+        );
         memberRepository.delete(member);
 
-        boardEventProducer.sendMemberRemoved(new MemberRemoved(
-                member.getId(), member.getUser().getId(), member.getBoard().getId()
-        ));
+        boardEventProducer.sendMemberRemoved(memberRemoved);
     }
 
     private BoardMember getMemberById(Integer memberId) {

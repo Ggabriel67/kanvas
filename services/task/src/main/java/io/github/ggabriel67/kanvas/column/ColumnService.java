@@ -4,15 +4,12 @@ import io.github.ggabriel67.kanvas.exception.ColumnNotFoundException;
 import io.github.ggabriel67.kanvas.task.TaskDtoProjection;
 import io.github.ggabriel67.kanvas.task.TaskRepository;
 import io.github.ggabriel67.kanvas.task.TaskService;
-import io.github.ggabriel67.kanvas.task.TaskStatus;
 import io.github.ggabriel67.kanvas.task.assignee.TaskAssigneeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -123,9 +120,17 @@ public class ColumnService
     }
 
     @Transactional
-    public void deleteTask(Integer columnId) {
+    public void deleteColumn(Integer columnId) {
         taskAssigneeRepository.deleteAllByColumnId(columnId);
         taskRepository.deleteAllByColumnId(columnId);
         columnRepository.deleteById(columnId);
+    }
+
+    @Transactional
+    public void deleteAllByBoardId(Integer boardId) {
+        List<Column> columns = columnRepository.findAllByBoardId(boardId);
+        taskAssigneeRepository.deleteByColumnIn(columns);
+        taskRepository.deleteByColumnIn(columns);
+        columnRepository.deleteAllByBoardId(boardId);
     }
 }

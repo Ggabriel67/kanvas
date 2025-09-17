@@ -19,7 +19,7 @@ public class UserEventConsumer
     private final ObjectMapper objectMapper;
 
     @KafkaListener(topics = "user.events")
-    public void consumeUserCreated(Event<?> event) {
+    public void consumeUserEvent(Event<?> event) {
         log.info("Consuming message from 'user.events' topic");
         UserEventType eventType = UserEventType.valueOf(event.getEventType());
         switch (eventType) {

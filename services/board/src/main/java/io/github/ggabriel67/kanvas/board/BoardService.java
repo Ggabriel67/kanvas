@@ -7,6 +7,7 @@ import io.github.ggabriel67.kanvas.board.member.BoardMember;
 import io.github.ggabriel67.kanvas.board.member.BoardMemberDto;
 import io.github.ggabriel67.kanvas.board.member.BoardMemberMapper;
 import io.github.ggabriel67.kanvas.board.member.BoardMemberRepository;
+import io.github.ggabriel67.kanvas.event.board.BoardDeleted;
 import io.github.ggabriel67.kanvas.exception.BoardNotFoundException;
 import io.github.ggabriel67.kanvas.exception.NameAlreadyInUseException;
 import io.github.ggabriel67.kanvas.exception.WorkspaceNotFoundException;
@@ -103,6 +104,6 @@ public class BoardService
         boardInvitationRepository.deleteAllByBoard(board);
         boardRepository.delete(board);
 
-        boardEventProducer.sendBoardDeleted(boardId);
+        boardEventProducer.sendBoardDeleted(new BoardDeleted(boardId));
     }
 }
