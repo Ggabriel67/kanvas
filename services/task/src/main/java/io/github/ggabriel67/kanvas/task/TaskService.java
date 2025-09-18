@@ -47,26 +47,11 @@ public class TaskService
                         .column(column)
                         .orderIndex(orderIndex)
                         .title(request.title())
-                        .description(request.description())
-                        .deadline(request.deadline())
-                        .priority(request.priority())
                         .status(TaskStatus.ACTIVE)
                         .build()
         );
 
-
-        if (!request.assigneeIds().isEmpty()) {
-            List<TaskAssignee> taskAssignees = request.assigneeIds()
-                    .stream()
-                    .map(memberId -> TaskAssignee.builder()
-                            .task(task)
-                            .boardMemberId(memberId)
-                            .build())
-                    .toList();
-            taskAssigneeRepository.saveAll(taskAssignees);
-        }
-
-        return new TaskResponse(task.getId(), column.getId(), task.getOrderIndex());
+        return new TaskResponse(task.getId(), column.getId(), task.getOrderIndex(), false);
     }
 
     @Transactional
@@ -95,7 +80,7 @@ public class TaskService
         task.setOrderIndex(newOrderIndex);
         if (!task.getColumn().equals(targetColumn)) task.setColumn(targetColumn);
         taskRepository.save(task);
-        return new TaskResponse(task.getId(), targetColumn.getId(), newOrderIndex);
+        return new TaskResponse(task.getId(), targetColumn.getId(), newOrderIndex, task.isExpired());
     }
 
     public boolean isTaskExpired(TaskStatus status, Instant deadline) {
@@ -109,11 +94,12 @@ public class TaskService
         taskRepository.deleteById(taskId);
     }
 
-    public void updateTask(TaskUpdateRequest request) {
+    public TaskResponse updateTask(TaskUpdateRequest request) {
         Task task = getTaskById(request.taskId());
 
         mergeTask(task, request);
         taskRepository.save(task);
+        return new TaskResponse(task.getId(), task.getColumn().getId(), task.getOrderIndex(), task.isExpired());
     }
 
     private void mergeTask(Task task, TaskUpdateRequest request) {

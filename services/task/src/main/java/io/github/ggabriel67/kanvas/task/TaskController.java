@@ -38,9 +38,8 @@ public class TaskController
 
     @PatchMapping
     @PreAuthorize("@boardAuth.canEdit()")
-    public ResponseEntity<Void> updateTask(@RequestBody TaskUpdateRequest request) {
-        taskService.updateTask(request);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<TaskResponse> updateTask(@RequestBody TaskUpdateRequest request) {
+        return ResponseEntity.ok(taskService.updateTask(request));
     }
 
     @PostMapping("/assignees")
