@@ -10,6 +10,7 @@ public record TaskDtoProjection(
     String title,
     Instant deadline,
     TaskStatus status,
+    TaskPriority priority,
     List<Integer> assigneeIds,
     boolean isExpired
 ) {

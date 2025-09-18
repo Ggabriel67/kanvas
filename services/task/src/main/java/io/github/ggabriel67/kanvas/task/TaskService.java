@@ -135,4 +135,10 @@ public class TaskService
 
         taskEventProducer.sendTaskDeleted(taskDeleted);
     }
+
+    public TaskDto getTask(Integer taskId) {
+        Task task = getTaskById(taskId);
+        var assigneeIds = taskAssigneeRepository.findTaskAssigneeIdsByTaskId(taskId);
+        return taskMapper.toTaskDto(task, assigneeIds);
+    }
 }

@@ -55,4 +55,9 @@ public class TaskController
         taskAssigneeService.unassignTask(request);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/{taskId}")
+    public ResponseEntity<TaskDto> getTask(@PathVariable("taskId") Integer taskId) {
+        return ResponseEntity.ok(taskService.getTask(taskId));
+    }
 }

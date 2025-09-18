@@ -110,7 +110,7 @@ public class ColumnService
                             .filter(Objects::nonNull)
                             .toList();
                     return new TaskDtoProjection(flatTask.taskId(), flatTask.taskOrderIndex(), flatTask.columnId(), flatTask.taskTitle(), flatTask.deadline(),
-                            flatTask.status(), assigneeIds, taskService.isTaskExpired(flatTask.status(), flatTask.deadline())
+                            flatTask.status(), flatTask.priority(), assigneeIds, taskService.isTaskExpired(flatTask.status(), flatTask.deadline())
                     );
                 })
                 .toList();

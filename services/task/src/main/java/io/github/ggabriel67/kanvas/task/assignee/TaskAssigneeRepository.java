@@ -1,6 +1,7 @@
 package io.github.ggabriel67.kanvas.task.assignee;
 
 import io.github.ggabriel67.kanvas.column.Column;
+import io.github.ggabriel67.kanvas.task.Task;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -35,4 +36,10 @@ WHERE ta.task.column IN :columns
     void deleteByColumnIn(@Param("columns") List<Column> columns);
 
     void deleteByBoardMemberId(Integer integer);
+
+    @Query("""
+SELECT ta.boardMemberId FROM TaskAssignee ta
+WHERE ta.task.id = :taskId
+""")
+    List<Integer> findTaskAssigneeIdsByTaskId(@Param("taskId") Integer taskId);
 }
