@@ -28,5 +28,6 @@ public class Board {
     @CreatedDate
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
+    @Enumerated(EnumType.STRING)
     private BoardVisibility visibility;
 }

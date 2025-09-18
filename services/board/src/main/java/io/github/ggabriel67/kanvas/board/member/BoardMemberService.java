@@ -1,5 +1,6 @@
 package io.github.ggabriel67.kanvas.board.member;
 
+import io.github.ggabriel67.kanvas.authorization.board.BoardAuthorization;
 import io.github.ggabriel67.kanvas.authorization.board.BoardRole;
 import io.github.ggabriel67.kanvas.board.Board;
 import io.github.ggabriel67.kanvas.board.BoardRepository;
@@ -19,6 +20,7 @@ public class BoardMemberService
     private final BoardMemberRepository memberRepository;
     private final BoardRepository boardRepository;
     private final BoardEventProducer boardEventProducer;
+    private final BoardAuthorization boardAuthorization;
 
     public void addBoardMember(Board board, User invitee, BoardRole role) {
         memberRepository.save(
@@ -57,5 +59,10 @@ public class BoardMemberService
     private BoardMember getMemberById(Integer memberId) {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
+    }
+
+    public String getBoardRole(Integer boardId) {
+        Integer userId = boardAuthorization.getCurrentUserId();
+        return memberRepository.findRoleByUserIdAndBoardId(userId, boardId).name();
     }
 }

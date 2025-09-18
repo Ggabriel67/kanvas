@@ -34,7 +34,9 @@ public class Task
 
     @CreatedDate
     private LocalDateTime createdAt;
+    @Enumerated(EnumType.STRING)
     private TaskPriority priority;
+    @Enumerated(EnumType.STRING)
     private TaskStatus status;
 
     public boolean isExpired() {

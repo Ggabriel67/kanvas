@@ -51,4 +51,9 @@ public class BoardController
         boardService.deleteBoard(boardId);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/{boardId}/roles")
+    public ResponseEntity<String> getBoardRole(@PathVariable("boardId") Integer boardId) {
+        return ResponseEntity.ok(boardMemberService.getBoardRole(boardId));
+    }
 }
