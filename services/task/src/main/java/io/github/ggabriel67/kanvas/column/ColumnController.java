@@ -37,7 +37,6 @@ public class ColumnController
     }
 
     @GetMapping("/{boardId}")
-    @PreAuthorize("@boardAuth.canView()")
     public ResponseEntity<List<ColumnDto>> getAllBoardColumns(@PathVariable("boardId") Integer boardId) {
         return ResponseEntity.ok(columnService.getAllBoardColumns(boardId));
     }

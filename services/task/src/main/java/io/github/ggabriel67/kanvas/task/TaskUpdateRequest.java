@@ -7,10 +7,10 @@ import java.time.Instant;
 public record TaskUpdateRequest(
         Integer taskId,
         String title,
-        @Size(max = 4096, message = "Description is too long")
         String description,
         Instant deadline,
         TaskPriority priority,
-        TaskStatus status
+        TaskStatus status,
+        boolean isExpired
 ) {
 }

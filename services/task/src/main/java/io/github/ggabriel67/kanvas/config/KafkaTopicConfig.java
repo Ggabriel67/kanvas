@@ -12,4 +12,9 @@ public class KafkaTopicConfig
     public NewTopic columnEventsTopic() {
         return TopicBuilder.name("column.events").build();
     }
+
+    @Bean
+    public NewTopic taskEventsTopic() {
+        return TopicBuilder.name("task.events").build();
+    }
 }

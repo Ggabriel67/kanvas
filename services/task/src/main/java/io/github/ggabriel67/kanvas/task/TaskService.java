@@ -2,8 +2,13 @@ package io.github.ggabriel67.kanvas.task;
 
 import io.github.ggabriel67.kanvas.column.Column;
 import io.github.ggabriel67.kanvas.column.ColumnRepository;
+import io.github.ggabriel67.kanvas.event.task.TaskCreated;
+import io.github.ggabriel67.kanvas.event.task.TaskDeleted;
+import io.github.ggabriel67.kanvas.event.task.TaskMoved;
+import io.github.ggabriel67.kanvas.event.task.TaskUpdated;
 import io.github.ggabriel67.kanvas.exception.ColumnNotFoundException;
 import io.github.ggabriel67.kanvas.exception.TaskNotFoundException;
+import io.github.ggabriel67.kanvas.kafka.producer.TaskEventProducer;
 import io.github.ggabriel67.kanvas.task.assignee.TaskAssignee;
 import io.github.ggabriel67.kanvas.task.assignee.TaskAssigneeRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +29,7 @@ public class TaskService
     private final ColumnRepository columnRepository;
     private final TaskAssigneeRepository taskAssigneeRepository;
     private final TaskMapper taskMapper;
+    private final TaskEventProducer taskEventProducer;
 
     @Value("${application.ordering.step.task}")
     private Double step;
@@ -51,7 +57,32 @@ public class TaskService
                         .build()
         );
 
+        taskEventProducer.sendTaskCreated(new TaskCreated(
+                column.getBoardId(), column.getId(), task.getId(), task.getTitle())
+        );
+
         return new TaskResponse(task.getId(), column.getId(), task.getOrderIndex(), false);
+    }
+
+    public TaskResponse updateTask(TaskUpdateRequest request) {
+        Task task = getTaskById(request.taskId());
+
+        mergeTask(task, request);
+        taskRepository.save(task);
+
+        taskEventProducer.sendTaskUpdated(new TaskUpdated(task.getColumn().getBoardId(), task.getId(),
+                request.title(), request.deadline(), request.priority().name(), request.status().name(), task.isExpired()
+        ));
+
+        return new TaskResponse(task.getId(), task.getColumn().getId(), task.getOrderIndex(), task.isExpired());
+    }
+
+    private void mergeTask(Task task, TaskUpdateRequest request) {
+        if (StringUtils.isNotBlank(request.title())) task.setTitle(request.title());
+        if (StringUtils.isNotBlank(request.description())) task.setTitle(request.description());
+        if (request.deadline() != null) task.setDeadline(request.deadline());
+        if (request.priority() != null) task.setPriority(request.priority());
+        if (request.status() != null) task.setStatus(request.status());
     }
 
     @Transactional
@@ -80,6 +111,11 @@ public class TaskService
         task.setOrderIndex(newOrderIndex);
         if (!task.getColumn().equals(targetColumn)) task.setColumn(targetColumn);
         taskRepository.save(task);
+
+        taskEventProducer.sendTaskMoved(new TaskMoved(
+                targetColumn.getBoardId(), targetColumn.getId(), task.getId(), newOrderIndex)
+        );
+
         return new TaskResponse(task.getId(), targetColumn.getId(), newOrderIndex, task.isExpired());
     }
 
@@ -90,23 +126,13 @@ public class TaskService
 
     @Transactional
     public void deleteTask(Integer taskId) {
+        Task task = getTaskById(taskId);
+
+        TaskDeleted taskDeleted = new TaskDeleted(task.getColumn().getBoardId(), taskId);
+
         taskAssigneeRepository.deleteAllByTaskId(taskId);
         taskRepository.deleteById(taskId);
-    }
 
-    public TaskResponse updateTask(TaskUpdateRequest request) {
-        Task task = getTaskById(request.taskId());
-
-        mergeTask(task, request);
-        taskRepository.save(task);
-        return new TaskResponse(task.getId(), task.getColumn().getId(), task.getOrderIndex(), task.isExpired());
-    }
-
-    private void mergeTask(Task task, TaskUpdateRequest request) {
-        if (StringUtils.isNotBlank(request.title())) task.setTitle(request.title());
-        if (StringUtils.isNotBlank(request.description())) task.setTitle(request.description());
-        if (request.deadline() != null) task.setDeadline(request.deadline());
-        if (request.priority() != null) task.setPriority(request.priority());
-        if (request.status() != null) task.setStatus(request.status());
+        taskEventProducer.sendTaskDeleted(taskDeleted);
     }
 }
