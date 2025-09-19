@@ -7,10 +7,10 @@ import java.time.Instant;
 
 public record ColumnTaskFlatDto(
         Integer columnId,
-        double columnOrderIndex,
+        Double columnOrderIndex,
         String columnName,
         Integer taskId,
-        double taskOrderIndex,
+        Double taskOrderIndex,
         String taskTitle,
         Instant deadline,
         TaskStatus status,

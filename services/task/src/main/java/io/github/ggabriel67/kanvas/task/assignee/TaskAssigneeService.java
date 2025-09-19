@@ -43,10 +43,10 @@ public class TaskAssigneeService
         Task task = taskRepository.findById(request.taskId())
                 .orElseThrow(() -> new TaskNotFoundException("Task not found"));
 
-        TaskAssignee assignee = taskAssigneeRepository.findByBoardMemberIdAndTaskId(request.memberId(), request.boardId())
+        TaskAssignee assignee = taskAssigneeRepository.findByBoardMemberIdAndTaskId(request.memberId(), request.taskId())
                 .orElseThrow(() -> new AssigneeNotFoundException("User is not assigned"));
 
-        TaskAssignment taskAssignment = new TaskAssignment(request.boardId(), request.taskId(),
+        TaskAssignment taskAssignment = new TaskAssignment(task.getColumn().getBoardId(), request.taskId(),
                 request.memberId(), request.userId(), task.getTitle(), request.boardName());
 
         taskAssigneeRepository.delete(assignee);
