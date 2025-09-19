@@ -11,6 +11,8 @@ import io.github.ggabriel67.kanvas.event.board.BoardDeleted;
 import io.github.ggabriel67.kanvas.exception.BoardNotFoundException;
 import io.github.ggabriel67.kanvas.exception.NameAlreadyInUseException;
 import io.github.ggabriel67.kanvas.exception.WorkspaceNotFoundException;
+import io.github.ggabriel67.kanvas.feign.ColumnDto;
+import io.github.ggabriel67.kanvas.feign.TaskClient;
 import io.github.ggabriel67.kanvas.kafka.producer.BoardEventProducer;
 import io.github.ggabriel67.kanvas.user.User;
 import io.github.ggabriel67.kanvas.user.UserService;
@@ -34,6 +36,7 @@ public class BoardService
     private final BoardAuthorization boardAuth;
     private final BoardInvitationRepository boardInvitationRepository;
     private final BoardEventProducer boardEventProducer;
+    private final TaskClient taskClient;
 
     public void createBoard(BoardRequest request) {
         User user = userService.getUserById(request.creatorId());
@@ -85,6 +88,7 @@ public class BoardService
         Integer userId = boardAuth.getCurrentUserId();
         boolean readonly = boardMemberRepository.findByUserIdAndBoardId(userId, boardId).isEmpty();
 
+        List<ColumnDto> columns = taskClient.getAllBoardColumns(boardId);
         return new BoardDto(
                 board.getId(),
                 board.getName(),
@@ -92,7 +96,8 @@ public class BoardService
                 board.getCreatedAt(),
                 board.getVisibility(),
                 readonly,
-                boardMembers
+                boardMembers,
+                columns
         );
    }
 
