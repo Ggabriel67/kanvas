@@ -7,11 +7,14 @@ import io.github.ggabriel67.kanvas.board.BoardRepository;
 import io.github.ggabriel67.kanvas.event.board.BoardMemberRemoved;
 import io.github.ggabriel67.kanvas.event.board.RoleChanged;
 import io.github.ggabriel67.kanvas.exception.BoardNotFoundException;
+import io.github.ggabriel67.kanvas.exception.BoardRoleNotFoundException;
 import io.github.ggabriel67.kanvas.exception.UserNotFoundException;
 import io.github.ggabriel67.kanvas.kafka.producer.BoardEventProducer;
 import io.github.ggabriel67.kanvas.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -63,6 +66,8 @@ public class BoardMemberService
 
     public String getBoardRole(Integer boardId) {
         Integer userId = boardAuthorization.getCurrentUserId();
-        return memberRepository.findRoleByUserIdAndBoardId(userId, boardId).name();
+
+        return memberRepository.findRoleByUserIdAndBoardId(userId, boardId)
+                .orElseThrow(() -> new BoardRoleNotFoundException("User has no role in this board")).name();
     }
 }

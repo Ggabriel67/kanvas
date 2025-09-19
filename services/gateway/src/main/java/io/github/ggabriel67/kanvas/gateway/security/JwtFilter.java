@@ -5,12 +5,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
+import org.springframework.cloud.gateway.route.Route;
 import org.springframework.cloud.gateway.support.ServerWebExchangeUtils;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
@@ -21,7 +24,7 @@ public class JwtFilter implements GlobalFilter
 {
     private final JwtService jwtService;
     private final RouteValidator routeValidator;
-    private final WebClient webClient;
+    private final WebClient.Builder webClientBuilder;
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
@@ -41,19 +44,17 @@ public class JwtFilter implements GlobalFilter
         }
 
         if (accessToken == null) {
-            return onError(exchange, "No token", HttpStatus.UNAUTHORIZED);
+            return onError(exchange, "No access token", HttpStatus.UNAUTHORIZED);
         }
 
         if (!jwtService.isTokenValid(accessToken)) {
-            return onError(exchange, "Invalid token", HttpStatus.UNAUTHORIZED);
+            return onError(exchange, "Invalid access token", HttpStatus.UNAUTHORIZED);
         }
 
-        String route = exchange.getAttribute(ServerWebExchangeUtils.GATEWAY_PREDICATE_MATCHED_PATH_ATTR);
-        System.out.println("Route: " + route);
-
+        Route route = exchange.getAttribute(ServerWebExchangeUtils.GATEWAY_ROUTE_ATTR);
+        String service = route.getUri().getHost();
         Integer userId = jwtService.extractUserId(accessToken);
-        System.out.println("User id: " + userId);
-        if ("/board-service/**".equals(route)) {
+        if ("BOARD-SERVICE".equals(service)) {
             ServerWebExchange mutated = exchange.mutate()
                     .request(
                             r -> r.headers(
@@ -61,12 +62,14 @@ public class JwtFilter implements GlobalFilter
                     .build();
             return chain.filter(mutated);
         }
-        else if ("/task-service/**".equals(route)) {
-            String boardId = request.getHeaders().getFirst("X-Board-Role");
-            webClient.get()
-                    .uri("http://localhost:8222/api/v1/boards/{boardId}/roles", boardId)
+        else if ("TASK-SERVICE".equals(service)) {
+            String boardId = request.getHeaders().getFirst("X-Board-Id");
+            return webClientBuilder.build()
+                    .get()
+                    .uri("http://board-service/api/v1/boards/{boardId}/roles", boardId)
                     .header("X-User-Id", String.valueOf(userId))
                     .retrieve()
+                    .onStatus(HttpStatusCode::is4xxClientError, response -> Mono.error(new ResponseStatusException(HttpStatus.FORBIDDEN, "User has no role in this board")))
                     .bodyToMono(String.class)
                     .flatMap(boardRole -> {
                         ServerWebExchange mutated = exchange.mutate()

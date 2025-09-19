@@ -23,5 +23,5 @@ public interface BoardMemberRepository extends JpaRepository<BoardMember, Intege
 SELECT bm.role FROM BoardMember bm
 WHERE bm.user.id = :userId AND bm.board.id = :boardId
 """)
-    BoardRole findRoleByUserIdAndBoardId(@Param("userId") Integer userId, @Param("boardId") Integer boardId);
+    Optional<BoardRole> findRoleByUserIdAndBoardId(@Param("userId") Integer userId, @Param("boardId") Integer boardId);
 }
