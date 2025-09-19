@@ -11,7 +11,19 @@ spring:
             - id: user-service
               uri: lb:http://USER-SERVICE
               predicates:
-                - Path=/user-service/**
+                - Path=/api/v1/auth/**
+                - Path=/api/v1/users/**
+            - id: board-service
+              uri: lb:http://BOARD-SERVICE
+              predicates:
+                - Path=/api/v1/workspaces/**
+                - Path=/api/v1/boards/**
+                - Path=/api/v1/invitations/**
+            - id: task-service
+              uri: lb:http://TASK-SERVICE
+              predicates:
+                - Path=/api/v1/columns/**
+                - Path=/api/v1/tasks/**
 
 server:
   port: 8222

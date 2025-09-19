@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -69,6 +70,7 @@ public class AuthenticationService
         claims.put("userId", user.getId());
         String accessToken = jwtService.generateAccessToken(claims, user);
         String refreshToken = jwtService.generateRefreshToken(user);
+        revokeAllUserRefreshTokens(user);
         saveUserRefreshToken(user, refreshToken);
 
         Cookie accessTokenCookie = generateCookie(TokenType.ACCESS.getName(), accessToken, jwtService.getAccessTokenExpiration());
@@ -79,6 +81,17 @@ public class AuthenticationService
         return AuthenticationResponse.builder()
                 .accessToken(accessToken)
                 .build();
+    }
+
+    private void revokeAllUserRefreshTokens(User user) {
+        List<Token> validUserTokens = tokenRepository.findAllValidTokensByUserAndType(user.getId(), TokenType.REFRESH);
+        if (validUserTokens.isEmpty())
+            return;
+        validUserTokens.forEach(token -> {
+            token.setRevoked(true);
+            token.setExpired(true);
+        });
+        tokenRepository.saveAll(validUserTokens);
     }
 
     private void saveUserRefreshToken(User user, String jwt) {
