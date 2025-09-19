@@ -45,8 +45,9 @@ public class ColumnService
 
         Column column = columnRepository.save(
                 Column.builder()
-                        .name(request.columnName())
+                        .name(request.name())
                         .orderIndex(maxOrderIndex + step)
+                        .boardId(request.boardId())
                         .build()
         );
 
@@ -58,7 +59,7 @@ public class ColumnService
 
     public void updateColumnName(Integer columnId, ColumnRequest request) {
         Column column = getColumnById(columnId);
-        column.setName(request.columnName());
+        column.setName(request.name());
         columnRepository.save(column);
 
         columnEventProducer.sendColumnUpdated(new ColumnUpdated(

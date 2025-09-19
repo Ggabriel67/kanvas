@@ -19,7 +19,7 @@ import java.time.Instant;
 public class WorkspaceInvitation
 {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @ManyToOne

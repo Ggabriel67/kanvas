@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 @Table(name = "boards")
 public class Board {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @ManyToOne
     @JoinColumn(name = "workspace_id")

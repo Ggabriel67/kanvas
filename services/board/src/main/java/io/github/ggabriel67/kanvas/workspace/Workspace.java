@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 public class Workspace
 {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String name;
     private String description;

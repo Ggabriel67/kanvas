@@ -9,7 +9,7 @@ public record ColumnRequest(
         @NotNull(message = "Column name is required")
         @NotBlank(message = "Column name is required")
         @Size(max = 255, message = "Column name is too long")
-        String columnName
+        String name
 ) {
 
 }

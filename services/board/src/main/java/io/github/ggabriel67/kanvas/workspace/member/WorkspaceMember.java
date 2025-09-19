@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 public class WorkspaceMember
 {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @ManyToOne

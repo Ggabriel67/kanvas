@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 public class BoardMember
 {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @ManyToOne
