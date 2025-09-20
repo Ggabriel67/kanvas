@@ -22,7 +22,7 @@ public class InvitationEventProducer
     public void sendInvitationCreated(InvitationCreated invitation) {
         log.info("Sending new invitation");
         Message<Event<InvitationCreated>> message = MessageBuilder
-                .withPayload(new Event<>(InvitationEventType.SENT.name(), invitation))
+                .withPayload(new Event<>(InvitationEventType.CREATED.name(), invitation))
                 .setHeader(KafkaHeaders.TOPIC, "invitation.events")
                 .build();
         kafkaTemplate.send(message);
