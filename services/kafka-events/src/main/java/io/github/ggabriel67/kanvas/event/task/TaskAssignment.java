@@ -6,6 +6,7 @@ public record TaskAssignment(
         Integer boardMemberId,
         Integer userId,
         String taskTitle,
-        String boardName
+        String boardName,
+        boolean assigned
 ) {
 }

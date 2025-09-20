@@ -35,7 +35,7 @@ public class TaskAssigneeService
         );
 
         taskEventProducer.sendTaskAssigned(new TaskAssignment(task.getColumn().getBoardId(),
-                task.getId(), request.memberId(), request.userId(), task.getTitle(), request.boardName())
+                task.getId(), request.memberId(), request.userId(), task.getTitle(), request.boardName(), true)
         );
     }
 
@@ -47,7 +47,7 @@ public class TaskAssigneeService
                 .orElseThrow(() -> new AssigneeNotFoundException("User is not assigned"));
 
         TaskAssignment taskAssignment = new TaskAssignment(task.getColumn().getBoardId(), request.taskId(),
-                request.memberId(), request.userId(), task.getTitle(), request.boardName());
+                request.memberId(), request.userId(), task.getTitle(), request.boardName(), false);
 
         taskAssigneeRepository.delete(assignee);
 

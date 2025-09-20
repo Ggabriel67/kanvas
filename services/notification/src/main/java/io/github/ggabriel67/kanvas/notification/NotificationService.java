@@ -2,6 +2,7 @@ package io.github.ggabriel67.kanvas.notification;
 
 import io.github.ggabriel67.kanvas.event.invitation.InvitationCreated;
 import io.github.ggabriel67.kanvas.event.invitation.InvitationUpdate;
+import io.github.ggabriel67.kanvas.event.task.TaskAssignment;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -34,5 +35,21 @@ public class NotificationService
         Notification notification = repository.findByInvitationIdAndUserId(invUpdate.invitationId(), invUpdate.inviteeId());
         notification.setStatus(NotificationStatus.DELETED);
         repository.save(notification);
+    }
+
+    public void createAssignmentNotification(TaskAssignment assignment) {
+        Notification notification = repository.save(
+                Notification.builder()
+                        .userId(assignment.userId())
+                        .type(NotificationType.ASSIGNMENT)
+                        .status(NotificationStatus.UNREAD)
+                        .payload(Map.of(
+                                "taskTitle", assignment.taskTitle(),
+                                "boardName", assignment.boardName(),
+                                "assigned", assignment.assigned()
+                                )
+                        )
+                        .build()
+        );
     }
 }
