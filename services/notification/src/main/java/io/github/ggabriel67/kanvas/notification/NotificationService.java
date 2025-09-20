@@ -1,5 +1,6 @@
 package io.github.ggabriel67.kanvas.notification;
 
+import io.github.ggabriel67.kanvas.event.board.BoardMemberRemoved;
 import io.github.ggabriel67.kanvas.event.invitation.InvitationCreated;
 import io.github.ggabriel67.kanvas.event.invitation.InvitationUpdate;
 import io.github.ggabriel67.kanvas.event.task.TaskAssignment;
@@ -47,6 +48,20 @@ public class NotificationService
                                 "taskTitle", assignment.taskTitle(),
                                 "boardName", assignment.boardName(),
                                 "assigned", assignment.assigned()
+                                )
+                        )
+                        .build()
+        );
+    }
+
+    public void createBoardMemberRemovedNotification(BoardMemberRemoved memberRemoved) {
+        Notification notification = repository.save(
+                Notification.builder()
+                        .userId(memberRemoved.userId())
+                        .type(NotificationType.REMOVED_FROM_BOARD)
+                        .status(NotificationStatus.UNREAD)
+                        .payload(Map.of(
+                                "boardName", memberRemoved.boardName()
                                 )
                         )
                         .build()
