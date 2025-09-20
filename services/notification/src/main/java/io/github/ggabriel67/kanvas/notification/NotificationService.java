@@ -4,16 +4,21 @@ import io.github.ggabriel67.kanvas.event.board.BoardMemberRemoved;
 import io.github.ggabriel67.kanvas.event.invitation.InvitationCreated;
 import io.github.ggabriel67.kanvas.event.invitation.InvitationUpdate;
 import io.github.ggabriel67.kanvas.event.task.TaskAssignment;
+import io.github.ggabriel67.kanvas.exception.NotificationNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class NotificationService
 {
     private final NotificationRepository repository;
+    private final NotificationRepository notificationRepository;
+    private final NotificationMapper notificationMapper;
 
     public void createInvitationNotification(InvitationCreated invitation) {
         Notification notification = repository.save(
@@ -34,7 +39,7 @@ public class NotificationService
 
     public void updateInvitationNotification(InvitationUpdate invUpdate) {
         Notification notification = repository.findByInvitationIdAndUserId(invUpdate.invitationId(), invUpdate.inviteeId());
-        notification.setStatus(NotificationStatus.DELETED);
+        notification.setStatus(NotificationStatus.DISMISSED);
         repository.save(notification);
     }
 
@@ -66,5 +71,20 @@ public class NotificationService
                         )
                         .build()
         );
+    }
+
+    public List<NotificationDto> getNotifications(Integer userId) {
+        return notificationRepository.findValidNotificationsForUser(userId,NotificationStatus.DISMISSED)
+                .stream()
+                .map(notificationMapper::toNotificationDto)
+                .collect(Collectors.toList());
+    }
+
+    public void updateNotificationStatus(Integer notificationId, NotificationStatus status) {
+        Notification notification = repository.findById(notificationId)
+                .orElseThrow(() -> new NotificationNotFoundException("Notification not found"));
+
+        notification.setStatus(status);
+        repository.save(notification);
     }
 }
