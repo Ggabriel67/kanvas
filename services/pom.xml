@@ -27,5 +27,6 @@
         <module>board</module>
         <module>task</module>
         <module>kafka-events</module>
+        <module>notification</module>
     </modules>
 </project>
