@@ -46,6 +46,22 @@ services:
       - kanvas-net
     restart: unless-stopped
 
+  notification-service-db:
+    container_name: notification-service-db
+    image: postgres
+    environment:
+      POSTGRES_DB: notification_service_db
+      POSTGRES_USER: gabriel
+      POSTGRES_PASSWORD: gabriel
+      PGDATA: /var/lib/postgresql/data
+    volumes:
+      - notification-service-postgres:/var/lib/postgresql/data
+    ports:
+      - 5436:5432
+    networks:
+      - kanvas-net
+    restart: unless-stopped
+
   pgadmin:
     container_name: kanvas-pgadmin
     image: dpage/pgadmin4
@@ -89,4 +105,5 @@ volumes:
   user-service-postgres:
   board-service-postgres:
   task-service-postgres:
+  notification-service-postgres:
   pgadmin:
