@@ -22,12 +22,9 @@ public class BoardEventConsumer
     public void consumeBoardEvent(Event<?> event) {
         log.info("Consuming message from 'board.events' topic");
         BoardEventType eventType = BoardEventType.valueOf(event.getEventType());
-        switch (eventType) {
-            case MEMBER_REMOVED -> {
-                BoardMemberRemoved boardMemberRemoved = objectMapper.convertValue(event.getPayload(), BoardMemberRemoved.class);
-                handleMemberRemoved(boardMemberRemoved);
-            }
-            default -> {}
+        if (eventType == BoardEventType.MEMBER_REMOVED) {
+            BoardMemberRemoved boardMemberRemoved = objectMapper.convertValue(event.getPayload(), BoardMemberRemoved.class);
+            handleMemberRemoved(boardMemberRemoved);
         }
     }
 

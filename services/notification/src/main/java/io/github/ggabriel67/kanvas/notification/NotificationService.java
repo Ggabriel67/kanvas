@@ -3,8 +3,10 @@ package io.github.ggabriel67.kanvas.notification;
 import io.github.ggabriel67.kanvas.event.board.BoardMemberRemoved;
 import io.github.ggabriel67.kanvas.event.invitation.InvitationCreated;
 import io.github.ggabriel67.kanvas.event.invitation.InvitationUpdate;
+import io.github.ggabriel67.kanvas.event.notification.NotificationCreated;
 import io.github.ggabriel67.kanvas.event.task.TaskAssignment;
 import io.github.ggabriel67.kanvas.exception.NotificationNotFoundException;
+import io.github.ggabriel67.kanvas.kafka.producer.NotificationEventProducer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +21,7 @@ public class NotificationService
     private final NotificationRepository repository;
     private final NotificationRepository notificationRepository;
     private final NotificationMapper notificationMapper;
+    private final NotificationEventProducer eventProducer;
 
     public void createInvitationNotification(InvitationCreated invitation) {
         Notification notification = repository.save(
@@ -35,12 +38,8 @@ public class NotificationService
                         )
                         .build()
         );
-    }
 
-    public void updateInvitationNotification(InvitationUpdate invUpdate) {
-        Notification notification = repository.findByInvitationIdAndUserId(invUpdate.invitationId(), invUpdate.inviteeId());
-        notification.setStatus(NotificationStatus.DISMISSED);
-        repository.save(notification);
+        this.sendNotificationCreated(notification);
     }
 
     public void createAssignmentNotification(TaskAssignment assignment) {
@@ -57,6 +56,8 @@ public class NotificationService
                         )
                         .build()
         );
+
+        this.sendNotificationCreated(notification);
     }
 
     public void createBoardMemberRemovedNotification(BoardMemberRemoved memberRemoved) {
@@ -71,6 +72,8 @@ public class NotificationService
                         )
                         .build()
         );
+
+        this.sendNotificationCreated(notification);
     }
 
     public List<NotificationDto> getNotifications(Integer userId) {
@@ -80,11 +83,24 @@ public class NotificationService
                 .collect(Collectors.toList());
     }
 
+    public void updateInvitationNotification(InvitationUpdate invUpdate) {
+        Notification notification = repository.findByInvitationIdAndUserId(invUpdate.invitationId(), invUpdate.inviteeId());
+        notification.setStatus(NotificationStatus.DISMISSED);
+        repository.save(notification);
+    }
+
     public void updateNotificationStatus(Integer notificationId, NotificationStatus status) {
         Notification notification = repository.findById(notificationId)
                 .orElseThrow(() -> new NotificationNotFoundException("Notification not found"));
 
         notification.setStatus(status);
         repository.save(notification);
+    }
+
+    private void sendNotificationCreated(Notification notification) {
+        eventProducer.sendNotificationCreated(new NotificationCreated(
+                notification.getId(), notification.getUserId(), notification.getType().name(),
+                notification.getStatus().name(), notification.getSentAt(), notification.getPayload())
+        );
     }
 }
