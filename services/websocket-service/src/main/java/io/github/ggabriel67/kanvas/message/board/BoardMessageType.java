@@ -10,5 +10,7 @@ public enum BoardMessageType {
     TASK_MOVED,
     TASK_DELETED,
     TASK_ASSIGNED,
-    TASK_UNASSIGNED
+    TASK_UNASSIGNED,
+    BOARD_UPDATED,
+    MEMBER_REMOVED
 }
