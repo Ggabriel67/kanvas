@@ -36,6 +36,10 @@ spring:
               uri: lb://TASK-SERVICE
               predicates:
                 - Path=/api/v1/tasks/**
+            - id: notification-notifications
+              uri: lb://NOTIFICATION-SERVICE
+              predicates:
+                - Path=/api/v1/notifications/**
 
 server:
   port: 8222
