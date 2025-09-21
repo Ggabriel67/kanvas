@@ -28,5 +28,6 @@
         <module>task</module>
         <module>kafka-events</module>
         <module>notification</module>
+        <module>websocket-service</module>
     </modules>
 </project>
