@@ -109,11 +109,12 @@ public class TaskService
         Task task = getTaskById(request.taskId());
 
         task.setOrderIndex(newOrderIndex);
+        Integer beforeColumnId = task.getColumn().getId();
         if (!task.getColumn().equals(targetColumn)) task.setColumn(targetColumn);
         taskRepository.save(task);
 
         taskEventProducer.sendTaskMoved(new TaskMoved(
-                targetColumn.getBoardId(), targetColumn.getId(), task.getId(), newOrderIndex)
+                targetColumn.getBoardId(), beforeColumnId, targetColumn.getId(), task.getId(), newOrderIndex)
         );
 
         return new TaskResponse(task.getId(), targetColumn.getId(), newOrderIndex, task.isExpired());
