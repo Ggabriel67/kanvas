@@ -1,5 +1,6 @@
 package io.github.ggabriel67.kanvas.board;
 
+import io.github.ggabriel67.kanvas.authorization.board.BoardAuthorization;
 import io.github.ggabriel67.kanvas.board.member.BoardMemberRemoveRequest;
 import io.github.ggabriel67.kanvas.board.member.BoardMemberService;
 import io.github.ggabriel67.kanvas.board.member.BoardRoleChangeRequest;
@@ -29,6 +30,13 @@ public class BoardController
     @PreAuthorize("@boardAuth.canView(#boardId)")
     public ResponseEntity<BoardDto> getBoard(@PathVariable("boardId") Integer boardId) {
         return ResponseEntity.ok(boardService.getBoard(boardId));
+    }
+
+    @PatchMapping("/{boardId}")
+    @PreAuthorize("@boardAuth.isAdmin(#boardId)")
+    public ResponseEntity<Void> updateBoard(@RequestBody BoardRequest request, @PathVariable("boardId") Integer boardId) {
+        boardService.updateBoard(request, boardId);
+        return ResponseEntity.ok().build();
     }
 
     @PatchMapping("/members")

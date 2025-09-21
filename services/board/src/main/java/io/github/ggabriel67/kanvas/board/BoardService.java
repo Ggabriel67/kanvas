@@ -8,6 +8,7 @@ import io.github.ggabriel67.kanvas.board.member.BoardMemberDto;
 import io.github.ggabriel67.kanvas.board.member.BoardMemberMapper;
 import io.github.ggabriel67.kanvas.board.member.BoardMemberRepository;
 import io.github.ggabriel67.kanvas.event.board.BoardDeleted;
+import io.github.ggabriel67.kanvas.event.board.BoardUpdated;
 import io.github.ggabriel67.kanvas.exception.BoardNotFoundException;
 import io.github.ggabriel67.kanvas.exception.NameAlreadyInUseException;
 import io.github.ggabriel67.kanvas.exception.WorkspaceNotFoundException;
@@ -63,6 +64,27 @@ public class BoardService
                         .role(BoardRole.ADMIN)
                         .build()
         );
+    }
+
+    public void updateBoard(BoardRequest request, Integer boardId) {
+        Board board = getBoardById(boardId);
+        mergeBoard(board, request);
+        boardRepository.save(board);
+
+        boardEventProducer.sendBoardUpdated(new BoardUpdated(
+                boardId, request.name(), request.description(), request.visibility().name())
+        );
+    }
+
+    private void mergeBoard(Board board, BoardRequest request) {
+        if (!request.name().isBlank()) {
+            if (boardRepository.findByNameAndWorkspace(request.name(), board.getWorkspace()).isPresent()) {
+                throw new NameAlreadyInUseException("Board with name " +  request.name() + " already exists in this workspace");
+            }
+            board.setName(request.name());
+        }
+        if (request.description() != null) board.setDescription(request.description());
+        if (request.visibility() != null) board.setVisibility(request.visibility());
     }
 
     public Board getBoardById(Integer id) {

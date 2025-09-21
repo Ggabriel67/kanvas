@@ -1,9 +1,6 @@
 package io.github.ggabriel67.kanvas.kafka.producer;
 
-import io.github.ggabriel67.kanvas.event.board.BoardDeleted;
-import io.github.ggabriel67.kanvas.event.board.BoardEventType;
-import io.github.ggabriel67.kanvas.event.board.BoardMemberRemoved;
-import io.github.ggabriel67.kanvas.event.board.RoleChanged;
+import io.github.ggabriel67.kanvas.event.board.*;
 import io.github.ggabriel67.kanvas.event.Event;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +39,15 @@ public class BoardEventProducer
         log.info("Sending member removed");
         Message<Event<BoardMemberRemoved>> message = MessageBuilder
                 .withPayload(new Event<>(BoardEventType.MEMBER_REMOVED.name(), memberRemoved))
+                .setHeader(KafkaHeaders.TOPIC, "board.events")
+                .build();
+        kafkaTemplate.send(message);
+    }
+
+    public void sendBoardUpdated(BoardUpdated boardUpdated) {
+        log.info("Sending board updated");
+        Message<Event<BoardUpdated>> message = MessageBuilder
+                .withPayload(new Event<>(BoardEventType.BOARD_UPDATED.name(), boardUpdated))
                 .setHeader(KafkaHeaders.TOPIC, "board.events")
                 .build();
         kafkaTemplate.send(message);
