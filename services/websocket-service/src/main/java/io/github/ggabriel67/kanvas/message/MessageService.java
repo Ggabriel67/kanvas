@@ -1,6 +1,7 @@
 package io.github.ggabriel67.kanvas.message;
 
 import io.github.ggabriel67.kanvas.event.notification.NotificationCreated;
+import io.github.ggabriel67.kanvas.message.board.BoardMessage;
 import io.github.ggabriel67.kanvas.message.notification.NotificationMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -25,5 +26,12 @@ public class MessageService
                 notificationCreated.userId().toString(),
                 "/notifications",
                 message);
+    }
+
+    public void sendBoardMessage(Integer boardId, BoardMessage<?> message) {
+        messagingTemplate.convertAndSend(
+                "/topic/board." + boardId,
+                message
+        );
     }
 }
