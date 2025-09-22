@@ -29,6 +29,7 @@ public class AuthGatewayFilter implements GlobalFilter
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         ServerHttpRequest request = exchange.getRequest();
+        ServerHttpResponse response = exchange.getResponse();
 
         if (!routeValidator.isSecured.test(request)) return chain.filter(exchange);
 
@@ -43,51 +44,36 @@ public class AuthGatewayFilter implements GlobalFilter
             }
         }
 
-        if (accessToken == null) {
-            return onError(exchange, "No access token", HttpStatus.UNAUTHORIZED);
-        }
-
-        if (!jwtService.isTokenValid(accessToken)) {
-            return onError(exchange, "Invalid access token", HttpStatus.UNAUTHORIZED);
+        if (accessToken == null || !jwtService.isTokenValid(accessToken)) {
+            response.setStatusCode(HttpStatus.UNAUTHORIZED);
+            return response.setComplete();
         }
 
         Route route = exchange.getAttribute(ServerWebExchangeUtils.GATEWAY_ROUTE_ATTR);
         String service = route.getUri().getHost();
         Integer userId = jwtService.extractUserId(accessToken);
-        if ("BOARD-SERVICE".equals(service)) {
+        if (service.equals("BOARD-SERVICE")) {
             ServerWebExchange mutated = exchange.mutate()
-                    .request(
-                            r -> r.headers(
-                                    h -> h.add("X-User-Id", String.valueOf(userId))))
+                    .request(r -> r.header("X-User-Id", userId.toString()))
                     .build();
             return chain.filter(mutated);
         }
-        else if ("TASK-SERVICE".equals(service)) {
+        else if (service.equals("TASK-SERVICE")) {
             String boardId = request.getHeaders().getFirst("X-Board-Id");
             return webClientBuilder.build()
                     .get()
                     .uri("http://board-service/api/v1/boards/{boardId}/roles", boardId)
                     .header("X-User-Id", String.valueOf(userId))
                     .retrieve()
-                    .onStatus(HttpStatusCode::is4xxClientError, response -> Mono.error(new ResponseStatusException(HttpStatus.FORBIDDEN, "User has no role in this board")))
+                    .onStatus(HttpStatusCode::is4xxClientError, resp -> Mono.error(new ResponseStatusException(HttpStatus.FORBIDDEN, "User has no role in this board")))
                     .bodyToMono(String.class)
                     .flatMap(boardRole -> {
                         ServerWebExchange mutated = exchange.mutate()
-                                .request(r -> r.headers(h -> h.add("X-Board-Role", boardRole)))
+                                .request(r -> r.header("X-Board-Role", boardRole))
                                 .build();
                         return chain.filter(mutated);
                     });
         }
         return chain.filter(exchange);
-    }
-
-    private Mono<Void> onError(ServerWebExchange exchange, String error, HttpStatus httpStatus) {
-        ServerHttpResponse response = exchange.getResponse();
-        response.setStatusCode(httpStatus);
-        return response.setComplete();
-    }
-
-    private boolean isCredentialMissing(String token) {
-        return jwtService.extractUsername(token).isEmpty();
     }
 }
