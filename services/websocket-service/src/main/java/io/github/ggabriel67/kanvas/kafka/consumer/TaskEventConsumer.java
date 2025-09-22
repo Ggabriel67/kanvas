@@ -52,7 +52,7 @@ public class TaskEventConsumer
     private void handleTaskCreated(TaskCreated taskCreated) {
         BoardMessage<TaskCreatedMessage> message = new BoardMessage<>(
                 BoardMessageType.TASK_CREATED,
-                new TaskCreatedMessage(taskCreated.columnId(), taskCreated.taskId(), taskCreated.title())
+                new TaskCreatedMessage(taskCreated.columnId(), taskCreated.taskId(), taskCreated.orderIndex(), taskCreated.title())
         );
         messageService.sendBoardMessage(taskCreated.boardId(), message);
     }

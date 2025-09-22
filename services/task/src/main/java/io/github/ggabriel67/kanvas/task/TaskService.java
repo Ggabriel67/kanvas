@@ -58,7 +58,7 @@ public class TaskService
         );
 
         taskEventProducer.sendTaskCreated(new TaskCreated(
-                column.getBoardId(), column.getId(), task.getId(), task.getTitle())
+                column.getBoardId(), column.getId(), task.getId(), orderIndex, task.getTitle())
         );
 
         return new TaskResponse(task.getId(), column.getId(), task.getOrderIndex(), false);

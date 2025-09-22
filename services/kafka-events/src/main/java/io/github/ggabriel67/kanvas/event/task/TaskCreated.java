@@ -4,6 +4,7 @@ public record TaskCreated(
     Integer boardId,
     Integer columnId,
     Integer taskId,
+    double orderIndex,
     String title
 ) {
 }

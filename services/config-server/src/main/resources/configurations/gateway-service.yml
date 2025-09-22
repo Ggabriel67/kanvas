@@ -40,6 +40,10 @@ spring:
               uri: lb://NOTIFICATION-SERVICE
               predicates:
                 - Path=/api/v1/notifications/**
+            - id: websocket-service
+              uri: lb://WEBSOCKET-SERVICE
+              predicates:
+                - Path=/ws/**
 
 server:
   port: 8222
