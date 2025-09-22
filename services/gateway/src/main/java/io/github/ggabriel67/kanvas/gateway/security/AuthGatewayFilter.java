@@ -20,7 +20,7 @@ import reactor.core.publisher.Mono;
 @Service
 @RequiredArgsConstructor
 @RefreshScope
-public class JwtFilter implements GlobalFilter
+public class AuthGatewayFilter implements GlobalFilter
 {
     private final JwtService jwtService;
     private final RouteValidator routeValidator;

@@ -3,3 +3,8 @@ spring:
     import: optional:configserver:http://localhost:8888
   application:
     name: websocket-service
+
+application:
+  security:
+    jwt:
+      secret-key: acd57fe63f11c84ca7ba1da03d3a99bceb7427ccbb6103488397a84c04f2894b
