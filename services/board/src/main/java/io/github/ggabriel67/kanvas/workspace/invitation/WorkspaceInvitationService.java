@@ -30,7 +30,7 @@ public class WorkspaceInvitationService
     private final WorkspaceMemberService memberService;
     private final InvitationEventProducer invitationEventProducer;
 
-    public void sendInvitation(WorkspaceInvitationRequest request) {
+    public void createInvitation(WorkspaceInvitationRequest request) {
         if (memberRepository.findByUserIdAndWorkspaceId(request.inviteeId(), request.workspaceId())
                 .isPresent()) {
             throw new MemberAlreadyExistsException("This user is already a member of the workspace");
@@ -83,11 +83,12 @@ public class WorkspaceInvitationService
                 .orElseThrow(() -> new InvitationNotFoundException("Invitation does not exist"));
 
         validate(invitation);
+
         invitation.setStatus(InvitationStatus.DECLINED);
         invitationRepository.save(invitation);
 
         invitationEventProducer.sendInvitationUpdated(new InvitationUpdate(
-                invitation.getId(), invitation.getInvitee().getId(), InvitationStatus.ACCEPTED.name())
+                invitation.getId(), invitation.getInvitee().getId(), InvitationStatus.DECLINED.name())
         );
     }
 
