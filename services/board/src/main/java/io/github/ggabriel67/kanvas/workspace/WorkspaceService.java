@@ -40,13 +40,15 @@ public class WorkspaceService
                         .build()
         );
 
-        return workspaceMemberRepository.save(
+        workspaceMemberRepository.save(
                 WorkspaceMember.builder()
                         .user(user)
                         .workspace(workspace)
                         .role(WorkspaceRole.OWNER)
                         .build()
-        ).getId();
+        );
+
+        return workspace.getId();
     }
 
     public void updateWorkspace(WorkspaceRequest request, Integer workspaceId) {
