@@ -21,9 +21,8 @@ public class BoardController
 
     @PostMapping
     @PreAuthorize("@workspaceAuth.isMember(#request.workspaceId())")
-    public ResponseEntity<Void> createBoard(@RequestBody @Valid BoardRequest request) {
-        boardService.createBoard(request);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    public ResponseEntity<Integer> createBoard(@RequestBody @Valid BoardRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(boardService.createBoard(request));
     }
 
     @GetMapping("/{boardId}")

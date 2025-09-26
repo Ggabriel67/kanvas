@@ -39,7 +39,7 @@ public class BoardService
     private final BoardEventProducer boardEventProducer;
     private final TaskClient taskClient;
 
-    public void createBoard(BoardRequest request) {
+    public Integer createBoard(BoardRequest request) {
         User user = userService.getUserById(request.creatorId());
 
         Workspace workspace = workspaceRepository.findById(request.workspaceId())
@@ -64,6 +64,8 @@ public class BoardService
                         .role(BoardRole.ADMIN)
                         .build()
         );
+
+        return board.getId();
     }
 
     public void updateBoard(BoardRequest request, Integer boardId) {

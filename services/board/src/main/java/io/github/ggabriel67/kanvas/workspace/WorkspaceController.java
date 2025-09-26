@@ -19,9 +19,8 @@ public class WorkspaceController
     private final WorkspaceMemberService workspaceMemberService;
 
     @PostMapping
-    public ResponseEntity<?> createWorkspace(@RequestBody @Valid WorkspaceRequest request) {
-        workspaceService.createWorkspace(request);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    public ResponseEntity<Integer> createWorkspace(@RequestBody @Valid WorkspaceRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(workspaceService.createWorkspace(request));
     }
 
     @PatchMapping("/{workspaceId}")

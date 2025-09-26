@@ -30,7 +30,7 @@ public class WorkspaceService
     private final BoardService boardService;
     private final BoardRepository boardRepository;
 
-    public void createWorkspace(WorkspaceRequest request) {
+    public Integer createWorkspace(WorkspaceRequest request) {
         User user = userService.getUserById(request.creatorId());
 
         Workspace workspace = workspaceRepository.save(
@@ -40,13 +40,13 @@ public class WorkspaceService
                         .build()
         );
 
-        workspaceMemberRepository.save(
+        return workspaceMemberRepository.save(
                 WorkspaceMember.builder()
                         .user(user)
                         .workspace(workspace)
                         .role(WorkspaceRole.OWNER)
                         .build()
-        );
+        ).getId();
     }
 
     public void updateWorkspace(WorkspaceRequest request, Integer workspaceId) {
