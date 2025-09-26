@@ -50,7 +50,7 @@ public class WorkspaceController
     @PatchMapping("/members")
     @PreAuthorize("@workspaceAuth.canModerate(#request.workspaceId(), #request.targetMemberId())")
     public ResponseEntity<Void> changeWorkspaceMemberRole(@RequestBody WorkspaceRoleChangeRequest request) {
-        workspaceMemberService.changeWorkspaceMemberRole(request);
+        workspaceMemberService.changeMemberRole(request);
         return ResponseEntity.ok().build();
     }
 

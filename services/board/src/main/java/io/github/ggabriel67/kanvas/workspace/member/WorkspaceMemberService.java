@@ -4,9 +4,7 @@ import io.github.ggabriel67.kanvas.authorization.workspace.WorkspaceRole;
 import io.github.ggabriel67.kanvas.exception.UserNotFoundException;
 import io.github.ggabriel67.kanvas.exception.WorkspaceNotFoundException;
 import io.github.ggabriel67.kanvas.user.User;
-import io.github.ggabriel67.kanvas.user.UserService;
 import io.github.ggabriel67.kanvas.workspace.Workspace;
-import io.github.ggabriel67.kanvas.workspace.WorkspaceDtoProjection;
 import io.github.ggabriel67.kanvas.workspace.WorkspaceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,7 +17,6 @@ import java.util.stream.Collectors;
 public class WorkspaceMemberService
 {
     private final WorkspaceMemberRepository memberRepository;
-    private final UserService userService;
     private final WorkspaceRepository workspaceRepository;
     private final WorkspaceMemberMapper memberMapper;
 
@@ -33,7 +30,7 @@ public class WorkspaceMemberService
         );
     }
 
-    public void changeWorkspaceMemberRole(WorkspaceRoleChangeRequest request) {
+    public void changeMemberRole(WorkspaceRoleChangeRequest request) {
         if (workspaceRepository.findById(request.workspaceId()).isEmpty()) {
             throw new WorkspaceNotFoundException("Workspace not found");
         }
