@@ -30,7 +30,7 @@ public class BoardInvitationService
     private final BoardService boardService;
     private final InvitationEventProducer invitationEventProducer;
 
-    public void sendInvitation(BoardInvitationRequest request) {
+    public void createInvitation(BoardInvitationRequest request) {
         if (memberRepository.findByUserIdAndBoardId(request.inviteeId(), request.boardId())
                 .isPresent()) {
             throw new MemberAlreadyExistsException("This user is already a member of the board");
