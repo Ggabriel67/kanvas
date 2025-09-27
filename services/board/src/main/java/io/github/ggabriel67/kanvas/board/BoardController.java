@@ -1,6 +1,5 @@
 package io.github.ggabriel67.kanvas.board;
 
-import io.github.ggabriel67.kanvas.authorization.board.BoardAuthorization;
 import io.github.ggabriel67.kanvas.board.member.BoardMemberRemoveRequest;
 import io.github.ggabriel67.kanvas.board.member.BoardMemberService;
 import io.github.ggabriel67.kanvas.board.member.BoardRoleChangeRequest;
@@ -41,7 +40,7 @@ public class BoardController
     @PatchMapping("/members")
     @PreAuthorize("@boardAuth.canModerate(#request.boardId(), #request.targetMemberId())")
     public ResponseEntity<Void> changeBoardMemberRole(BoardRoleChangeRequest request) {
-        boardMemberService.changeBoardMemberRole(request);
+        boardMemberService.changeMemberRole(request);
         return ResponseEntity.ok().build();
     }
 

@@ -14,8 +14,6 @@ import io.github.ggabriel67.kanvas.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 public class BoardMemberService
@@ -35,7 +33,7 @@ public class BoardMemberService
         );
     }
 
-    public void changeBoardMemberRole(BoardRoleChangeRequest request) {
+    public void changeMemberRole(BoardRoleChangeRequest request) {
         if (boardRepository.findById(request.boardId()).isEmpty()) {
             throw new BoardNotFoundException("Board not found");
         }
