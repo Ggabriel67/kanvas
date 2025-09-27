@@ -14,7 +14,6 @@ import jakarta.ws.rs.ForbiddenException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -78,10 +77,10 @@ public class WorkspaceService
 
         List<BoardDtoProjection> boardProjections;
         if (workspaceRole == WorkspaceRole.OWNER || workspaceRole == WorkspaceRole.ADMIN) {
-            boardProjections = boardService.getBoardsByWorkspace(workspace);
+            boardProjections = boardService.getAllBoardsByWorkspace(workspace);
         }
         else {
-            boardProjections = boardService.getVisibleBoardsForMember(userId, workspace);
+            boardProjections = boardService.getPublicBoardsByWorkspaceAndMember(userId, workspace);
         }
 
         return new WorkspaceDto(

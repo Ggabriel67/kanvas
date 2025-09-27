@@ -94,11 +94,11 @@ public class BoardService
                 .orElseThrow(() -> new BoardNotFoundException("Board not found"));
     }
 
-    public List<BoardDtoProjection> getBoardsByWorkspace(Workspace workspace) {
+    public List<BoardDtoProjection> getAllBoardsByWorkspace(Workspace workspace) {
         return boardRepository.findByWorkspace(workspace);
     }
 
-    public List<BoardDtoProjection> getVisibleBoardsForMember(Integer userId, Workspace workspace) {
+    public List<BoardDtoProjection> getPublicBoardsByWorkspaceAndMember(Integer userId, Workspace workspace) {
         return boardRepository.findBoardsForMemberByVisibility(userId, workspace, BoardVisibility.WORKSPACE_PUBLIC);
     }
 
