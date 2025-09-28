@@ -5,6 +5,7 @@ import './index.css'
 import SignUp from './pages/SignUp.tsx'
 import NotFoundPage from './pages/NotFoundPage.tsx'
 import SignIn from './pages/SignIn.tsx'
+import { Toaster } from 'react-hot-toast'
 
 const router = createBrowserRouter([
   {
@@ -21,5 +22,6 @@ const router = createBrowserRouter([
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <RouterProvider router={router} />
+    <Toaster position="top-right" reverseOrder={false} />
   </StrictMode>,
 );
