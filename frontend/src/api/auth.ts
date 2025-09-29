@@ -40,3 +40,27 @@ export async function authenticateUser(data: AuthenticationRequest) {
     throw error;
   }
 }
+
+export async function refreshToken() {
+  try {
+    const response = await api.post<{accessToken: string;}>("/refresh-token");
+    return response.data.accessToken;
+  } catch (error: any) {
+    if (error.response) {
+      throw new Error(error.response.data.error || "Refresh token failed");
+    }
+    throw error;
+  }
+}
+
+export async function logoutUser() {
+   try {
+    const res = await api.post("/logout");
+    return res.data;
+  } catch (error: any) {
+    if (error.response) {
+      throw new Error(error.response.data.error || "Logout failed");
+    }
+    throw error;
+  }
+}

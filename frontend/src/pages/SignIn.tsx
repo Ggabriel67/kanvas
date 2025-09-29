@@ -3,6 +3,8 @@ import { useForm, type SubmitHandler } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import { authenticateUser } from '../api/auth';
 import { MdLockOutline } from "react-icons/md";
+import useAuth from '../hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
 
 type FormFields = {
   email: string;
@@ -17,9 +19,12 @@ const SignIn = () => {
     formState: { errors, isSubmitting },
   } = useForm<FormFields>();
 
-  const onSubmit: SubmitHandler<FormFields> = async (data) => {
+  const auth = useAuth();
+  const navigate = useNavigate();
+
+  const onSubmit: SubmitHandler<FormFields> = async (data) => {  
     try {
-      const accessToken = await authenticateUser(data);
+      await auth.login(data);
     } catch (error: any) {
       setError("root", { message: error.message });
     }
