@@ -1,5 +1,7 @@
 package io.github.ggabriel67.kanvas.user;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,8 +16,8 @@ public class UserController
 {
     private final UserService userService;
 
-    @GetMapping("/{user-email}")
-    public ResponseEntity<UserDto> getUser(@PathVariable("user-email") String userEmail) {
-        return ResponseEntity.ok(userService.getUser(userEmail));
+    @GetMapping("/me")
+    public ResponseEntity<UserDto> getUser() {
+        return ResponseEntity.ok(userService.getUser());
     }
 }
