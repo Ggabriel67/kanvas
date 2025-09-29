@@ -17,13 +17,15 @@ type AuthContextType = {
 	accessToken: string | null;
 	login: (data: AuthenticationRequest) => Promise<void>;
   logout: () => void;
+  loading: boolean;
 }
 
 export const AuthContext = createContext<AuthContextType | null>(null);
 
 const AuthProvider = ({ children }: { children: ReactNode }) => {
-	const [user, setUser] = useState<any | null>(null);
+	const [user, setUser] = useState<User | null>(null);
 	const [accessToken, setAccessToken] = useState<string | null>(localStorage.getItem("accessToken"));
+  const [loading, setLoading] = useState<boolean>(true);
 	const navigate = useNavigate();
 
   const login = async (data: AuthenticationRequest) => {
@@ -49,6 +51,20 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   useEffect(() => {
+    const initializeAuth = async () => {
+      try {
+        const newToken = await refreshToken();
+        setAccessToken(newToken);
+        localStorage.setItem("accessToken", newToken);
+      } catch {
+        await logout();
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    initializeAuth();
+
     const interval = setInterval(async () => {
       try {
         const newToken = await refreshToken();
@@ -58,12 +74,12 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
         (async () => await logout());
       }
     }, 14 * 60 * 1000 + 45 * 1000);
-
+    
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, accessToken, login, logout }}>
+    <AuthContext.Provider value={{ user, accessToken, login, logout, loading }}>
 			{children}
 		</AuthContext.Provider>
   )
