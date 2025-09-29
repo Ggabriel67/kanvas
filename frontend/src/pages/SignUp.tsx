@@ -1,9 +1,11 @@
 import React from 'react'
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { MdLockOutline } from "react-icons/md";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { registerUser } from '../api/auth';
 import toast from "react-hot-toast";
+import { useEffect } from 'react';
+import useAuth from '../hooks/useAuth';
 
 type FormFields = {
   firstname: string;
@@ -26,6 +28,9 @@ const SignUp = () => {
     reset();
   };
 
+  const auth = useAuth();
+  const navigate = useNavigate();
+
   const onSubmit: SubmitHandler<FormFields> = async (data) => {
     try {
       await registerUser(data);
@@ -35,6 +40,12 @@ const SignUp = () => {
       setError("root", { message: error.message });
     }
   };
+
+    useEffect(() => {
+      if (auth.accessToken) {
+        navigate("/home", { replace: true });
+      }
+    }, [auth.accessToken, navigate]);
 
   return (
     <form 

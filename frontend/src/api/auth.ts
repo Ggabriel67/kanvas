@@ -1,7 +1,8 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:8222/api/v1/auth"
+  baseURL: "http://localhost:8222/api/v1/auth",
+  withCredentials: true,
 })
 
 export type RegistrationRequest = {

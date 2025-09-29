@@ -1,10 +1,10 @@
 import React from 'react'
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { Link } from 'react-router-dom';
-import { authenticateUser } from '../api/auth';
 import { MdLockOutline } from "react-icons/md";
 import useAuth from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 
 type FormFields = {
   email: string;
@@ -25,10 +25,17 @@ const SignIn = () => {
   const onSubmit: SubmitHandler<FormFields> = async (data) => {  
     try {
       await auth.login(data);
+      navigate("/home", { replace: true });
     } catch (error: any) {
       setError("root", { message: error.message });
     }
   };
+
+  useEffect(() => {
+    if (auth.accessToken) {
+      navigate("/home", { replace: true });
+    }
+  }, [auth.accessToken, navigate]);
   
   return (
     <form

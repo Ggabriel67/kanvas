@@ -1,7 +1,7 @@
 import React, { useEffect, useState, type ReactNode } from 'react'
 import { createContext } from 'react'
 import { authenticateUser, refreshToken, logoutUser, type AuthenticationRequest } from '../api/auth';
-import { useNavigate } from 'react-router-dom';
+import { getUser } from '../api/users';
 
 export type User = {
   id: number;
@@ -26,13 +26,14 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 	const [user, setUser] = useState<User | null>(null);
 	const [accessToken, setAccessToken] = useState<string | null>(localStorage.getItem("accessToken"));
   const [loading, setLoading] = useState<boolean>(true);
-	const navigate = useNavigate();
 
   const login = async (data: AuthenticationRequest) => {
     try {
       const accessToken = await authenticateUser(data);
       setAccessToken(accessToken);
       localStorage.setItem("accessToken", accessToken);
+      const user: User = await getUser();
+      setUser(user);
     } catch (error: any) {
       throw error instanceof Error ? error : new Error(String(error));
     }
@@ -44,18 +45,24 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
       setUser(null);
       setAccessToken(null);
       localStorage.removeItem("accessToken");
-      navigate("/");
     } catch (error: any) {
       throw error instanceof Error ? error : new Error(String(error));
     }
   };
 
   useEffect(() => {
+    if (!accessToken) {
+      setLoading(false);
+      return;
+    }
+
     const initializeAuth = async () => {
       try {
         const newToken = await refreshToken();
         setAccessToken(newToken);
         localStorage.setItem("accessToken", newToken);
+        const user: User = await getUser();
+        setUser(user);
       } catch {
         await logout();
       } finally {
