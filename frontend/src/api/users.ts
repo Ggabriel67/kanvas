@@ -7,10 +7,10 @@ const api = axios.create({
 })
 
 export async function getUser() {
-    try {
-        const response = await api.get<User>("/me");
-        return response.data;
-    } catch (error: any) {
+  try {
+    const response = await api.get<User>("/me");
+    return response.data;
+  } catch (error: any) {
     if (error.response) {
       throw new Error(error.response.data.error);
     }

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import { MdLockOutline } from "react-icons/md";
@@ -12,6 +12,7 @@ type FormFields = {
 };
 
 const SignIn = () => {
+
   const { 
     register, 
     handleSubmit,
@@ -25,17 +26,16 @@ const SignIn = () => {
   const onSubmit: SubmitHandler<FormFields> = async (data) => {  
     try {
       await auth.login(data);
-      navigate("/app", { replace: true });
     } catch (error: any) {
       setError("root", { message: error.message });
     }
   };
 
   useEffect(() => {
-    if (auth.accessToken) {
+    if (auth.user) {
       navigate("/app", { replace: true });
     }
-  }, [auth.accessToken, navigate]);
+  }, [auth.user, navigate]);
   
   return (
     <div className="flex items-center justify-center min-h-screen">

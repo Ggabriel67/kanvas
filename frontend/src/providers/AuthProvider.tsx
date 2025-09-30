@@ -42,11 +42,13 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 	const logout = async () => {
     try {
       await logoutUser();
+    } catch (error: any) {
+      throw error instanceof Error ? error : new Error(String(error));
+    } finally {
       setUser(null);
       setAccessToken(null);
       localStorage.removeItem("accessToken");
-    } catch (error: any) {
-      throw error instanceof Error ? error : new Error(String(error));
+      setLoading(false);
     }
   };
 

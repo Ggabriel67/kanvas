@@ -41,11 +41,11 @@ const SignUp = () => {
     }
   };
 
-    useEffect(() => {
-      if (auth.accessToken) {
-        navigate("/app", { replace: true });
-      }
-    }, [auth.accessToken, navigate]);
+  useEffect(() => {
+    if (auth.user) {
+      navigate("/app", { replace: true });
+    }
+  }, [auth.user, navigate]);
 
   return (
     <div className="flex items-center justify-center min-h-screen">

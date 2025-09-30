@@ -26,16 +26,15 @@ const Navbar = () => {
 
   return (
     <div className="h-16 bg-[#1a1a1a] border-b border-gray-600 flex items-center justify-between px-5">
-      {/* Logo on the left */}
+      {/* Logo and app name */}
       <div className="flex items-center space-x-3 text-3xl font-bold">
-        {/* <BsFillKanbanFill size={30}/> */}
         <img src={appLogo} width="30" height="30"/>
         <span>Kanvas</span>
       </div>
 
-      {/* Notifications + Avatar on the right */}
+      {/* Notification bell and avatar icon */}
       <div className="flex items-center relative" ref={accMenuRef}>
-        <FaBell size={26} className="mr-4 cursor-pointer" />
+        <FaBell size={25} className="mr-5 cursor-pointer" />
         {user && (
           <div className="relative">
             <div

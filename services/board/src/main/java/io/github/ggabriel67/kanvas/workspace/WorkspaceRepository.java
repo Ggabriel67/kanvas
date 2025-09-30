@@ -13,7 +13,7 @@ public interface WorkspaceRepository extends JpaRepository<Workspace, Integer>
 {
     @Query("""
 SELECT new io.github.ggabriel67.kanvas.workspace.WorkspaceDtoProjection(
-    w.id, w.name
+    w.id, w.name, wm.role
 )
 FROM Workspace w
 JOIN WorkspaceMember wm ON wm.workspace = w
