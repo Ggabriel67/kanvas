@@ -4,6 +4,7 @@ import { BsFillKanbanFill } from "react-icons/bs";
 import { IoLogOutOutline } from "react-icons/io5";
 import { IoSettingsOutline } from "react-icons/io5";
 import useAuth from '../hooks/useAuth';
+import appLogo from '../assets/appLogo.png'
 
 const Navbar = () => {
   const [isAccMenuOpen, setIsAccMenuOpen] = useState<boolean>(false);
@@ -27,8 +28,9 @@ const Navbar = () => {
     <div className="h-16 bg-[#1a1a1a] border-b border-gray-600 flex items-center justify-between px-5">
       {/* Logo on the left */}
       <div className="flex items-center space-x-3 text-3xl font-bold">
-        <BsFillKanbanFill size={30}/>
-        <span>Kanban</span>
+        {/* <BsFillKanbanFill size={30}/> */}
+        <img src={appLogo} width="30" height="30"/>
+        <span>Kanvas</span>
       </div>
 
       {/* Notifications + Avatar on the right */}

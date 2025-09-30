@@ -9,7 +9,7 @@ const Sidebar = () => {
     <div className="w-64 bg-[#1a1a1a] border-r border-gray-600 flex flex-col">
       {/* Home button */}
       <div className="pt-3">
-        <button className="w-full text-left px-5 py-2 hover:bg-[#2a2a2a] rounded cursor-pointer flex space-x-2">
+        <button className="w-full text-left px-5 py-2 hover:bg-[#2a2a2a] rounded cursor-pointer flex space-x-2  items-center">
           <IoHomeOutline size={20}/>
           <span>Home</span>
         </button>
@@ -17,23 +17,43 @@ const Sidebar = () => {
       {/* Divider under Home */}
       <div className="border-b border-gray-600 my-3" />
 
-      {/* Workspaces Section */}
+      {/* My Workspaces Section */}
       <div>
         <div className="px-3 py-2 text-sm font-semibold text-gray-400 uppercase">
-          Workspaces
+          My Workspaces
         </div>
         <nav className="flex-1 overflow-y-auto">
           <ul className="space-y-1">
             <li>
-              <button className="w-full text-left px-5 py-2 hover:bg-[#2a2a2a] rounded cursor-pointer space-x-2 flex">
+              <button className="w-full text-left px-7 py-2 hover:bg-[#2a2a2a] items-center rounded cursor-pointer space-x-2 flex">
                 <BsPersonWorkspace  size={20}/>
-                <span>Workspace 1</span>
+                <span>My Workspace</span>
+              </button>
+            </li>
+          </ul>
+        </nav>
+      </div>
+
+      {/* Divider under Workspaces */}
+      <div className="border-b border-gray-600 my-3" />
+
+      {/* Other Workspaces Section */}
+      <div>
+        <div className="px-3 py-2 text-sm font-semibold text-gray-400 uppercase">
+          Other Workspaces
+        </div>
+        <nav className="flex-1 overflow-y-auto">
+          <ul className="space-y-1">
+            <li>
+              <button className="w-full text-left px-7 py-2 hover:bg-[#2a2a2a] items-center rounded cursor-pointer space-x-2 flex">
+                <BsPersonWorkspace  size={20}/>
+                <span>Foregin Workspace 1</span>
               </button>
             </li>
             <li>
-              <button className="w-full text-left px-5 py-2 hover:bg-[#2a2a2a] rounded cursor-pointer space-x-2 flex">
+              <button className="w-full text-left px-7 py-2 hover:bg-[#2a2a2a] items-center rounded cursor-pointer space-x-2 flex">
                 <BsPersonWorkspace  size={20}/>
-                <span>Workspace 2</span>
+                <span>Foregin Workspace 2</span>
               </button>
             </li>
           </ul>
@@ -44,8 +64,8 @@ const Sidebar = () => {
       <div className="border-b border-gray-600 my-3" />
 
       {/* Guest Workspaces */}
-      <button className="w-full flex text-left px-5 py-2 hover:bg-[#2a2a2a] rounded cursor-pointer space-x-2">
-        <FaRegUser size={20}/>
+      <button className="w-full flex text-left px-3 py-2 hover:bg-[#2a2a2a]  items-center rounded cursor-pointer space-x-2">
+        <FaRegUser size={18}/>
         <span>Guest workspaces</span>
       </button>
     </div>
