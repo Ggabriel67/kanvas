@@ -1,6 +1,7 @@
 import React from 'react'
 import { BsFillKanbanFill } from "react-icons/bs";
 import { IoHomeOutline } from "react-icons/io5";
+import { FaRegUser } from "react-icons/fa";
 import { BsPersonWorkspace } from "react-icons/bs";
 
 const Sidebar = () => {
@@ -43,8 +44,9 @@ const Sidebar = () => {
       <div className="border-b border-gray-600 my-3" />
 
       {/* Guest Workspaces */}
-      <button className="w-full text-left px-5 py-2 hover:bg-[#2a2a2a] rounded cursor-pointer">
-        Guest workspaces
+      <button className="w-full flex text-left px-5 py-2 hover:bg-[#2a2a2a] rounded cursor-pointer space-x-2">
+        <FaRegUser size={20}/>
+        <span>Guest workspaces</span>
       </button>
     </div>
   );
