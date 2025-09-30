@@ -8,7 +8,7 @@ import SignIn from './pages/SignIn.tsx'
 import { Toaster } from 'react-hot-toast'
 import AuthProvider from './providers/AuthProvider.tsx'
 import PrivateRoute from './components/PrivateRoute.tsx'
-import HomePage from './pages/HomePage.tsx'
+import AppLayout from './pages/AppLayout.tsx'
 
 const router = createBrowserRouter([
   {
@@ -25,7 +25,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: '/home',
-        element: <HomePage />,
+        element: <AppLayout />,
       }
     ]
   }

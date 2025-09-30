@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 body {
-  @apply min-h-screen bg-[#121212] flex items-center justify-center font-sans;
+  @apply min-h-screen bg-[#121212] font-sans;
 }
 
 @theme {
