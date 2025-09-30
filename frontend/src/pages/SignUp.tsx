@@ -43,7 +43,7 @@ const SignUp = () => {
 
     useEffect(() => {
       if (auth.accessToken) {
-        navigate("/home", { replace: true });
+        navigate("/app", { replace: true });
       }
     }, [auth.accessToken, navigate]);
 

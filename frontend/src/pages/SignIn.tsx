@@ -25,7 +25,7 @@ const SignIn = () => {
   const onSubmit: SubmitHandler<FormFields> = async (data) => {  
     try {
       await auth.login(data);
-      navigate("/home", { replace: true });
+      navigate("/app", { replace: true });
     } catch (error: any) {
       setError("root", { message: error.message });
     }
@@ -33,7 +33,7 @@ const SignIn = () => {
 
   useEffect(() => {
     if (auth.accessToken) {
-      navigate("/home", { replace: true });
+      navigate("/app", { replace: true });
     }
   }, [auth.accessToken, navigate]);
   

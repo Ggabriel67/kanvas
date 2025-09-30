@@ -1,7 +1,8 @@
 import React from 'react'
-import useAuth from '../hooks/useAuth';
-import Sidebar from '../components/Sidebar';
-import Navbar from '../components/Navbar';
+import useAuth from '../../hooks/useAuth';
+import Sidebar from '../Sidebar';
+import Navbar from '../Navbar';
+import { Outlet } from 'react-router-dom';
 
 const AppLayout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
   return (
@@ -13,7 +14,9 @@ const AppLayout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
       <div className="flex flex-1">
         <Sidebar />
 
-        <main className="flex-1 p-4 overflow-auto">{children}</main>
+        <main className="flex-1 p-4 overflow-auto">
+          <Outlet />
+        </main>
       </div>
     </div>
   );

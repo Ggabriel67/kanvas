@@ -39,7 +39,7 @@ const Navbar = () => {
         {user && (
           <div className="relative">
             <div
-              className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold cursor-pointer"
+              className="w-10 h-10 rounded-full flex items-center justify-center text-white text-xl font-bold cursor-pointer"
               style={{ backgroundColor: user.avatarColor }}
               onClick={() => setIsAccMenuOpen((prev) => !prev)}
             >
