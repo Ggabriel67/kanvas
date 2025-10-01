@@ -19,17 +19,17 @@ const Sidebar = () => {
   const navigate = useNavigate();
 
   const fetchWorkspaces = async () => {
-      try {
-        if (!user){
-          toast.error("No user");
-          return
-        } 
-        const data = await getAllUserWorkspaces(user?.id);
-        setWorkspaces(data);
-      } catch (error: any) {
-        toast.error(error.message);
+    try {
+      if (!user){
+        toast.error("No user");
+        return
       }
-    };
+      const data = await getAllUserWorkspaces(user?.id);
+      setWorkspaces(data);
+    } catch (error: any) {
+      toast.error(error.message);
+    }
+  };
 
   useEffect(() => {
     fetchWorkspaces();
@@ -64,7 +64,7 @@ const Sidebar = () => {
         <IoHomeOutline size={20} />
         <span>Home</span>
       </NavLink> 
-
+      
       {/* My Workspaces Section */}
       <div>
         <div className="px-3 mt-3 py-2 text-sm font-semibold text-gray-400 uppercase">
@@ -90,7 +90,7 @@ const Sidebar = () => {
           </ul>
           <button 
             onClick={() => setIsModalOpen(true)}
-            className="w-full text-left px-7 py-2 text-purple-400 hover:text-purple-300 hover:bg-[#2a2a2a] rounded-lg cursor-pointer flex items-center space-x-2"
+            className="w-full text-left px-7 py-2 text-purple-400 hover:text-purple-300 hover:bg-[#2a2a2a] rounded-lg cursor-pointer flex items-center space-x-1"
           >
             <IoMdAdd size={20} />
             <span>New Workspace</span>

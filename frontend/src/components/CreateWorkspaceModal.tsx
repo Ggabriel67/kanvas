@@ -59,7 +59,9 @@ const CreateWorkspaceModal: React.FC<CreateWorkspaceModalProps> = ({
             <label className="block text-sm mb-1">Name *</label>
             <input
 							{...register("name", {
-								required: "Name is required"
+								required: "Name is required",
+                validate: (value) =>
+                  value.trim() !== "" || "Name is required"
 							})}
               type="text"
               className="w-full px-3 py-2 rounded bg-[#2a2a2a] text-white focus:outline-none focus:ring-2 focus:ring-purple-500"

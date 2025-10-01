@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { WorkspaceProjection, WorkspaceRequest } from "../types/workspace";
+import type { Workspace, WorkspaceProjection, WorkspaceRequest } from "../types/workspace";
 
 const api = axios.create({
   baseURL: "http://localhost:8222/api/v1/workspaces",
@@ -13,6 +13,18 @@ export async function createWorkspace(request: WorkspaceRequest) {
   } catch (error: any) {
     if (error.response) {
       throw new Error(error.response.data.error);
+    }
+    throw error;
+  }
+}
+
+export async function getWorkspace(workspaceId: number) {
+  try {
+    const response = await api.get<Workspace>(`/${workspaceId}`);
+    return response.data;
+  } catch (error: any) {
+    if (error.response) {
+      throw new Error(error.response.data);
     }
     throw error;
   }
