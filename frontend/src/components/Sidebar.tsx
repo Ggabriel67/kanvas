@@ -3,19 +3,22 @@ import { IoHomeOutline } from "react-icons/io5";
 import { FaRegUser } from "react-icons/fa";
 import { BsPersonWorkspace } from "react-icons/bs";
 import { IoMdAdd } from "react-icons/io";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import type { WorkspaceProjection } from '../types/workspace';
-import { getAllUserWorkspaces } from '../api/workspaces';
+import { createWorkspace, getAllUserWorkspaces } from '../api/workspaces';
 import useAuth from '../hooks/useAuth';
 import toast from "react-hot-toast";
+import CreateWorkspaceModal from './CreateWorkspaceModal';
+import { type WorkspaceRequest } from '../types/workspace';
 
 const Sidebar = () => {
   const [workspaces, setWorkspaces] = useState<WorkspaceProjection[]>([]);
-
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const { user } = useAuth();
 
-  useEffect(() => {
-    const fetchWorkspaces = async () => {
+  const navigate = useNavigate();
+
+  const fetchWorkspaces = async () => {
       try {
         if (!user){
           toast.error("No user");
@@ -28,8 +31,20 @@ const Sidebar = () => {
       }
     };
 
+  useEffect(() => {
     fetchWorkspaces();
-  }, []);
+  }, [user]);
+
+  const handleCreate = async (request: WorkspaceRequest) => {
+    try {
+      const workspaceId: number = await createWorkspace(request);
+      toast.success(`Workspace created`);
+      fetchWorkspaces();
+      navigate(`/app/workspaces/${workspaceId}`)
+    } catch(err: any) {
+      toast.error(err.message || "Failed to create workspace");
+    }
+  };
 
   const owned = workspaces.filter(w => w.role === "OWNER");
   const others = workspaces.filter(w => w.role !== "OWNER");
@@ -73,10 +88,19 @@ const Sidebar = () => {
               </li>
             ))}
           </ul>
-          <button className="w-full text-left px-7 py-2 text-purple-400 hover:text-purple-300 hover:bg-[#2a2a2a] rounded-lg cursor-pointer flex items-center space-x-2">
+          <button 
+            onClick={() => setIsModalOpen(true)}
+            className="w-full text-left px-7 py-2 text-purple-400 hover:text-purple-300 hover:bg-[#2a2a2a] rounded-lg cursor-pointer flex items-center space-x-2"
+          >
             <IoMdAdd size={20} />
             <span>New Workspace</span>
           </button>
+          <CreateWorkspaceModal 
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            onCreate={handleCreate}
+          />
+
         </nav>
       </div>
 
