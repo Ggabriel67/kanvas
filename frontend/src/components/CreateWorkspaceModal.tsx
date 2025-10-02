@@ -45,12 +45,12 @@ const CreateWorkspaceModal: React.FC<CreateWorkspaceModalProps> = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Overlay */}
       <div
-        className="fixed inset-0 bg-black/75 backdrop-blur-xs"
+        className="fixed inset-0 bg-black/75"
         onClick={onClose}
       />
 
       {/* Modal */}
-      <div className="relative bg-[#1e1e1e] text-gray-200 rounded-xl shadow-xl w-full max-w-md p-6 z-10">
+      <div className="relative bg-[#1e1e1e] text-gray-200 rounded-xl shadow-xl w-full max-w-lg p-6 z-10">
         <h2 className="text-xl font-semibold mb-4">Create Workspace</h2>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -89,13 +89,13 @@ const CreateWorkspaceModal: React.FC<CreateWorkspaceModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded bg-gray-600 hover:bg-gray-500"
+              className="px-4 py-2 rounded bg-gray-600 hover:bg-gray-500 cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-2 rounded bg-purple-600 hover:bg-purple-500"
+              className="px-4 py-2 rounded bg-purple-600 hover:bg-purple-500 cursor-pointer"
             >
               Create
             </button>

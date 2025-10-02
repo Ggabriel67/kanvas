@@ -19,7 +19,7 @@ export interface BoardProjection {
 };
 
 export interface WorkspaceRequest {
-	creatorId: number;
+  creatorId: number;
 	name: string;
 	description: string;
 }

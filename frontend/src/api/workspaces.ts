@@ -12,7 +12,7 @@ export async function createWorkspace(request: WorkspaceRequest) {
     return response.data;
   } catch (error: any) {
     if (error.response) {
-      throw new Error(error.response.data.error);
+      throw new Error(error.response.data);
     }
     throw error;
   }
@@ -36,7 +36,7 @@ export async function getAllUserWorkspaces(userId: number) {
     return response.data;
   } catch (error: any) {
     if (error.response) {
-      throw new Error(error.response.data.error);
+      throw new Error(error.response.data);
     }
     throw error;
   }

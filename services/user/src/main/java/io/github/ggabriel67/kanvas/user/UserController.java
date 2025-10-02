@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
@@ -19,5 +21,10 @@ public class UserController
     @GetMapping("/me")
     public ResponseEntity<UserDto> getUser() {
         return ResponseEntity.ok(userService.getUser());
+    }
+
+    @GetMapping("/search/{query}")
+    public ResponseEntity<List<UserDto>> searchUsers(@PathVariable("query") String query) {
+        return ResponseEntity.ok(userService.searchUsers(query));
     }
 }
