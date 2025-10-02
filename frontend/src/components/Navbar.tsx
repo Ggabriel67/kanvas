@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { FaBell } from "react-icons/fa";
-import { BsFillKanbanFill } from "react-icons/bs";
+import { FaRegBell } from "react-icons/fa6";
 import { IoLogOutOutline } from "react-icons/io5";
 import { IoSettingsOutline } from "react-icons/io5";
 import useAuth from '../hooks/useAuth';
@@ -38,7 +37,7 @@ const Navbar = () => {
 
       {/* Notification bell and avatar icon */}
       <div className="flex items-center relative" ref={accMenuRef}>
-        <FaBell size={25} className="mr-5 cursor-pointer" />
+        <FaRegBell size={28} className="mr-5 cursor-pointer" />
         {user && (
           <div className="relative">
             <div

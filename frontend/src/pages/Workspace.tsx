@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
 import { getWorkspace } from '../api/workspaces';
-import type { Workspace } from '../types/workspace';
+import type { WorkspaceDto } from '../types/workspace';
 import toast from "react-hot-toast";
 import { IoMdAdd } from "react-icons/io";
 import { RiKanbanView } from "react-icons/ri";
@@ -14,7 +14,7 @@ const Workspace = () => {
   const { workspaceId } = useParams<{ workspaceId: string }>();
   const wsId = workspaceId ? parseInt(workspaceId, 10) : null;
 
-  const [workspace, setWorkspace] = useState<Workspace>();
+  const [workspace, setWorkspace] = useState<WorkspaceDto>();
   const [isInviteModalOpen, setIsInviteModalOpen] = useState<boolean>(false);
 
   const navigate = useNavigate();

@@ -11,6 +11,7 @@ import PrivateRoute from './components/PrivateRoute.tsx'
 import AppLayout from './components/layouts/AppLayout.tsx'
 import Home from './pages/Home.tsx'
 import Workspace from './pages/Workspace.tsx'
+import WebSocketProvider from './providers/WebSocketProvider.tsx'
 
 const router = createBrowserRouter([
   {
@@ -46,8 +47,10 @@ const router = createBrowserRouter([
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <AuthProvider>
-      <RouterProvider router={router} />
-      <Toaster position="top-right" reverseOrder={false} />
+      <WebSocketProvider>
+        <RouterProvider router={router} />
+        <Toaster position="top-right" reverseOrder={false} />
+      </WebSocketProvider>
     </AuthProvider>
   </StrictMode>,
 );

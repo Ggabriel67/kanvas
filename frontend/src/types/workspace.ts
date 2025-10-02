@@ -4,7 +4,7 @@ export interface WorkspaceProjection {
   role: string;
 };
 
-export interface Workspace {
+export interface WorkspaceDto {
   id: number;
   name: string;
   description: string;
