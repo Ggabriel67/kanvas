@@ -60,9 +60,6 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const initializeAuth = async () => {
       try {
-        const newToken = await refreshToken();
-        setAccessToken(newToken);
-        localStorage.setItem("accessToken", newToken);
         const user: User = await getUser();
         setUser(user);
       } catch {
@@ -85,7 +82,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
     }, 14 * 60 * 1000 + 45 * 1000);
     
     return () => clearInterval(interval);
-  }, []);
+  }, [accessToken]);
 
   return (
     <AuthContext.Provider value={{ user, accessToken, login, logout, loading }}>

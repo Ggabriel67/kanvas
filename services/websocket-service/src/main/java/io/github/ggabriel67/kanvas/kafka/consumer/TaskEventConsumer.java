@@ -88,5 +88,6 @@ public class TaskEventConsumer
                 messageType,
                 new TaskAssignmentMessage(taskAssignment.taskId(), taskAssignment.boardMemberId())
         );
+        messageService.sendBoardMessage(taskAssignment.boardId(), message);
     }
 }

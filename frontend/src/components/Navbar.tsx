@@ -9,6 +9,16 @@ import { type Notification, type ReadNotificationsRequest } from '../types/notif
 import NotificationPanel from './NotificationPanel';
 import toast from 'react-hot-toast';
 import { getNotifications, getUnreadNotificationsCount, updateNotificationsStatusToRead } from '../api/notifications';
+import useWebSocket from '../hooks/useWebSocket';
+
+interface NotificationMessage {
+	notificationId: number;
+	userId: number;
+	type: string;
+	status: string;
+	sentAt: string;
+	payload: Record<string, string>;
+}
 
 const Navbar = () => {
   const [isAccMenuOpen, setIsAccMenuOpen] = useState<boolean>(false);
@@ -20,6 +30,7 @@ const Navbar = () => {
   const notifRef = useRef<HTMLDivElement>(null);
 
   const { user, logout } = useAuth();
+  const { client, connected } = useWebSocket();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -53,6 +64,31 @@ const Navbar = () => {
   useEffect(() => {
     checkUnread();
   }, [])
+
+  useEffect(() => {
+    if (!connected || !client || !user) return;
+
+    const sub = client.subscribe(
+      `/user/${user.id}/notifications`,
+      (message) => {
+        try {
+          const newNotification: NotificationMessage = JSON.parse(message.body);
+
+          if (isNotifOpen) {
+            setNotifications((prev) => [newNotification, ...prev]);
+          } else {
+            setHasUnread(true);
+          }
+        } catch (error) {
+          toast.error(`Failed to parse WS notification: ${error}`);
+        }
+      }
+    );
+
+    return () => {
+      sub.unsubscribe();
+    }
+  }, [connected, client, user, isNotifOpen])
 
   const loadNotifications = async () => {
     try {
