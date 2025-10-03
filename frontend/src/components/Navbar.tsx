@@ -17,7 +17,7 @@ interface NotificationMessage {
 	type: string;
 	status: string;
 	sentAt: string;
-	payload: Record<string, string>;
+	payload: Record<string, unknown>;
 }
 
 const Navbar = () => {
@@ -106,6 +106,10 @@ const Navbar = () => {
     }
   }
 
+  const removeNotification = (id: number) => {
+    setNotifications((prev) => prev.filter((n) => n.notificationId !== id));
+  };
+
   return (
     <div className="h-16 bg-[#1a1a1a] border-b border-gray-600 flex items-center justify-between px-3">
       {/* Logo */}
@@ -141,6 +145,7 @@ const Navbar = () => {
             <div className="absolute right-0 translate-x-14 mt-4 w-100 bg-[#1a1a1a] border border-gray-600 rounded-lg shadow-lg z-50">
               <NotificationPanel
                 notifications={notifications}
+                onRemove={removeNotification}
                 onClose={() => setIsNotifOpen(false)}
               />
             </div>

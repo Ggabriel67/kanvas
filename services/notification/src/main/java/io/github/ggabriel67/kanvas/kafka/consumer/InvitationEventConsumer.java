@@ -29,8 +29,8 @@ public class InvitationEventConsumer
                 handleInvitationCreated(invitationCreated);
             }
             case UPDATED -> {
-                InvitationUpdate invitationCreated = objectMapper.convertValue(event.getPayload(), InvitationUpdate.class);
-                handleInvitationUpdated(invitationCreated);
+                InvitationUpdate invitationUpdated = objectMapper.convertValue(event.getPayload(), InvitationUpdate.class);
+                handleInvitationUpdated(invitationUpdated);
             }
         }
     }
@@ -39,7 +39,7 @@ public class InvitationEventConsumer
         notificationService.createInvitationNotification(invitationCreated);
     }
 
-    private void handleInvitationUpdated(InvitationUpdate invitationCreated) {
-        notificationService.updateInvitationNotification(invitationCreated);
+    private void handleInvitationUpdated(InvitationUpdate invitationUpdated) {
+        notificationService.updateInvitationNotification(invitationUpdated);
     }
 }

@@ -1,8 +1,11 @@
 import React from 'react'
 import type { Notification } from '../types/notifications';
+import toast from 'react-hot-toast';
+import { acceptWorkspaceInvitation, declineWorkspaceInvitation } from '../api/invitations';
 
 interface NotificationPanelProps {
   notifications: Notification[];
+	onRemove: (id: number) => void;
 	onClose: () => void;
 }
 
@@ -17,7 +20,25 @@ const timeAgo = (dateString: string) => {
   return `${Math.floor(diff / 86400)} day(s) ago`;
 };
 
-const NotificationPanel: React.FC<NotificationPanelProps> = ({ notifications }) => {
+const NotificationPanel: React.FC<NotificationPanelProps> = ({ notifications, onRemove }) => {
+
+	const handleAcceptWorkspaceInv = async (invitationId: number, targetName: string) => {
+		try {
+			await acceptWorkspaceInvitation(invitationId);
+			toast.success(`You are now a member of ${targetName}!`);
+		} catch (error: any) {
+			toast.error(error.message);
+		}
+	}
+
+	const handleDeclineWorkspaceInv = async (invitationId: number) => {
+		try {
+			await declineWorkspaceInvitation(invitationId);
+		} catch (error: any) {
+			toast.error(error.message);
+		}
+	}
+
   return (
     <div>
 			{/* Panel Header */}
@@ -36,9 +57,10 @@ const NotificationPanel: React.FC<NotificationPanelProps> = ({ notifications }) 
 					<ul className="divide-y divide-gray-700">
 						{notifications.map((n) => {
 							if (n.type === "INVITATION") {
-								const inviterUsername = n.payload["inviterUsername"];
-								const targetName = n.payload["targetName"];
-								const scope = n.payload["scope"];
+								const inviterUsername = n.payload["inviterUsername"] as string;
+								const targetName = n.payload["targetName"] as string;
+								const scope = n.payload["scope"] as string;
+								const invitationId = n.payload["invitationId"] as number;
 
 								return (
 									<li
@@ -53,10 +75,22 @@ const NotificationPanel: React.FC<NotificationPanelProps> = ({ notifications }) 
 										</p>
 
 										<div className="flex space-x-3 mb-2">
-											<button className="px-3 py-1 text-sm bg-purple-600 rounded hover:bg-purple-500 cursor-pointer">
+											<button 
+												className="px-3 py-1 text-sm bg-purple-600 rounded hover:bg-purple-500 cursor-pointer"
+												onClick={() => {
+													if (scope === "WORKSPACE") handleAcceptWorkspaceInv(invitationId, targetName);
+													onRemove(n.notificationId);
+												}}
+											>
 												Accept
 											</button>
-											<button className="px-3 py-1 text-sm bg-gray-600 rounded hover:bg-gray-500 cursor-pointer">
+											<button 
+												className="px-3 py-1 text-sm bg-gray-600 rounded hover:bg-gray-500 cursor-pointer"
+												onClick={() => {
+													if (scope === "WORKSPACE") handleDeclineWorkspaceInv(invitationId);
+													onRemove(n.notificationId);
+												}}
+											>
 												Decline
 											</button>
 										</div>
@@ -68,7 +102,6 @@ const NotificationPanel: React.FC<NotificationPanelProps> = ({ notifications }) 
 								);
 							}
 
-							// fallback
 							return <div key={n.notificationId}></div>;
 						})}
 					</ul>

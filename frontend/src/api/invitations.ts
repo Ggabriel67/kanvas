@@ -16,3 +16,26 @@ export async function createWorkspaceInvitation(request: WorkspaceInvitationRequ
     throw error;
   }
 } 
+
+export async function acceptWorkspaceInvitation(invitationId: number) {
+  try {
+		await api.post(`/workspaces/${invitationId}/accept`);
+	} catch (error: any) {
+    if (error.response) {
+      throw new Error(error.response.data);
+    }
+    throw error;
+  }
+}
+
+export async function declineWorkspaceInvitation(invitationId: number) {
+  try {
+		await api.patch(`/workspaces/${invitationId}/decline`);
+	} catch (error: any) {
+    if (error.response) {
+      throw new Error(error.response.data);
+    }
+    throw error;
+  }
+}
+

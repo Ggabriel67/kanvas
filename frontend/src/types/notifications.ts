@@ -4,7 +4,7 @@ export interface Notification {
 	type: string;
 	status: string;
 	sentAt: string;
-	payload: Record<string, string>;
+	payload: Record<string, unknown>;
 }
 
 export interface ReadNotificationsRequest {
