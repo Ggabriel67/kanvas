@@ -89,11 +89,11 @@ public class NotificationService
         repository.save(notification);
     }
 
-    public void updateNotificationStatus(Integer notificationId, NotificationStatus status) {
+    public void dismissNotification(Integer notificationId) {
         Notification notification = repository.findById(notificationId)
                 .orElseThrow(() -> new NotificationNotFoundException("Notification not found"));
 
-        notification.setStatus(status);
+        notification.setStatus(NotificationStatus.DISMISSED);
         repository.save(notification);
     }
 
@@ -102,5 +102,9 @@ public class NotificationService
                 notification.getId(), notification.getUserId(), notification.getType().name(),
                 notification.getStatus().name(), notification.getSentAt(), notification.getPayload())
         );
+    }
+
+    public void updateNotificationsStatusToRead(ReadNotificationsRequest request) {
+        notificationRepository.updateStatusToRead(request.ids(), NotificationStatus.READ);
     }
 }

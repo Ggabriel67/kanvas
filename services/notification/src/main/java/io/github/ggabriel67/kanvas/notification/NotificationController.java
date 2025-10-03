@@ -18,10 +18,15 @@ public class NotificationController
         return ResponseEntity.ok(notificationService.getNotifications(userId));
     }
 
-    @PatchMapping("/{notificationId}/status/{status}")
-    public ResponseEntity<Void> updateNotificationStatus(@PathVariable("notificationId") Integer notificationId,
-                                                         @PathVariable("status") NotificationStatus status) {
-        notificationService.updateNotificationStatus(notificationId, status);
+    @PatchMapping("/{notificationId}/dismiss")
+    public ResponseEntity<Void> dismissNotification(@PathVariable("notificationId") Integer notificationId) {
+        notificationService.dismissNotification(notificationId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/status/read")
+    public ResponseEntity<Void> updateNotificationsStatusToRead(@RequestBody ReadNotificationsRequest request) {
+        notificationService.updateNotificationsStatusToRead(request);
         return ResponseEntity.ok().build();
     }
 
