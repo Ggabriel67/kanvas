@@ -21,15 +21,16 @@ SELECT * FROM notifications WHERE user_id = :userId AND payload->>'invitationId'
     @Query("""
 SELECT n FROM Notification n
 WHERE n.userId = :userId AND n.status != :status
+ORDER BY n.sentAt DESC
 """)
     List<Notification> findValidNotificationsForUser(@Param("userId") Integer userId,
                                                      @Param("status") NotificationStatus status);
 
-    @Modifying
     @Query("""
-UPDATE Notification n
-SET n.status = :status
-WHERE n.id IN :ids
+SELECT COUNT (*) FROM Notification  n
+WHERE n.userId = :userId and n.status = :status
 """)
-    void updateStatusToRead(@Param("ids") List<Integer> ids, @Param("status") NotificationStatus status);
+    Integer getUnreadNotificationsCount(@Param("userId") Integer userId, @Param("status") NotificationStatus status);
+
+    List<Notification> findByIdIn(List<Integer> ids);
 }

@@ -105,6 +105,12 @@ public class NotificationService
     }
 
     public void updateNotificationsStatusToRead(ReadNotificationsRequest request) {
-        notificationRepository.updateStatusToRead(request.ids(), NotificationStatus.READ);
+        List<Notification> notifications = notificationRepository.findByIdIn(request.ids());
+        notifications.forEach(n -> n.setStatus(NotificationStatus.READ));
+        notificationRepository.saveAll(notifications);
+    }
+
+    public Integer getUnreadNotificationsCount(Integer userId) {
+        return notificationRepository.getUnreadNotificationsCount(userId, NotificationStatus.UNREAD);
     }
 }

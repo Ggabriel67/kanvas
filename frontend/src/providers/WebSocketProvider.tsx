@@ -18,6 +18,7 @@ const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ children }
   const clientRef = useRef<Client | null>(null);
 
   useEffect(() => {
+    if (!accessToken) return;
     const client = new Client({
       brokerURL: `ws://localhost:8222/ws?token=${accessToken}`,
       reconnectDelay: 5000,

@@ -30,4 +30,8 @@ public class NotificationController
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/{userId}/unread")
+    public ResponseEntity<Integer> getUnreadNotificationsCount(@PathVariable("userId") Integer userId) {
+        return ResponseEntity.ok(notificationService.getUnreadNotificationsCount(userId));
+    }
 }
