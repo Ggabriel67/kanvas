@@ -6,8 +6,10 @@ import io.github.ggabriel67.kanvas.exception.WorkspaceNotFoundException;
 import io.github.ggabriel67.kanvas.user.User;
 import io.github.ggabriel67.kanvas.workspace.Workspace;
 import io.github.ggabriel67.kanvas.workspace.WorkspaceRepository;
+import io.github.ggabriel67.kanvas.workspace.invitation.WorkspaceInvitationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,6 +21,7 @@ public class WorkspaceMemberService
     private final WorkspaceMemberRepository memberRepository;
     private final WorkspaceRepository workspaceRepository;
     private final WorkspaceMemberMapper memberMapper;
+    private final WorkspaceInvitationRepository workspaceInvitationRepository;
 
     public void addWorkspaceMember(Workspace workspace, User invitee, WorkspaceRole role) {
         memberRepository.save(
@@ -41,8 +44,10 @@ public class WorkspaceMemberService
         memberRepository.save(member);
     }
 
+    @Transactional
     public void removeMember(WorkspaceMemberRemoveRequest request) {
         WorkspaceMember member = getMemberById(request.targetMemberId());
+        workspaceInvitationRepository.deleteAllByInvitee(member.getUser());
         memberRepository.delete(member);
     }
 

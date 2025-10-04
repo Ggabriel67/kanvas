@@ -1,6 +1,6 @@
 import React from 'react'
 import { useForm, type SubmitHandler } from 'react-hook-form';
-import { type WorkspaceRequest } from '../types/workspace';
+import { type WorkspaceRequest } from '../types/workspaces';
 import useAuth from '../hooks/useAuth';
 
 interface CreateWorkspaceModalProps {

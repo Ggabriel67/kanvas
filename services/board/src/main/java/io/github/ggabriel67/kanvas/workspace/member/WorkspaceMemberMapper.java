@@ -8,6 +8,7 @@ public class WorkspaceMemberMapper
     public WorkspaceMemberDto toWorkspaceMemberDto(WorkspaceMember member) {
         return new WorkspaceMemberDto(
                 member.getId(),
+                member.getUser().getId(),
                 member.getUser().getFirstname(),
                 member.getUser().getLastname(),
                 member.getUser().getUsername(),

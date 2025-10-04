@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { WorkspaceDto, WorkspaceProjection, WorkspaceRequest } from "../types/workspace";
+import type { WorkspaceDto, WorkspaceMember, WorkspaceProjection, WorkspaceRequest, WorkspaceRoleChangeRequest, WorkspaceMemberRemoveRequest } from "../types/workspaces";
 
 const api = axios.create({
   baseURL: "http://localhost:8222/api/v1/workspaces",
@@ -34,6 +34,40 @@ export async function getAllUserWorkspaces(userId: number) {
   try {
     const response = await api.get<WorkspaceProjection[]>(`/${userId}/workspaces`);
     return response.data;
+  } catch (error: any) {
+    if (error.response) {
+      throw new Error(error.response.data);
+    }
+    throw error;
+  }
+}
+
+export async function getAllWorkspaceMembers(workspaceId: number) {
+  try {
+    const response = await api.get<WorkspaceMember[]>(`/${workspaceId}/members`);
+    return response.data;
+  } catch (error: any) {
+    if (error.response) {
+      throw new Error(error.response.data);
+    }
+    throw error;
+  }
+}
+
+export async function changeWorkspaceMemberRole(request: WorkspaceRoleChangeRequest) {
+  try {
+    await api.patch("/members", request);
+  } catch (error: any) {
+    if (error.response) {
+      throw new Error(error.response.data);
+    }
+    throw error;
+  }
+}
+
+export async function removeWorkspaceMember(request: WorkspaceMemberRemoveRequest) {
+  try {
+    await api.delete("/members", {data: request})
   } catch (error: any) {
     if (error.response) {
       throw new Error(error.response.data);

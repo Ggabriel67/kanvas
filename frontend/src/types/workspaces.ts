@@ -23,3 +23,26 @@ export interface WorkspaceRequest {
 	name: string;
 	description: string;
 }
+
+export interface WorkspaceMember {
+  memberId: number;
+  userId: number;
+  firstname: string;
+  lastname: string;
+  username: string;
+  avatarColor: string;
+  role: string;
+  joinedAt: string
+}
+
+export interface WorkspaceRoleChangeRequest {
+  targetMemberId: number;
+  workspaceId: number;
+  newRole: string;
+}
+
+
+export interface WorkspaceMemberRemoveRequest {
+  targetMemberId: number;
+  workspaceId: number;
+}

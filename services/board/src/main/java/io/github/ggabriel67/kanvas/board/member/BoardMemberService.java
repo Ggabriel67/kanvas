@@ -4,6 +4,7 @@ import io.github.ggabriel67.kanvas.authorization.board.BoardAuthorization;
 import io.github.ggabriel67.kanvas.authorization.board.BoardRole;
 import io.github.ggabriel67.kanvas.board.Board;
 import io.github.ggabriel67.kanvas.board.BoardRepository;
+import io.github.ggabriel67.kanvas.board.invitation.BoardInvitationRepository;
 import io.github.ggabriel67.kanvas.event.board.BoardMemberRemoved;
 import io.github.ggabriel67.kanvas.event.board.RoleChanged;
 import io.github.ggabriel67.kanvas.exception.BoardNotFoundException;
@@ -13,6 +14,7 @@ import io.github.ggabriel67.kanvas.kafka.producer.BoardEventProducer;
 import io.github.ggabriel67.kanvas.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +24,7 @@ public class BoardMemberService
     private final BoardRepository boardRepository;
     private final BoardEventProducer boardEventProducer;
     private final BoardAuthorization boardAuthorization;
+    private final BoardInvitationRepository boardInvitationRepository;
 
     public void addBoardMember(Board board, User invitee, BoardRole role) {
         memberRepository.save(
@@ -47,11 +50,13 @@ public class BoardMemberService
         ));
     }
 
+    @Transactional
     public void removeMember(BoardMemberRemoveRequest request) {
         BoardMember member = getMemberById(request.targetMemberId());
         BoardMemberRemoved memberRemoved = new BoardMemberRemoved(
                 member.getId(), member.getUser().getId(), member.getBoard().getId(), member.getBoard().getName()
         );
+        boardInvitationRepository.deleteAllByInvitee(member.getUser());
         memberRepository.delete(member);
 
         boardEventProducer.sendMemberRemoved(memberRemoved);

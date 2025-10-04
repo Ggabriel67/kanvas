@@ -79,7 +79,7 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
       } catch {
         (async () => await logout());
       }
-    }, 14 * 60 * 1000 + 45 * 1000);
+    }, 14 * 60 * 1000);
     
     return () => clearInterval(interval);
   }, [accessToken]);

@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 
 public record WorkspaceMemberDto(
         Integer memberId,
+        Integer userId,
         String firstname,
         String lastname,
         String username,

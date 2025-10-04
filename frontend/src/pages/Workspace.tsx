@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
 import { getWorkspace } from '../api/workspaces';
-import type { WorkspaceDto } from '../types/workspace';
+import type { WorkspaceDto } from '../types/workspaces';
 import toast from "react-hot-toast";
 import { IoMdAdd } from "react-icons/io";
 import { RiKanbanView } from "react-icons/ri";
@@ -9,6 +9,7 @@ import { AiOutlineUserAdd } from "react-icons/ai";
 import { IoSettingsOutline } from "react-icons/io5";
 import { PiUsersThree } from "react-icons/pi";
 import InviteUserModal from '../components/InviteUserModal';
+import WorkspaceMembersModal from '../components/WorkspaceMembersModal';
 
 const Workspace = () => {
   const { workspaceId } = useParams<{ workspaceId: string }>();
@@ -16,6 +17,7 @@ const Workspace = () => {
 
   const [workspace, setWorkspace] = useState<WorkspaceDto>();
   const [isInviteModalOpen, setIsInviteModalOpen] = useState<boolean>(false);
+  const [isMembersModalOpen, setisMembersModalOpen] = useState<boolean>(false);
 
   const navigate = useNavigate();
 
@@ -60,12 +62,20 @@ const Workspace = () => {
             <span>Settings</span>
           </button>
 
-          <button // TODO
+          <button
+            onClick={() => setisMembersModalOpen(true)}
+
             className="px-4 py-2 bg-[#222222] text-white flex space-x-1 rounded-lg font-medium shadow-md items-center hover:bg-[#2a2a2a] cursor-pointer"
           >
             <PiUsersThree size={20}/>
             <span>Members</span>
           </button>
+          <WorkspaceMembersModal
+            isOpen={isMembersModalOpen}
+            onClose={() => setisMembersModalOpen(false)}
+            workspaceId={workspace.id}
+            workspaceRole={workspace.workspaceRole}
+          />
 
           {/* Invite Button (OWNER/ADMIN only) */}
           {(workspace.workspaceRole === "OWNER" || workspace.workspaceRole === "ADMIN") && (
@@ -75,7 +85,7 @@ const Workspace = () => {
               className="px-4 py-2 bg-[#222222] text-white flex space-x-1 rounded-lg font-medium shadow-md items-center hover:bg-[#2a2a2a] cursor-pointer"
             >
               <AiOutlineUserAdd  size={20}/>
-              <span></span>Invite user
+              <span>Invite user</span>
             </button>
           )}
           <InviteUserModal 
