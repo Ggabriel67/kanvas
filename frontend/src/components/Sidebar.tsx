@@ -90,7 +90,7 @@ const Sidebar = () => {
           </ul>
           <button 
             onClick={() => setIsModalOpen(true)}
-            className="w-full text-left px-7 py-2 text-purple-400 hover:text-purple-300 hover:bg-[#2a2a2a] rounded-lg cursor-pointer flex items-center space-x-1"
+            className="w-full text-left px-7 py-2 text-purple-300 hover:text-purple-200 hover:bg-[#2a2a2a] rounded-lg cursor-pointer flex items-center space-x-1"
           >
             <IoMdAdd size={20} />
             <span>New Workspace</span>
@@ -137,10 +137,17 @@ const Sidebar = () => {
       <div className="border-b border-gray-600 my-3" />
 
       {/* Guest Workspaces */}
-      <button className="w-full flex text-left px-3 py-2 hover:bg-[#2a2a2a]  items-center rounded-lg cursor-pointer space-x-2">
+      <NavLink
+        to="/app/guest-workspaces"
+        className={({ isActive }) =>
+          `w-full text-left px-3 py-2 rounded-lg cursor-pointer flex space-x-2 items-center ${
+            isActive ? "bg-purple-900" : "hover:bg-[#2a2a2a]"
+          }`
+        }
+        >
         <FaRegUser size={18}/>
         <span>Guest workspaces</span>
-      </button>
+      </NavLink>
     </div>
   );
 };

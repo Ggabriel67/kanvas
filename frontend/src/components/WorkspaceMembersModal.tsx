@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import type { WorkspaceMember, WorkspaceMemberRemoveRequest, WorkspaceRoleChangeRequest } from '../types/workspaces';
 import toast from 'react-hot-toast';
 import { changeWorkspaceMemberRole, getAllWorkspaceMembers, removeWorkspaceMember } from '../api/workspaces';
-import { set } from 'react-hook-form';
 import { IoMdClose } from "react-icons/io";
 import useAuth from '../hooks/useAuth';
 

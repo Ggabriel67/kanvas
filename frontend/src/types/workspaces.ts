@@ -46,3 +46,9 @@ export interface WorkspaceMemberRemoveRequest {
   targetMemberId: number;
   workspaceId: number;
 }
+
+export interface GuestWorkspace {
+  workspaceId: number;
+  workspaceName: string;
+  boardProjections: BoardProjection[];
+}

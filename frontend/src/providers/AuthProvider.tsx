@@ -2,6 +2,7 @@ import React, { useEffect, useState, type ReactNode } from 'react'
 import { createContext } from 'react'
 import { authenticateUser, refreshToken, logoutUser, type AuthenticationRequest } from '../api/auth';
 import { getUser } from '../api/users';
+import { jwtDecode } from 'jwt-decode';
 
 export type User = {
   id: number;
@@ -19,6 +20,8 @@ type AuthContextType = {
   logout: () => void;
   loading: boolean;
 }
+
+type DecodedToken = { exp: number };
 
 export const AuthContext = createContext<AuthContextType | null>(null);
 
@@ -52,6 +55,27 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const scheduleRefresh = (token: string) => {
+    const decoded: DecodedToken = jwtDecode(token);
+    const expiresAt = decoded.exp * 1000;
+    const now = Date.now();
+
+    const refreshDelay = Math.max(expiresAt - now - 15_000, 0);
+
+    return setTimeout(async () => {
+      try {
+        const newToken = await refreshToken();
+        setAccessToken(newToken);
+        localStorage.setItem("accessToken", newToken);
+
+        scheduleRefresh(newToken);
+      } catch (err) {
+        console.error("Refresh failed", err);
+        await logout();
+      }
+    }, refreshDelay);
+  }
+
   useEffect(() => {
     if (!accessToken) {
       setLoading(false);
@@ -71,17 +95,9 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     initializeAuth();
 
-    const interval = setInterval(async () => {
-      try {
-        const newToken = await refreshToken();
-        setAccessToken(newToken);
-        localStorage.setItem("accessToken", newToken);
-      } catch {
-        (async () => await logout());
-      }
-    }, 14 * 60 * 1000);
-    
-    return () => clearInterval(interval);
+    const timeoutId = scheduleRefresh(accessToken);
+
+    return () => clearTimeout(timeoutId);
   }, [accessToken]);
 
   return (

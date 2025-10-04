@@ -53,8 +53,6 @@ const SignIn = () => {
             <input
               {...register("email", {
                 required: "Email address is required",
-                validate: (value) =>
-                  value.includes("@") || "Incorrect email address",
               })}
               type="text"
               placeholder="Email Address *"
@@ -70,10 +68,6 @@ const SignIn = () => {
           <input
             {...register("password", {
               required: "Password is required",
-              minLength: {
-                value: 8,
-                message: "Password must have at least 8 characters",
-              },
             })}
             type="password"
             placeholder="Password *"
