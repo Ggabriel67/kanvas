@@ -29,6 +29,7 @@ public class Task
 
     private double orderIndex;
     private String title;
+    @jakarta.persistence.Column(columnDefinition = "TEXT")
     private String description;
     private Instant deadline;
 

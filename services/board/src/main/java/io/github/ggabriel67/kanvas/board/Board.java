@@ -24,6 +24,7 @@ public class Board {
     @JoinColumn(name = "workspace_id")
     private Workspace workspace;
     private String name;
+    @Column(columnDefinition = "TEXT")
     private String description;
     @CreatedDate
     @Column(nullable = false, updatable = false)
