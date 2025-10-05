@@ -39,7 +39,7 @@ const Sidebar = () => {
       const workspaceId: number = await createWorkspace(request);
       toast.success(`Workspace created`);
       fetchWorkspaces();
-      navigate(`/app/workspaces/${workspaceId}`)
+      navigate(`/app/workspaces/${workspaceId}`);
     } catch(err: any) {
       toast.error(err.message || "Failed to create workspace");
     }

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { getWorkspace } from '../api/workspaces';
 import type { WorkspaceDto } from '../types/workspaces';
 import toast from "react-hot-toast";
@@ -11,6 +11,7 @@ import { PiUsersThree } from "react-icons/pi";
 import InviteUserModal from '../components/InviteUserModal';
 import WorkspaceMembersModal from '../components/WorkspaceMembersModal';
 import WorkspaceSettingsModal from '../components/WorkspaceSettingsModal';
+import CreateBoardModal from '../components/CreateBoardModal';
 
 const Workspace = () => {
   const { workspaceId } = useParams<{ workspaceId: string }>();
@@ -20,6 +21,7 @@ const Workspace = () => {
   const [isInviteModalOpen, setIsInviteModalOpen] = useState<boolean>(false);
   const [isMembersModalOpen, setisMembersModalOpen] = useState<boolean>(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState<boolean>(false);
+  const [isCreateBoardModalOpen, setIsCreateBoardModalOpen] = useState<boolean>(false);
 
   const navigate = useNavigate();
 
@@ -42,11 +44,8 @@ const Workspace = () => {
   
   return (
     <div className="pr-15 pl-15 pt-5">
-      {/* Workspace Header */}
       <div className="mb-7">
-      {/* Header row: name + buttons */}
       <div className="flex justify-between items-start">
-        {/* Left: Workspace name + creation date */}
         <div>
           <h1 className="text-2xl font-bold text-gray-100">{workspace.name}</h1>
           {workspace.createdAt && (
@@ -56,9 +55,7 @@ const Workspace = () => {
           )}
         </div>
 
-        {/* Right: Buttons */}
         <div className="flex space-x-3">
-          {/* Settings Button */}
           <button
             onClick={() => setIsSettingsModalOpen(true)}
             className="px-4 py-2 bg-[#222222] text-white flex space-x-1 rounded-lg font-medium shadow-md items-center hover:bg-[#2a2a2a] cursor-pointer"
@@ -73,7 +70,6 @@ const Workspace = () => {
             setWorkspace={setWorkspace}
           />
 
-          {/* Members Button */}
           <button
             onClick={() => setisMembersModalOpen(true)}
             className="px-4 py-2 bg-[#222222] text-white flex space-x-1 rounded-lg font-medium shadow-md items-center hover:bg-[#2a2a2a] cursor-pointer"
@@ -125,19 +121,28 @@ const Workspace = () => {
         </div>
         <div className="grid grid-cols-4 gap-20">
           {workspace.boardProjections.map((board) => (
-            <div
+            <Link
+              to={`/app/boards/${board.boardId}`}
               key={board.boardId}
               className="bg-[#333333] rounded-lg p-10 flex items-center justify-center text-gray-100 font-semibold cursor-pointer hover:bg-[#4a4a4a] "
             >
               {board.name}
-            </div>
+            </Link>
           ))}
 
           {/* Create Board Button */}
-          <button className="bg-purple-700 flex items-center justify-center space-x-1 text-white rounded-lg p-10 font-semibold hover:bg-purple-600 cursor-pointer">
+          <button
+            onClick={() => setIsCreateBoardModalOpen(true)}
+            className="bg-purple-700 flex items-center justify-center space-x-1 text-white rounded-lg p-10 font-semibold hover:bg-purple-600 cursor-pointer"
+          >
             <IoMdAdd size={20}/>
             <span>New Board</span>
           </button>
+          <CreateBoardModal
+            isOpen={isCreateBoardModalOpen}
+            workspaceId={workspace.id}
+            onClose={() => setIsCreateBoardModalOpen(false)}
+          />
         </div>
       </div>
     </div>

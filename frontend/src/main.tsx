@@ -13,6 +13,8 @@ import Home from './pages/Home.tsx'
 import Workspace from './pages/Workspace.tsx'
 import WebSocketProvider from './providers/WebSocketProvider.tsx'
 import GuestWorkspaces from './pages/GuestWorkspaces.tsx'
+import BoardLayout from './components/layouts/BoardLayout.tsx'
+import Board from './components/Board.tsx'
 
 const router = createBrowserRouter([
   {
@@ -42,6 +44,16 @@ const router = createBrowserRouter([
           {
             path: "guest-workspaces",
             element: <GuestWorkspaces />
+          },
+        ]
+      },
+      {
+        path: '/app/boards',
+        element: <BoardLayout />,
+        children: [
+          {
+            path: ":boardId",
+            element: <Board />
           },
         ]
       }
