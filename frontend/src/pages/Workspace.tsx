@@ -10,6 +10,7 @@ import { IoSettingsOutline } from "react-icons/io5";
 import { PiUsersThree } from "react-icons/pi";
 import InviteUserModal from '../components/InviteUserModal';
 import WorkspaceMembersModal from '../components/WorkspaceMembersModal';
+import WorkspaceSettingsModal from '../components/WorkspaceSettingsModal';
 
 const Workspace = () => {
   const { workspaceId } = useParams<{ workspaceId: string }>();
@@ -18,6 +19,7 @@ const Workspace = () => {
   const [workspace, setWorkspace] = useState<WorkspaceDto>();
   const [isInviteModalOpen, setIsInviteModalOpen] = useState<boolean>(false);
   const [isMembersModalOpen, setisMembersModalOpen] = useState<boolean>(false);
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState<boolean>(false);
 
   const navigate = useNavigate();
 
@@ -55,16 +57,22 @@ const Workspace = () => {
         </div>
 
         <div className="flex space-x-3">
-          <button // TODO
+          <button
+            onClick={() => setIsSettingsModalOpen(true)}
             className="px-4 py-2 bg-[#222222] text-white flex space-x-1 rounded-lg font-medium shadow-md items-center hover:bg-[#2a2a2a] cursor-pointer"
           >
             <IoSettingsOutline size={20}/>
             <span>Settings</span>
           </button>
+          <WorkspaceSettingsModal
+            isOpen={isSettingsModalOpen}
+            onClose={() => setIsSettingsModalOpen(false)}
+            workspace={workspace}
+            setWorkspace={setWorkspace}
+          />
 
           <button
             onClick={() => setisMembersModalOpen(true)}
-
             className="px-4 py-2 bg-[#222222] text-white flex space-x-1 rounded-lg font-medium shadow-md items-center hover:bg-[#2a2a2a] cursor-pointer"
           >
             <PiUsersThree size={20}/>
@@ -81,7 +89,6 @@ const Workspace = () => {
           {(workspace.workspaceRole === "OWNER" || workspace.workspaceRole === "ADMIN") && (
             <button
               onClick={() => setIsInviteModalOpen(true)}
-
               className="px-4 py-2 bg-[#222222] text-white flex space-x-1 rounded-lg font-medium shadow-md items-center hover:bg-[#2a2a2a] cursor-pointer"
             >
               <AiOutlineUserAdd  size={20}/>
@@ -109,7 +116,7 @@ const Workspace = () => {
           {workspace.boardProjections.map((board) => (
             <div
               key={board.boardId}
-              className="bg-[#3a3a3a] rounded-lg p-10 flex items-center justify-center text-gray-100 font-semibold cursor-pointer hover:bg-[#4a4a4a] "
+              className="bg-[#333333] rounded-lg p-10 flex items-center justify-center text-gray-100 font-semibold cursor-pointer hover:bg-[#4a4a4a] "
             >
               {board.name}
             </div>

@@ -82,7 +82,7 @@ const Sidebar = () => {
                     }`
                   }
                 >
-                  <BsPersonWorkspace  size={20}/>
+                  <div><BsPersonWorkspace  size={20}/></div>
                   <span>{ws.name}</span>
                 </NavLink>
               </li>

@@ -18,6 +18,17 @@ export async function createWorkspace(request: WorkspaceRequest) {
   }
 }
 
+export async function updateWorkspace(workspaceId: number, request: WorkspaceRequest) {
+  try {
+    await api.patch(`/${workspaceId}`, request)
+  } catch (error: any) {
+    if (error.response) {
+      throw new Error(error.response.data);
+    }
+    throw error;
+  }
+}
+
 export async function getWorkspace(workspaceId: number) {
   try {
     const response = await api.get<WorkspaceDto>(`/${workspaceId}`);

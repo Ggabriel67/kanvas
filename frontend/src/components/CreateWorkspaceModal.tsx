@@ -76,7 +76,7 @@ const CreateWorkspaceModal: React.FC<CreateWorkspaceModalProps> = ({
             <label className="block text-sm mb-1">Description (optional)</label>
             <textarea
 							{...register("description")}
-              className="w-full px-3 py-2 rounded bg-[#2a2a2a] text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full px-3 py-2 rounded bg-[#2a2a2a] text-white focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"
               rows={3}
             />
 					{errors.description && (

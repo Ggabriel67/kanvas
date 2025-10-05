@@ -50,7 +50,7 @@ const GuestWorkspaces = () => {
 								{w.boardProjections.map((board) => (
 									<div
 										key={board.boardId}
-										className="bg-[#3a3a3a] rounded-lg p-10 flex items-center justify-center text-gray-100 font-semibold cursor-pointer hover:bg-[#4a4a4a] transition-colors"
+										className="bg-[#333333] rounded-lg p-10 flex items-center justify-center text-gray-100 font-semibold cursor-pointer hover:bg-[#4a4a4a] transition-colors"
 									>
 										{board.name}
 									</div>

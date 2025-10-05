@@ -86,26 +86,26 @@ const WorkspaceMembersModal: React.FC<WorkspaceMembersModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-    {/* Overlay */}
-    <div
-      className="fixed inset-0 bg-black/75"
-      onClick={onClose}
-    />
+    	{/* Overlay */}
+			<div
+				className="fixed inset-0 bg-black/75"
+				onClick={onClose}
+			/>
 
-    {/* Modal */}
-    <div className="relative bg-[#1e1e1e] text-gray-200 rounded-xl shadow-xl w-full max-w-4xl p-6 z-10 pb-8">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-semibold">Workspace Members</h2>
-        <IoMdClose
-          className="cursor-pointer hover:text-gray-400"
-          size={25}
-          onClick={onClose}
-        />
-      </div>
+    	{/* Modal */}
+    	<div className="relative bg-[#1e1e1e] text-gray-200 rounded-xl shadow-xl w-full max-w-4xl p-6 z-10 pb-8">
+				{/* Header */}
+				<div className="flex items-center justify-between mb-4">
+					<h2 className="text-xl font-semibold">Workspace Members</h2>
+					<IoMdClose
+						className="cursor-pointer hover:text-gray-400"
+						size={25}
+						onClick={onClose}
+					/>
+				</div>
 
-      {/* Separator */}
-      <div className="border-t border-gray-700 mb-4"></div>
+				{/* Separator */}
+				<div className="border-t border-gray-700 mb-5"></div>
 
       {/* Members list */}
       <ul className="space-y-2 max-h-80 overflow-y-auto mb-10">
@@ -157,7 +157,7 @@ const WorkspaceMembersModal: React.FC<WorkspaceMembersModalProps> = ({
 
 							{user?.id === m.userId ? (
 								<button
-									className="min-w-[150px] flex items-center justify-center space-x-1 px-3 py-1.5 text-base bg-[#4a4a4a] rounded hover:bg-[#6a6a6a] cursor-pointer"
+									className="min-w-[150px] flex items-center justify-center space-x-1 px-3 py-1.5 text-base bg-[#4a4a4a] rounded hover:bg-red-700 cursor-pointer"
 								>
 									<IoMdClose size={18}/>
 									<span>Leave workspace</span>
@@ -165,7 +165,7 @@ const WorkspaceMembersModal: React.FC<WorkspaceMembersModalProps> = ({
 							) : (
 								canRemove(workspaceRole, m.role, m.userId === user?.id) && (
 									<button
-										className="min-w-[150px] flex items-center justify-center space-x-1 px-3 py-1.5 text-base bg-[#4a4a4a] rounded hover:bg-[#6a6a6a] cursor-pointer"
+										className="min-w-[150px] flex items-center justify-center space-x-1 px-3 py-1.5 text-base bg-[#4a4a4a] rounded hover:bg-red-700  cursor-pointer"
 										onClick={() => handleRemoveMember(m.memberId, m.username)}
 									>
 										<IoMdClose size={18}/>

@@ -88,7 +88,7 @@ const Navbar = () => {
     return () => {
       sub.unsubscribe();
     }
-  }, [connected, client, user, isNotifOpen])
+  }, [connected, client, isNotifOpen])
 
   const loadNotifications = async () => {
     try {

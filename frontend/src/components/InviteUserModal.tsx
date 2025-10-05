@@ -84,7 +84,7 @@ const InviteUserModal: React.FC<InviteUserModalProps> = ({ isOpen, onClose, work
 
       {/* Modal */}
       <div className="relative bg-[#1e1e1e] text-gray-200 rounded-xl shadow-xl w-full max-w-lg p-6 z-10 pb-8">
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between mb-5">
           <h2 className="text-xl font-semibold">Invite user to workspace</h2>
           <IoMdClose 
             className="cursor-pointer hover:text-gray-400" 
@@ -95,6 +95,9 @@ const InviteUserModal: React.FC<InviteUserModalProps> = ({ isOpen, onClose, work
             }}
           />
         </div>
+
+        {/* Separator */}
+        <div className="border-t border-gray-700 mb-4"></div>
 
         {/* Role selector */}
         <div className="mb-5">
