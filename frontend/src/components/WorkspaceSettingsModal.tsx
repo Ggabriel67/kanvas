@@ -7,6 +7,7 @@ import SettingsRulesTab from './SettingsRulesTab';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { updateWorkspace } from '../api/workspaces';
 import toast from 'react-hot-toast';
+import { useWorkspaceStore } from '../hooks/useWorkspaceStore';
 
 interface WorkspaceSettingsModalProps {
 	isOpen: boolean;
@@ -29,6 +30,7 @@ const WorkspaceSettingsModal: React.FC<WorkspaceSettingsModalProps> = ({
   const [isEditing, setIsEditing] = useState(false);
   
   const { user } = useAuth();
+  const { triggerSideBarRefresh } = useWorkspaceStore();
 
   const isAdminOrOwner = ["ADMIN", "OWNER"].includes(workspace.workspaceRole);
   const isOwner = workspace.workspaceRole === "OWNER";
@@ -54,6 +56,7 @@ const WorkspaceSettingsModal: React.FC<WorkspaceSettingsModalProps> = ({
     try {
       await updateWorkspace(workspace.id, request);
       toast.success("Workspace updated");
+      triggerSideBarRefresh();
     } catch(error: any) {
       toast.error(error.message);
     }
@@ -75,7 +78,7 @@ const WorkspaceSettingsModal: React.FC<WorkspaceSettingsModalProps> = ({
       />
       
       {/* Modal */}
-      <div className="relative bg-[#1e1e1e] text-gray-200 rounded-xl min-h-[700px] max-h-[700px] overflow-y-auto shadow-xl w-full max-w-4xl p-6 z-10 pb-8">
+      <div className="relative bg-[#1e1e1e] text-gray-200 rounded-xl min-h-[750px] max-h-[750px] overflow-y-auto shadow-xl w-full max-w-4xl p-6 z-10 pb-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-5">
           <h2 className="text-xl font-semibold">Workspace Settings</h2>
@@ -95,7 +98,7 @@ const WorkspaceSettingsModal: React.FC<WorkspaceSettingsModalProps> = ({
         {/* Tabs */}
         <div className="flex space-x-6 mb-6">
           {[
-            { id: "workspace", label: "Workspace" },
+            { id: "workspace", label: "Workspace details" },
             { id: "boards", label: "Boards" },
             { id: "permissions", label: "Rules & Permissions" },
           ].map((tab) => (

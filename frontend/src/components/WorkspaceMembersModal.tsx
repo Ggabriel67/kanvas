@@ -109,7 +109,10 @@ const WorkspaceMembersModal: React.FC<WorkspaceMembersModalProps> = ({
 
       {/* Members list */}
       <ul className="space-y-2 max-h-80 overflow-y-auto mb-10">
-        {members.map((m) => (
+        {members
+          .slice()
+          .sort((a, b) => (a.userId === user?.id ? -1 : b.userId === user?.id ? 1 : 0))
+          .map((m) => (
           <li
             key={m.memberId}
             className="flex items-center justify-between p-3 bg-[#2a2a2a] rounded"
@@ -125,6 +128,7 @@ const WorkspaceMembersModal: React.FC<WorkspaceMembersModalProps> = ({
               <div>
                 <p className="font-semibold">
                   {m.firstname} {m.lastname}
+                  {user?.id === m.userId ? " (You)" : ""}
                 </p>
                 <p className="text-sm text-gray-400">
                   {m.username} &#x2022; Joined: {new Date(m.joinedAt).toLocaleDateString()}

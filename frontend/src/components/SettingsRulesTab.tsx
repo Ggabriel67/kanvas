@@ -36,26 +36,38 @@ const SettingsRulesTab = () => {
       <div className="border-t border-gray-700 mb-4"></div> 
 
       <h3 className="text-lg font-semibold mb-3">Workspace Visibility</h3>
-      <div>Workspaces are visible only for their members.</div>
+      <div className="text-gray-300">Workspaces are visible only for their members.</div>
       <div className="border-t border-gray-700 mb-4"></div>
 
       <h3 className="text-lg font-semibold mb-3">Board Visibility</h3>
-      <ul>
-        <li className="flex">
-          <div className="flex items-center space-x-1 text-purple-400">
-            <MdLockOutline size={20}/>
-            <span className="font-semibold">Private:</span>
-          </div>
-          <span>&nbsp;Visible only for board members.</span>
-        </li>
-        <li className="flex">
-          <div className="flex items-center space-x-1 text-purple-400">
-            <PiUsersThree size={20}/>
-            <span className="font-semibold">Workspace public:</span>
-          </div>
-          <span>&nbsp;Visible to anyone in the workspace as readonly (implicit board <span className="font-semibold text-purple-400">Viever</span>).</span>
-        </li>
-      </ul>
+      <ul className="space-y-3 text-gray-300">
+				<li className="flex items-start space-x-2">
+					<div className="flex items-center shrink-0">
+						<MdLockOutline size={20} className="text-gray-400" />
+					</div>
+
+					<div className="leading-snug">
+						<span className="font-semibold text-purple-400 relative top-[1px]">Private:</span>
+						<span className="align-middle">
+							&nbsp;Visible only for board members. Workspace administrators can moderate members in a private board or delete it.
+						</span>
+					</div>
+				</li>
+
+				<li className="flex items-start space-x-2">
+					<div className="flex items-center shrink-0">
+						<PiUsersThree size={20} className="text-gray-400" />
+					</div>
+
+					<div className="leading-snug">
+						<span className="font-semibold text-purple-400 relative top-[1px]">Workspace public:</span>
+						<span className="align-middle">
+							&nbsp;Visible to anyone in the workspace as readonly (implicit board
+							<span className="font-semibold text-purple-400"> Viewer</span>).
+						</span>
+					</div>
+				</li>
+			</ul>
     </div>
   )
 }

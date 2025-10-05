@@ -43,7 +43,10 @@ const Workspace = () => {
   return (
     <div className="pr-15 pl-15 pt-5">
       {/* Workspace Header */}
-      <div className="mb-7 flex justify-between items-start">
+      <div className="mb-7">
+      {/* Header row: name + buttons */}
+      <div className="flex justify-between items-start">
+        {/* Left: Workspace name + creation date */}
         <div>
           <h1 className="text-2xl font-bold text-gray-100">{workspace.name}</h1>
           {workspace.createdAt && (
@@ -51,17 +54,16 @@ const Workspace = () => {
               Created: {new Date(workspace.createdAt).toLocaleDateString()}
             </p>
           )}
-          {workspace.description && workspace.description.trim() !== "" && (
-            <p className="mt-2 text-gray-300">{workspace.description}</p>
-          )}
         </div>
 
+        {/* Right: Buttons */}
         <div className="flex space-x-3">
+          {/* Settings Button */}
           <button
             onClick={() => setIsSettingsModalOpen(true)}
             className="px-4 py-2 bg-[#222222] text-white flex space-x-1 rounded-lg font-medium shadow-md items-center hover:bg-[#2a2a2a] cursor-pointer"
           >
-            <IoSettingsOutline size={20}/>
+            <IoSettingsOutline size={20} />
             <span>Settings</span>
           </button>
           <WorkspaceSettingsModal
@@ -71,11 +73,12 @@ const Workspace = () => {
             setWorkspace={setWorkspace}
           />
 
+          {/* Members Button */}
           <button
             onClick={() => setisMembersModalOpen(true)}
             className="px-4 py-2 bg-[#222222] text-white flex space-x-1 rounded-lg font-medium shadow-md items-center hover:bg-[#2a2a2a] cursor-pointer"
           >
-            <PiUsersThree size={20}/>
+            <PiUsersThree size={20} />
             <span>Members</span>
           </button>
           <WorkspaceMembersModal
@@ -85,23 +88,31 @@ const Workspace = () => {
             workspaceRole={workspace.workspaceRole}
           />
 
-          {/* Invite Button (OWNER/ADMIN only) */}
+          {/* Invite User Button (OWNER/ADMIN only) */}
           {(workspace.workspaceRole === "OWNER" || workspace.workspaceRole === "ADMIN") && (
-            <button
-              onClick={() => setIsInviteModalOpen(true)}
-              className="px-4 py-2 bg-[#222222] text-white flex space-x-1 rounded-lg font-medium shadow-md items-center hover:bg-[#2a2a2a] cursor-pointer"
-            >
-              <AiOutlineUserAdd  size={20}/>
-              <span>Invite user</span>
-            </button>
+            <>
+              <button
+                onClick={() => setIsInviteModalOpen(true)}
+                className="px-4 py-2 bg-[#222222] text-white flex space-x-1 rounded-lg font-medium shadow-md items-center hover:bg-[#2a2a2a] cursor-pointer"
+              >
+                <AiOutlineUserAdd size={20} />
+                <span>Invite user</span>
+              </button>
+              <InviteUserModal 
+                isOpen={isInviteModalOpen}
+                onClose={() => setIsInviteModalOpen(false)}
+                workspaceId={workspace.id}
+              />
+            </>
           )}
-          <InviteUserModal 
-            isOpen={isInviteModalOpen}
-            onClose={() => setIsInviteModalOpen(false)}
-            workspaceId={workspace.id}
-          />
         </div>
       </div>
+
+      {/* Description below the header */}
+      {workspace.description && workspace.description.trim() !== "" && (
+        <p className="mt-3 text-gray-300">{workspace.description}</p>
+      )}
+    </div>
 
       {/* Separator */}
       <hr className="border-gray-600 mb-5" />

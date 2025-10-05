@@ -10,6 +10,7 @@ import useAuth from '../hooks/useAuth';
 import toast from "react-hot-toast";
 import CreateWorkspaceModal from './CreateWorkspaceModal';
 import { type WorkspaceRequest } from '../types/workspaces';
+import { useWorkspaceStore } from '../hooks/useWorkspaceStore';
 
 const Sidebar = () => {
   const [workspaces, setWorkspaces] = useState<WorkspaceProjection[]>([]);
@@ -17,13 +18,11 @@ const Sidebar = () => {
   const { user } = useAuth();
 
   const navigate = useNavigate();
+  const { refreshKey } = useWorkspaceStore();
 
   const fetchWorkspaces = async () => {
     try {
-      if (!user){
-        toast.error("No user");
-        return
-      }
+      if (!user) return;
       const data = await getAllUserWorkspaces(user?.id);
       setWorkspaces(data);
     } catch (error: any) {
@@ -33,7 +32,7 @@ const Sidebar = () => {
 
   useEffect(() => {
     fetchWorkspaces();
-  }, [user]);
+  }, [refreshKey]);
 
   const handleCreate = async (request: WorkspaceRequest) => {
     try {

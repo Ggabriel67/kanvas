@@ -2,6 +2,7 @@ import React from 'react'
 import type { Notification } from '../types/notifications';
 import toast from 'react-hot-toast';
 import { acceptWorkspaceInvitation, declineWorkspaceInvitation } from '../api/invitations';
+import { useWorkspaceStore } from '../hooks/useWorkspaceStore';
 
 interface NotificationPanelProps {
   notifications: Notification[];
@@ -22,10 +23,13 @@ const timeAgo = (dateString: string) => {
 
 const NotificationPanel: React.FC<NotificationPanelProps> = ({ notifications, onRemove }) => {
 
+	const { triggerSideBarRefresh } = useWorkspaceStore();
+
 	const handleAcceptWorkspaceInv = async (invitationId: number, targetName: string) => {
 		try {
 			await acceptWorkspaceInvitation(invitationId);
 			toast.success(`You are now a member of ${targetName}!`);
+			triggerSideBarRefresh();
 		} catch (error: any) {
 			toast.error(error.message);
 		}
