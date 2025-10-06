@@ -11,6 +11,7 @@ import io.github.ggabriel67.kanvas.event.board.BoardDeleted;
 import io.github.ggabriel67.kanvas.event.board.BoardUpdated;
 import io.github.ggabriel67.kanvas.exception.BoardNotFoundException;
 import io.github.ggabriel67.kanvas.exception.NameAlreadyInUseException;
+import io.github.ggabriel67.kanvas.exception.UserNotFoundException;
 import io.github.ggabriel67.kanvas.exception.WorkspaceNotFoundException;
 import io.github.ggabriel67.kanvas.feign.ColumnDto;
 import io.github.ggabriel67.kanvas.feign.TaskClient;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -110,7 +112,10 @@ public class BoardService
                 .toList();
 
         Integer userId = boardAuth.getCurrentUserId();
-        boolean readonly = boardMemberRepository.findByUserIdAndBoardId(userId, boardId).isEmpty();
+        Optional<BoardMember> boardMember = boardMemberRepository.findByUserIdAndBoardId(userId, boardId);
+
+        BoardRole role = boardMember.map(BoardMember::getRole).orElse(null);
+        boolean readonly = boardMember.isEmpty();
 
         List<ColumnDto> columns = taskClient.getAllBoardColumns(boardId);
         return new BoardDto(
@@ -119,6 +124,7 @@ public class BoardService
                 board.getDescription(),
                 board.getCreatedAt(),
                 board.getVisibility(),
+                role,
                 readonly,
                 boardMembers,
                 columns
