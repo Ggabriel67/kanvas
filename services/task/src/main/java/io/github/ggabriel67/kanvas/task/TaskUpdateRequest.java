@@ -10,7 +10,6 @@ public record TaskUpdateRequest(
         String description,
         Instant deadline,
         TaskPriority priority,
-        TaskStatus status,
-        boolean isExpired
+        TaskStatus status
 ) {
 }

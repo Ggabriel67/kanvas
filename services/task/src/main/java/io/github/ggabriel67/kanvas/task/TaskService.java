@@ -11,6 +11,7 @@ import io.github.ggabriel67.kanvas.exception.TaskNotFoundException;
 import io.github.ggabriel67.kanvas.kafka.producer.TaskEventProducer;
 import io.github.ggabriel67.kanvas.task.assignee.TaskAssignee;
 import io.github.ggabriel67.kanvas.task.assignee.TaskAssigneeRepository;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,6 +32,7 @@ public class TaskService
     private final TaskMapper taskMapper;
     private final TaskEventProducer taskEventProducer;
 
+    @Getter
     @Value("${application.ordering.step.task}")
     private Double step;
 
@@ -79,7 +81,7 @@ public class TaskService
 
     private void mergeTask(Task task, TaskUpdateRequest request) {
         if (StringUtils.isNotBlank(request.title())) task.setTitle(request.title());
-        if (StringUtils.isNotBlank(request.description())) task.setTitle(request.description());
+        if (StringUtils.isNotBlank(request.description())) task.setDescription(request.description());
         if (request.deadline() != null) task.setDeadline(request.deadline());
         if (request.priority() != null) task.setPriority(request.priority());
         if (request.status() != null) task.setStatus(request.status());
@@ -122,7 +124,7 @@ public class TaskService
 
     public boolean isTaskExpired(TaskStatus status, Instant deadline) {
         return status != TaskStatus.DONE && deadline != null &&
-                deadline.isBefore(Instant.from(LocalDateTime.now()));
+                deadline.isBefore(Instant.now());
     }
 
     @Transactional

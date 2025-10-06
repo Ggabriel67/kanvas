@@ -42,6 +42,6 @@ public class Task
 
     public boolean isExpired() {
         return status != TaskStatus.DONE && deadline != null &&
-                deadline.isBefore(Instant.from(LocalDateTime.now()));
+                deadline.isBefore(Instant.now());
     }
 }
