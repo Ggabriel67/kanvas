@@ -10,6 +10,7 @@ import io.github.ggabriel67.kanvas.task.TaskDtoProjection;
 import io.github.ggabriel67.kanvas.task.TaskRepository;
 import io.github.ggabriel67.kanvas.task.TaskService;
 import io.github.ggabriel67.kanvas.task.assignee.TaskAssigneeRepository;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,7 @@ public class ColumnService
     private final TaskAssigneeRepository taskAssigneeRepository;
     private final ColumnEventProducer columnEventProducer;
 
+    @Getter
     @Value("${application.ordering.step.column}")
     private Double step;
 
@@ -141,7 +143,7 @@ public class ColumnService
     @Transactional
     public void deleteColumn(Integer columnId) {
         Column column = getColumnById(columnId);
-        ColumnDeleted columnDeleted = new ColumnDeleted(columnId, column.getBoardId());
+        ColumnDeleted columnDeleted = new ColumnDeleted(column.getBoardId(), columnId);
 
         taskAssigneeRepository.deleteAllByColumnId(columnId);
         taskRepository.deleteAllByColumnId(columnId);
