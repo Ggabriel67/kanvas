@@ -1,7 +1,10 @@
 package io.github.ggabriel67.kanvas.workspace.invitation;
 
+import io.github.ggabriel67.kanvas.invitation.InvitationStatus;
 import io.github.ggabriel67.kanvas.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -9,7 +12,15 @@ import java.util.Optional;
 @Repository
 public interface WorkspaceInvitationRepository extends JpaRepository<WorkspaceInvitation, Integer>
 {
-    Optional<WorkspaceInvitation> findByInviteeIdAndWorkspaceId(Integer inviteeId, Integer workspaceId);
-
     void deleteAllByInvitee(User user);
+
+    @Query("""
+SELECT i FROM WorkspaceInvitation i
+WHERE i.invitee.id = :inviteeId AND i.workspace.id = :workspaceId
+AND i.status = :status
+""")
+    Optional<WorkspaceInvitation> findPendingByInviteeIdAndWorkspaceId(
+            @Param("inviteeId") Integer inviteeId,
+            @Param("workspaceId") Integer workspaceId,
+            @Param("status") InvitationStatus status);
 }

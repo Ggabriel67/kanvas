@@ -36,11 +36,10 @@ public class BoardInvitationService
             throw new MemberAlreadyExistsException("This user is already a member of the board");
         }
 
-        Optional<BoardInvitation> existingInvitation = invitationRepository.findByInviteeIdAndBoardId(request.inviteeId(), request.boardId());
-        if (existingInvitation.isPresent()) {
-            if (existingInvitation.get().getStatus() == InvitationStatus.PENDING) {
-                throw new InvitationPendingException("Invitation already pending");
-            }
+        if (invitationRepository.findPendingByInviteeIdAndBoardId(
+                        request.inviteeId(), request.boardId(), InvitationStatus.PENDING)
+                .isPresent()) {
+            throw new InvitationPendingException("Invitation already pending for this user");
         }
 
         User inviter = userService.getUserById(request.inviterId());

@@ -69,7 +69,7 @@ class BoardInvitationServiceTest
             BoardInvitation existing = BoardInvitation.builder()
                     .status(InvitationStatus.PENDING)
                     .build();
-            when(invitationRepository.findByInviteeIdAndBoardId(2, 10))
+            when(invitationRepository.findPendingByInviteeIdAndBoardId(2, 10, InvitationStatus.PENDING))
                     .thenReturn(Optional.of(existing));
 
             assertThatThrownBy(() -> invitationService.createInvitation(request))
@@ -85,7 +85,7 @@ class BoardInvitationServiceTest
             BoardInvitationRequest request = new BoardInvitationRequest(1, 2, 10, BoardRole.EDITOR);
 
             when(memberRepository.findByUserIdAndBoardId(2, 10)).thenReturn(Optional.empty());
-            when(invitationRepository.findByInviteeIdAndBoardId(2, 10)).thenReturn(Optional.empty());
+            when(invitationRepository.findPendingByInviteeIdAndBoardId(2, 10, InvitationStatus.PENDING)).thenReturn(Optional.empty());
 
             User inviter = User.builder().id(1).username("john").build();
             User invitee = User.builder().id(2).username("bob").build();

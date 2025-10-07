@@ -69,7 +69,7 @@ class WorkspaceInvitationServiceTest
             WorkspaceInvitation existing = WorkspaceInvitation.builder()
                     .status(InvitationStatus.PENDING)
                     .build();
-            when(invitationRepository.findByInviteeIdAndWorkspaceId(2, 10))
+            when(invitationRepository.findPendingByInviteeIdAndWorkspaceId(2, 10, InvitationStatus.PENDING))
                     .thenReturn(Optional.of(existing));
 
             assertThatThrownBy(() -> invitationService.createInvitation(request))
@@ -85,7 +85,7 @@ class WorkspaceInvitationServiceTest
             WorkspaceInvitationRequest request = new WorkspaceInvitationRequest(1, 2, 10, WorkspaceRole.MEMBER);
 
             when(memberRepository.findByUserIdAndWorkspaceId(2, 10)).thenReturn(Optional.empty());
-            when(invitationRepository.findByInviteeIdAndWorkspaceId(2, 10)).thenReturn(Optional.empty());
+            when(invitationRepository.findPendingByInviteeIdAndWorkspaceId(2, 10, InvitationStatus.PENDING)).thenReturn(Optional.empty());
 
             User inviter = User.builder().id(1).username("john").build();
             User invitee = User.builder().id(2).username("bob").build();

@@ -36,11 +36,10 @@ public class WorkspaceInvitationService
             throw new MemberAlreadyExistsException("This user is already a member of the workspace");
         }
 
-        Optional<WorkspaceInvitation> existingInvitation = invitationRepository.findByInviteeIdAndWorkspaceId(request.inviteeId(), request.workspaceId());
-        if (existingInvitation.isPresent()) {
-            if (existingInvitation.get().getStatus() == InvitationStatus.PENDING) {
-                throw new InvitationPendingException("Invitation already pending");
-            }
+        if (invitationRepository.findPendingByInviteeIdAndWorkspaceId(
+                request.inviteeId(), request.workspaceId(), InvitationStatus.PENDING)
+                .isPresent()) {
+            throw new InvitationPendingException("Invitation already pending for this user");
         }
 
         User inviter = userService.getUserById(request.inviterId());
