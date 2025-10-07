@@ -19,7 +19,6 @@ import java.util.stream.Collectors;
 public class NotificationService
 {
     private final NotificationRepository repository;
-    private final NotificationRepository notificationRepository;
     private final NotificationMapper notificationMapper;
     private final NotificationEventProducer eventProducer;
 
@@ -77,7 +76,7 @@ public class NotificationService
     }
 
     public List<NotificationDto> getNotifications(Integer userId) {
-        return notificationRepository.findValidNotificationsForUser(userId,NotificationStatus.DISMISSED)
+        return repository.findValidNotificationsForUser(userId,NotificationStatus.DISMISSED)
                 .stream()
                 .map(notificationMapper::toNotificationDto)
                 .collect(Collectors.toList());
@@ -105,12 +104,12 @@ public class NotificationService
     }
 
     public void updateNotificationsStatusToRead(ReadNotificationsRequest request) {
-        List<Notification> notifications = notificationRepository.findByIdIn(request.ids());
+        List<Notification> notifications = repository.findByIdIn(request.ids());
         notifications.forEach(n -> n.setStatus(NotificationStatus.READ));
-        notificationRepository.saveAll(notifications);
+        repository.saveAll(notifications);
     }
 
     public Integer getUnreadNotificationsCount(Integer userId) {
-        return notificationRepository.getUnreadNotificationsCount(userId, NotificationStatus.UNREAD);
+        return repository.getUnreadNotificationsCount(userId, NotificationStatus.UNREAD);
     }
 }
