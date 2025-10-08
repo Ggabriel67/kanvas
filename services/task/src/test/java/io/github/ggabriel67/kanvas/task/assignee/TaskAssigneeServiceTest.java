@@ -40,9 +40,10 @@ class TaskAssigneeServiceTest
             Integer taskId = 10;
             Integer memberId = 5;
             Integer userId = 2;
+            Integer assignerId = 100;
             String boardName = "Test Board";
 
-            AssignmentRequest request = new AssignmentRequest(taskId, memberId, userId, boardName);
+            AssignmentRequest request = new AssignmentRequest(taskId, memberId, userId, assignerId, boardName);
 
             Column column = Column.builder().id(1).boardId(100).build();
             Task task = Task.builder().id(taskId).column(column).title("Test Task").build();
@@ -64,6 +65,7 @@ class TaskAssigneeServiceTest
                             event.userId().equals(userId) &&
                             event.boardName().equals(boardName) &&
                             event.taskTitle().equals("Test Task") &&
+                            event.assignerId().equals(assignerId) &&
                             event.assigned()
             ));
         }
@@ -72,7 +74,7 @@ class TaskAssigneeServiceTest
         void shouldThrow_WhenMemberAlreadyAssigned() {
             Integer taskId = 10;
             Integer memberId = 5;
-            AssignmentRequest request = new AssignmentRequest(taskId, memberId, 2, "Board");
+            AssignmentRequest request = new AssignmentRequest(taskId, memberId, 2, 10, "Board");
 
             when(taskAssigneeRepository.findByBoardMemberIdAndTaskId(memberId, taskId))
                     .thenReturn(Optional.of(TaskAssignee.builder().build()));
@@ -90,7 +92,7 @@ class TaskAssigneeServiceTest
         void shouldThrow_WhenTaskNotFound() {
             Integer taskId = 10;
             Integer memberId = 5;
-            AssignmentRequest request = new AssignmentRequest(taskId, memberId, 2, "Board");
+            AssignmentRequest request = new AssignmentRequest(taskId, memberId, 2, 10, "Board");
 
             when(taskAssigneeRepository.findByBoardMemberIdAndTaskId(memberId, taskId))
                     .thenReturn(Optional.empty());
@@ -113,9 +115,10 @@ class TaskAssigneeServiceTest
             Integer taskId = 10;
             Integer memberId = 5;
             Integer userId = 2;
+            Integer assignerId = 100;
             String boardName = "Board";
 
-            AssignmentRequest request = new AssignmentRequest(taskId, memberId, userId, boardName);
+            AssignmentRequest request = new AssignmentRequest(taskId, memberId, userId, assignerId, boardName);
 
             Column column = Column.builder().id(1).boardId(100).build();
             Task task = Task.builder().id(taskId).column(column).title("Test Task").build();
@@ -135,6 +138,7 @@ class TaskAssigneeServiceTest
                             event.userId().equals(userId) &&
                             event.boardName().equals(boardName) &&
                             event.taskTitle().equals("Test Task") &&
+                            event.assignerId().equals(assignerId) &&
                             !event.assigned()
             ));
         }
@@ -143,7 +147,7 @@ class TaskAssigneeServiceTest
         void shouldThrow_WhenTaskNotFound() {
             Integer taskId = 10;
             Integer memberId = 5;
-            AssignmentRequest request = new AssignmentRequest(taskId, memberId, 2, "Board");
+            AssignmentRequest request = new AssignmentRequest(taskId, memberId, 2, 10, "Board");
 
             when(taskRepository.findById(taskId)).thenReturn(Optional.empty());
 
@@ -160,7 +164,7 @@ class TaskAssigneeServiceTest
         void shouldThrow_WhenAssigneeNotFound() {
             Integer taskId = 10;
             Integer memberId = 5;
-            AssignmentRequest request = new AssignmentRequest(taskId, memberId, 2, "Board");
+            AssignmentRequest request = new AssignmentRequest(taskId, memberId, 2, 10, "Board");
 
             Task task = Task.builder().id(taskId).column(Column.builder().id(1).boardId(100).build()).title("Test Task").build();
             when(taskRepository.findById(taskId)).thenReturn(Optional.of(task));

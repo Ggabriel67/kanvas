@@ -4,6 +4,7 @@ public record AssignmentRequest(
         Integer taskId,
         Integer memberId,
         Integer userId,
+        Integer assignerId,
         String boardName
 ) {
 }

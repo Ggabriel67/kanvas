@@ -83,47 +83,59 @@ class NotificationServiceTest
         ));
     }
 
-    @Test
-    void shouldCreateAssignmentNotification_AndSendKafkaEvent() {
-        TaskAssignment assignment = new TaskAssignment(10, 50, 99, 5,
-                "Fix Login Bug", "Engineering Board", true);
+    @Nested
+    class CreateAssignmentNotification {
+        @Test
+        void shouldCreateAssignmentNotification_AndSendKafkaEvent() {
+            TaskAssignment assignment = new TaskAssignment(10, 50, 99, 5, 6,
+                    "Fix Login Bug", "Engineering Board", true);
 
-        Notification savedNotification = Notification.builder()
-                .id(100)
-                .userId(assignment.userId())
-                .type(NotificationType.ASSIGNMENT)
-                .status(NotificationStatus.UNREAD)
-                .sentAt(LocalDateTime.now())
-                .payload(Map.of(
-                        "taskTitle", assignment.taskTitle(),
-                        "boardName", assignment.boardName(),
-                        "assigned", assignment.assigned()
-                ))
-                .build();
+            Notification savedNotification = Notification.builder()
+                    .id(100)
+                    .userId(assignment.userId())
+                    .type(NotificationType.ASSIGNMENT)
+                    .status(NotificationStatus.UNREAD)
+                    .sentAt(LocalDateTime.now())
+                    .payload(Map.of(
+                            "taskTitle", assignment.taskTitle(),
+                            "boardName", assignment.boardName(),
+                            "assigned", assignment.assigned()
+                    ))
+                    .build();
 
-        when(repository.save(any(Notification.class))).thenReturn(savedNotification);
+            when(repository.save(any(Notification.class))).thenReturn(savedNotification);
 
-        notificationService.createAssignmentNotification(assignment);
+            notificationService.createAssignmentNotification(assignment);
 
-        ArgumentCaptor<Notification> captor = ArgumentCaptor.forClass(Notification.class);
-        verify(repository).save(captor.capture());
-        Notification saved = captor.getValue();
+            ArgumentCaptor<Notification> captor = ArgumentCaptor.forClass(Notification.class);
+            verify(repository).save(captor.capture());
+            Notification saved = captor.getValue();
 
-        assertThat(saved.getUserId()).isEqualTo(assignment.userId());
-        assertThat(saved.getType()).isEqualTo(NotificationType.ASSIGNMENT);
-        assertThat(saved.getStatus()).isEqualTo(NotificationStatus.UNREAD);
-        assertThat(saved.getPayload().get("taskTitle")).isEqualTo(assignment.taskTitle());
-        assertThat(saved.getPayload().get("boardName")).isEqualTo(assignment.boardName());
-        assertThat(saved.getPayload().get("assigned")).isEqualTo(assignment.assigned());
+            assertThat(saved.getUserId()).isEqualTo(assignment.userId());
+            assertThat(saved.getType()).isEqualTo(NotificationType.ASSIGNMENT);
+            assertThat(saved.getStatus()).isEqualTo(NotificationStatus.UNREAD);
+            assertThat(saved.getPayload().get("taskTitle")).isEqualTo(assignment.taskTitle());
+            assertThat(saved.getPayload().get("boardName")).isEqualTo(assignment.boardName());
+            assertThat(saved.getPayload().get("assigned")).isEqualTo(assignment.assigned());
 
-        verify(eventProducer).sendNotificationCreated(argThat(event ->
-                event.notificationId().equals(savedNotification.getId()) &&
-                        event.userId().equals(savedNotification.getUserId()) &&
-                        event.type().equals(savedNotification.getType().name()) &&
-                        event.status().equals(savedNotification.getStatus().name()) &&
-                        event.sentAt().equals(savedNotification.getSentAt()) &&
-                        event.payload().equals(savedNotification.getPayload())
-        ));
+            verify(eventProducer).sendNotificationCreated(argThat(event ->
+                    event.notificationId().equals(savedNotification.getId()) &&
+                            event.userId().equals(savedNotification.getUserId()) &&
+                            event.type().equals(savedNotification.getType().name()) &&
+                            event.status().equals(savedNotification.getStatus().name()) &&
+                            event.sentAt().equals(savedNotification.getSentAt()) &&
+                            event.payload().equals(savedNotification.getPayload())
+            ));
+        }
+
+        @Test
+        void shouldNotCreateNotification_WhenUserAssignsTaskToSelf() {
+            TaskAssignment selfAssignment = new TaskAssignment(10, 50, 99, 5, 5, "Fix Login Bug", "Engineering Board", true);
+            notificationService.createAssignmentNotification(selfAssignment);
+
+            verifyNoInteractions(repository);
+            verifyNoInteractions(eventProducer);
+        }
     }
 
     @Test

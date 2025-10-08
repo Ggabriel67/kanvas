@@ -42,6 +42,8 @@ public class NotificationService
     }
 
     public void createAssignmentNotification(TaskAssignment assignment) {
+        if (assignment.userId().equals(assignment.assignerId())) return;
+
         Notification notification = repository.save(
                 Notification.builder()
                         .userId(assignment.userId())
