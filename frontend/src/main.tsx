@@ -14,7 +14,7 @@ import Workspace from './pages/Workspace.tsx'
 import WebSocketProvider from './providers/WebSocketProvider.tsx'
 import GuestWorkspaces from './pages/GuestWorkspaces.tsx'
 import BoardLayout from './components/layouts/BoardLayout.tsx'
-import Board from './components/Board.tsx'
+import Board from './pages/Board.tsx'
 
 const router = createBrowserRouter([
   {
