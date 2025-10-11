@@ -156,7 +156,7 @@ const Navbar = () => {
         <div className="relative" ref={accMenuRef}>
           {user && (
             <div
-              className="w-10 h-10 mr-2 rounded-full flex items-center justify-center text-white text-xl font-bold cursor-pointer"
+              className="w-10 h-10 mr-3 rounded-full flex items-center justify-center text-white text-xl font-bold hover:bg-[#2a2a2a] cursor-pointer"
               style={{ backgroundColor: user.avatarColor }}
               onClick={() => setIsAccMenuOpen((prev) => !prev)}
             >

@@ -47,12 +47,12 @@ const GuestWorkspaces = () => {
 								{w.workspaceName}
 							</h2>
 
-							<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+							<div className="grid grid-flow-row auto-rows-auto gap-10 grid-cols-[repeat(auto-fill,300px)]">
 								{w.boardProjections.map((board) => (
 									<Link
 										to={`/app/boards/${board.boardId}`}
 										key={board.boardId}
-										className="bg-[#333333] rounded-lg p-10 flex items-center justify-center text-gray-100 font-semibold cursor-pointer hover:bg-[#4a4a4a] "
+										className="bg-[#333333] rounded-lg w-[300px] h-[100px] flex items-center justify-center text-gray-100 font-semibold cursor-pointer hover:bg-[#4a4a4a]"
 									>
 										{board.name}
 									</Link>

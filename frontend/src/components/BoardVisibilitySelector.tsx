@@ -29,9 +29,10 @@ const BoardVisibilitySelector: React.FC<VisibilitySelectorProps> = ({ boardId, v
     try {
       await updateBoard(boardId, request);
 
-      queryClient.setQueryData(["board", boardId], (old: BoardDto) => {
-        return { ...old, visibility: newVisibility};
-      })
+      queryClient.setQueryData<BoardDto | undefined>(
+        ["board", boardId],
+         (old) => old ?{...old, visibility: newVisibility} : old
+      );
     } catch (error: any) {
       toast.error(error.message)
     }
@@ -51,13 +52,13 @@ const BoardVisibilitySelector: React.FC<VisibilitySelectorProps> = ({ boardId, v
     <div className="relative" ref={dropdownRef}>
       {/* Toggle Button */}
       <button
-        className={`flex items-center space-x-1 cursor-pointer hover:text-white p-2 hover:bg-[#2a2a2a] rounded
+        className={`flex items-center space-x-1 cursor-pointer hover:text-white p-1.5 hover:bg-[#2a2a2a] rounded
           ${isOpen ? "bg-[#3a3a3a]" : ""}
         `}
         title={isPublic ? "Workspace Public" : "Private"}
         onClick={() => setIsOpen((prev) => !prev)}
       >
-        {isPublic ? <PiUsersThree size={20} /> : <MdLockOutline size={20} />}
+        {isPublic ? <PiUsersThree size={24} /> : <MdLockOutline size={24} />}
       </button>
 
       {/* Dropdown */}

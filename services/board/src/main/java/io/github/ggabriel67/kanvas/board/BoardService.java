@@ -75,8 +75,9 @@ public class BoardService
         mergeBoard(board, request);
         boardRepository.save(board);
 
+        String visibility = request.visibility() != null ? request.visibility().name() : null;
         boardEventProducer.sendBoardUpdated(new BoardUpdated(
-                boardId, request.name(), request.description(), request.visibility().name())
+                boardId, request.name(), request.description(), visibility)
         );
     }
 

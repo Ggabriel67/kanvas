@@ -119,12 +119,12 @@ const Workspace = () => {
           <RiKanbanView size={25}/>
           <span>Boards</span>
         </div>
-        <div className="grid grid-cols-4 gap-20">
+        <div className="grid grid-flow-row auto-rows-auto gap-15 grid-cols-[repeat(auto-fill,300px)]">
           {workspace.boardProjections.map((board) => (
             <Link
               to={`/app/boards/${board.boardId}`}
               key={board.boardId}
-              className="bg-[#333333] rounded-lg p-10 flex items-center justify-center text-gray-100 font-semibold cursor-pointer hover:bg-[#4a4a4a] "
+              className="bg-[#333333] rounded-lg w-[300px] h-[100px] flex items-center justify-center text-gray-100 font-semibold cursor-pointer hover:bg-[#4a4a4a]"
             >
               {board.name}
             </Link>
@@ -133,11 +133,12 @@ const Workspace = () => {
           {/* Create Board Button */}
           <button
             onClick={() => setIsCreateBoardModalOpen(true)}
-            className="bg-purple-700 flex items-center justify-center space-x-1 text-white rounded-lg p-10 font-semibold hover:bg-purple-600 cursor-pointer"
+            className="bg-purple-700 w-[300px] h-[100px] flex items-center justify-center space-x-1 text-white rounded-lg font-semibold hover:bg-purple-600 cursor-pointer"
           >
-            <IoMdAdd size={20}/>
+            <IoMdAdd size={20} />
             <span>New Board</span>
           </button>
+
           <CreateBoardModal
             isOpen={isCreateBoardModalOpen}
             workspaceId={workspace.id}
