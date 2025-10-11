@@ -4,3 +4,10 @@ export interface WorkspaceInvitationRequest {
     workspaceId: number;
     role: string;
 }
+
+export interface BoardInvitationRequest {
+    inviterId: number;
+    inviteeId: number;
+    boardId: number;
+    role: string;
+}

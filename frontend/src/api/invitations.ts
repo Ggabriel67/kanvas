@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { WorkspaceInvitationRequest } from "../types/invitations";
+import type { BoardInvitationRequest, WorkspaceInvitationRequest } from "../types/invitations";
 
 const api = axios.create({
   baseURL: "http://localhost:8222/api/v1/invitations",
@@ -38,4 +38,15 @@ export async function declineWorkspaceInvitation(invitationId: number) {
     throw error;
   }
 }
+
+export async function createBoardInvitation(request: BoardInvitationRequest) {
+  try {
+		await api.post("/boards", request);
+	} catch (error: any) {
+    if (error.response) {
+      throw new Error(error.response.data);
+    }
+    throw error;
+  }
+} 
 

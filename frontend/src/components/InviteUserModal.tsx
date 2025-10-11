@@ -62,7 +62,7 @@ const InviteUserModal: React.FC<InviteUserModalProps> = ({ isOpen, onClose, work
       toast.error(error.message);
     }
   };
-
+  
   useEffect(() => {
     doSearch(query || "");
   }, [query, doSearch]);

@@ -10,7 +10,7 @@ const BoardLayout = () => {
 
       {/* Rest of the app below the navbar */}
       <div className="flex flex-1">
-        <main className="flex-1 p-4 overflow-auto">
+        <main className="flex-1 overflow-auto">
           <Outlet />
         </main>
       </div>
