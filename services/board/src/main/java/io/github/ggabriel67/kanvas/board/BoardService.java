@@ -70,7 +70,7 @@ public class BoardService
         return board.getId();
     }
 
-    public void updateBoard(BoardRequest request, Integer boardId) {
+    public void updateBoard(BoardUpdateRequest request, Integer boardId) {
         Board board = getBoardById(boardId);
         mergeBoard(board, request);
         boardRepository.save(board);
@@ -80,8 +80,8 @@ public class BoardService
         );
     }
 
-    private void mergeBoard(Board board, BoardRequest request) {
-        if (!request.name().isBlank()) {
+    private void mergeBoard(Board board, BoardUpdateRequest request) {
+        if (request.name() != null) {
             if (boardRepository.findByNameAndWorkspace(request.name(), board.getWorkspace()).isPresent()) {
                 throw new NameAlreadyInUseException("Board with name " +  request.name() + " already exists in this workspace");
             }

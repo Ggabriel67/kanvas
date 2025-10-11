@@ -2,14 +2,14 @@ import React, { useEffect, useRef, useState } from 'react'
 import { FaRegBell } from "react-icons/fa6";
 import { IoLogOutOutline } from "react-icons/io5";
 import { IoSettingsOutline } from "react-icons/io5";
-import useAuth from '../hooks/useAuth';
-import appLogo from '../assets/appLogo.png'
+import useAuth from '../../hooks/useAuth';
+import appLogo from "../../assets/appLogo.png";
 import { NavLink } from 'react-router-dom';
-import { type Notification, type ReadNotificationsRequest } from '../types/notifications';
-import NotificationPanel from './NotificationPanel';
+import { type Notification, type ReadNotificationsRequest } from '../../types/notifications';
+import NotificationPanel from '../NotificationPanel';
 import toast from 'react-hot-toast';
-import { getNotifications, getUnreadNotificationsCount, updateNotificationsStatusToRead } from '../api/notifications';
-import useWebSocket from '../hooks/useWebSocket';
+import { getNotifications, getUnreadNotificationsCount, updateNotificationsStatusToRead } from '../../api/notifications';
+import useWebSocket from '../../hooks/useWebSocket';
 
 interface NotificationMessage {
 	notificationId: number;

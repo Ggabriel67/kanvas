@@ -32,7 +32,7 @@ public class BoardController
 
     @PatchMapping("/{boardId}")
     @PreAuthorize("@boardAuth.isAdmin(#boardId)")
-    public ResponseEntity<Void> updateBoard(@RequestBody BoardRequest request, @PathVariable("boardId") Integer boardId) {
+    public ResponseEntity<Void> updateBoard(@RequestBody BoardUpdateRequest request, @PathVariable("boardId") Integer boardId) {
         boardService.updateBoard(request, boardId);
         return ResponseEntity.ok().build();
     }

@@ -1,7 +1,7 @@
 import React from 'react'
 import useAuth from '../../hooks/useAuth';
-import Sidebar from '../Sidebar';
-import Navbar from '../Navbar';
+import Sidebar from './Sidebar';
+import Navbar from './Navbar';
 import { Outlet } from 'react-router-dom';
 
 const AppLayout: React.FC<{ children?: React.ReactNode }> = ({ children }) => {

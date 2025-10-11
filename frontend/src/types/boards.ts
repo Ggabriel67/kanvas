@@ -8,6 +8,12 @@ export interface BoardRequest {
 	visibility: string;
 }
 
+export interface BoardUpdateRequest {
+	name: string | null;
+	description: string | null;
+	visibility: string | null;
+}
+
 export interface BoardDto {
 	boardId: number;
 	name: string;

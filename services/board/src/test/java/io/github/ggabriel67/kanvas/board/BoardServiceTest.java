@@ -128,7 +128,7 @@ class BoardServiceTest
             Workspace workspace = Workspace.builder().id(100).build();
             Board existing = Board.builder().id(200).workspace(workspace).name("Old Name").description("Old Description").visibility(BoardVisibility.WORKSPACE_PUBLIC).build();
 
-            BoardRequest updateRequest = new BoardRequest(any(), 100, "New Name", "New Description", BoardVisibility.PRIVATE);
+            BoardUpdateRequest updateRequest = new BoardUpdateRequest("New Name", "New Description", BoardVisibility.PRIVATE);
 
             when(boardRepository.findById(100)).thenReturn(Optional.of(existing));
 
@@ -142,7 +142,7 @@ class BoardServiceTest
 
         @Test
         void shouldThrowException_WhenBoardNotFound() {
-            BoardRequest invalidRequest = new BoardRequest(1, 100, "Duplicate", "desc", BoardVisibility.WORKSPACE_PUBLIC);
+            BoardUpdateRequest invalidRequest = new BoardUpdateRequest("Duplicate", "desc", BoardVisibility.WORKSPACE_PUBLIC);
             when(boardRepository.findById(999)).thenReturn(Optional.empty());
 
             assertThatThrownBy(() -> boardService.updateBoard(invalidRequest, 999))

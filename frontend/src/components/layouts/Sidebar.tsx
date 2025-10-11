@@ -4,13 +4,13 @@ import { FaRegUser } from "react-icons/fa";
 import { BsPersonWorkspace } from "react-icons/bs";
 import { IoMdAdd } from "react-icons/io";
 import { NavLink, useNavigate } from "react-router-dom";
-import type { WorkspaceProjection } from '../types/workspaces';
-import { createWorkspace, getAllUserWorkspaces } from '../api/workspaces';
-import useAuth from '../hooks/useAuth';
+import type { WorkspaceProjection } from '../../types/workspaces';
+import { createWorkspace, getAllUserWorkspaces } from '../../api/workspaces';
+import useAuth from '../../hooks/useAuth';
 import toast from "react-hot-toast";
-import CreateWorkspaceModal from './CreateWorkspaceModal';
-import { type WorkspaceRequest } from '../types/workspaces';
-import { useWorkspaceStore } from '../hooks/useWorkspaceStore';
+import CreateWorkspaceModal from '../CreateWorkspaceModal';
+import { type WorkspaceRequest } from '../../types/workspaces';
+import { useWorkspaceStore } from '../../hooks/useWorkspaceStore';
 
 const Sidebar = () => {
   const [workspaces, setWorkspaces] = useState<WorkspaceProjection[]>([]);
