@@ -73,7 +73,7 @@ public class BoardInvitationService
         memberService.addBoardMember(invitation.getBoard(), invitation.getInvitee(), invitation.getRole());
 
         invitationEventProducer.sendInvitationUpdated(new InvitationUpdate(
-                invitation.getId(), invitation.getInvitee().getId(), InvitationStatus.ACCEPTED.name())
+                invitation.getId(), invitation.getInvitee().getId(), InvitationStatus.ACCEPTED.name(), InvitationScope.BOARD.name())
         );
     }
 
@@ -86,7 +86,7 @@ public class BoardInvitationService
         invitationRepository.save(invitation);
 
         invitationEventProducer.sendInvitationUpdated(new InvitationUpdate(
-                invitation.getId(), invitation.getInvitee().getId(), InvitationStatus.DECLINED.name())
+                invitation.getId(), invitation.getInvitee().getId(), InvitationStatus.DECLINED.name(), InvitationScope.BOARD.name())
         );
     }
 
@@ -97,7 +97,7 @@ public class BoardInvitationService
             invitationRepository.save(invitation);
 
             invitationEventProducer.sendInvitationUpdated(new InvitationUpdate(
-                    invitation.getId(), invitation.getInvitee().getId(), InvitationStatus.EXPIRED.name())
+                    invitation.getId(), invitation.getInvitee().getId(), InvitationStatus.EXPIRED.name(), InvitationScope.BOARD.name())
             );
 
             throw new InvitationExpiredException("Invitation has expired");

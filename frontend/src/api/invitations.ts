@@ -48,5 +48,26 @@ export async function createBoardInvitation(request: BoardInvitationRequest) {
     }
     throw error;
   }
-} 
+}
 
+export async function acceptBoardInvitation(invitationId: number) {
+  try {
+		await api.post(`/boards/${invitationId}/accept`);
+	} catch (error: any) {
+    if (error.response) {
+      throw new Error(error.response.data);
+    }
+    throw error;
+  }
+}
+
+export async function declineBoardInvitation(invitationId: number) {
+  try {
+		await api.patch(`/boards/${invitationId}/decline`);
+	} catch (error: any) {
+    if (error.response) {
+      throw new Error(error.response.data);
+    }
+    throw error;
+  }
+}

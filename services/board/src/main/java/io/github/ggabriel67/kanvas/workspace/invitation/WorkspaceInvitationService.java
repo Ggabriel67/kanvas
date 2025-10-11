@@ -73,7 +73,7 @@ public class WorkspaceInvitationService
         memberService.addWorkspaceMember(invitation.getWorkspace(), invitation.getInvitee(), invitation.getRole());
 
         invitationEventProducer.sendInvitationUpdated(new InvitationUpdate(
-                invitation.getId(), invitation.getInvitee().getId(), InvitationStatus.ACCEPTED.name())
+                invitation.getId(), invitation.getInvitee().getId(), InvitationStatus.ACCEPTED.name(), InvitationScope.WORKSPACE.name())
         );
     }
 
@@ -87,7 +87,7 @@ public class WorkspaceInvitationService
         invitationRepository.save(invitation);
 
         invitationEventProducer.sendInvitationUpdated(new InvitationUpdate(
-                invitation.getId(), invitation.getInvitee().getId(), InvitationStatus.DECLINED.name())
+                invitation.getId(), invitation.getInvitee().getId(), InvitationStatus.DECLINED.name(), InvitationScope.WORKSPACE.name())
         );
     }
 
@@ -98,7 +98,7 @@ public class WorkspaceInvitationService
             invitationRepository.save(invitation);
 
             invitationEventProducer.sendInvitationUpdated(new InvitationUpdate(
-                    invitation.getId(), invitation.getInvitee().getId(), InvitationStatus.EXPIRED.name())
+                    invitation.getId(), invitation.getInvitee().getId(), InvitationStatus.EXPIRED.name(), InvitationScope.WORKSPACE.name())
             );
 
             throw new InvitationExpiredException("Invitation has expired");

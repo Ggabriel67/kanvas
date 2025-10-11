@@ -1,7 +1,7 @@
 import React from 'react'
 import type { Notification } from '../types/notifications';
 import toast from 'react-hot-toast';
-import { acceptWorkspaceInvitation, declineWorkspaceInvitation } from '../api/invitations';
+import { acceptBoardInvitation, acceptWorkspaceInvitation, declineBoardInvitation, declineWorkspaceInvitation } from '../api/invitations';
 import { useWorkspaceStore } from '../hooks/useWorkspaceStore';
 
 interface NotificationPanelProps {
@@ -38,6 +38,24 @@ const NotificationPanel: React.FC<NotificationPanelProps> = ({ notifications, on
 	const handleDeclineWorkspaceInv = async (invitationId: number) => {
 		try {
 			await declineWorkspaceInvitation(invitationId);
+		} catch (error: any) {
+			toast.error(error.message);
+		}
+	}
+
+	const handleAcceptBoardInv = async (invitationId: number, targetName: string) => {
+		try {
+			await acceptBoardInvitation(invitationId);
+			toast.success(`You are now a member of ${targetName}!`);
+			triggerSideBarRefresh();
+		} catch (error: any) {
+			toast.error(error.message);
+		}
+	}
+
+	const handleDeclineBoardInv = async (invitationId: number) => {
+		try {
+			await declineBoardInvitation(invitationId);
 		} catch (error: any) {
 			toast.error(error.message);
 		}
@@ -83,6 +101,7 @@ const NotificationPanel: React.FC<NotificationPanelProps> = ({ notifications, on
 												className="px-3 py-1 text-sm bg-purple-600 rounded hover:bg-purple-500 cursor-pointer"
 												onClick={() => {
 													if (scope === "WORKSPACE") handleAcceptWorkspaceInv(invitationId, targetName);
+													if (scope === "BOARD") handleAcceptBoardInv(invitationId, targetName);
 													onRemove(n.notificationId);
 												}}
 											>
@@ -92,6 +111,7 @@ const NotificationPanel: React.FC<NotificationPanelProps> = ({ notifications, on
 												className="px-3 py-1 text-sm bg-gray-600 rounded hover:bg-gray-500 cursor-pointer"
 												onClick={() => {
 													if (scope === "WORKSPACE") handleDeclineWorkspaceInv(invitationId);
+													if (scope === "BOARD") handleDeclineBoardInv(invitationId);
 													onRemove(n.notificationId);
 												}}
 											>

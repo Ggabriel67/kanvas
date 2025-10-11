@@ -85,7 +85,7 @@ public class NotificationService
     }
 
     public void updateInvitationNotification(InvitationUpdate invUpdate) {
-        Notification notification = repository.findByInvitationIdAndUserId(invUpdate.invitationId(), invUpdate.inviteeId());
+        Notification notification = repository.findByInvitationIdAndUserId(invUpdate.invitationId(), invUpdate.inviteeId(), invUpdate.scope());
         notification.setStatus(NotificationStatus.DISMISSED);
         repository.save(notification);
     }
