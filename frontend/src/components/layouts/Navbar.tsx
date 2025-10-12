@@ -128,7 +128,7 @@ const Navbar = () => {
           
           <FaRegBell
             size={30}
-            className="mr-5 cursor-pointer"
+            className="mr-5 cursor-pointer text-gray-300 hover:text-white"
             onClick={() => {
                 setIsNotifOpen((prev) => !prev);
                 setHasUnread(false);

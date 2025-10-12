@@ -64,13 +64,13 @@ const NotificationPanel: React.FC<NotificationPanelProps> = ({ notifications, on
   return (
     <div>
 			{/* Panel Header */}
-			<div className="px-4 pt-3 pb-2">
+			<div className="px-4 pt-3">
 				<span className="text-lg font-semibold text-gray-200">Notifications</span>
 				<div className="border-t border-gray-700 mt-2" />
 			</div>
 
 			{/* Notifications List */}
-			<div className="max-h-80 overflow-y-auto">
+			<div className="max-h-80 overflow-y-auto py-2">
 				{notifications.length === 0 ? (
 					<div className="p-4 text-gray-400 text-sm text-center">
 						You have no unread notifications

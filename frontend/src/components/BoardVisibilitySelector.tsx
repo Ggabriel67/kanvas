@@ -55,7 +55,7 @@ const BoardVisibilitySelector: React.FC<VisibilitySelectorProps> = ({ boardId, v
         className={`flex items-center space-x-1 cursor-pointer hover:text-white p-1.5 hover:bg-[#2a2a2a] rounded
           ${isOpen ? "bg-[#3a3a3a]" : ""}
         `}
-        title={isPublic ? "Workspace Public" : "Private"}
+        title="Select Visibility"
         onClick={() => setIsOpen((prev) => !prev)}
       >
         {isPublic ? <PiUsersThree size={24} /> : <MdLockOutline size={24} />}

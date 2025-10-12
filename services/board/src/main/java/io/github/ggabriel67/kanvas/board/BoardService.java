@@ -116,7 +116,7 @@ public class BoardService
         Optional<BoardMember> boardMember = boardMemberRepository.findByUserIdAndBoardId(userId, boardId);
 
         BoardRole role = boardMember.map(BoardMember::getRole).orElse(null);
-        boolean readonly = boardMember.isEmpty();
+        boolean readonly = boardMember.isEmpty() || role == BoardRole.VIEWER;
 
         List<ColumnDto> columns = taskClient.getAllBoardColumns(boardId);
         return new BoardDto(

@@ -44,7 +44,7 @@ const BoardHeader: React.FC<BoardHeaderProps> = ({ board }) => {
 
       queryClient.setQueryData<BoardDto | undefined>(
         ["board", board.boardId],
-         (old) => old ?{...old, name: editedName} : old
+        (old) => old ? {...old, name: editedName} : old
       );
     } catch (error: any) {
       toast.error(error.message);
@@ -118,7 +118,7 @@ const BoardHeader: React.FC<BoardHeaderProps> = ({ board }) => {
 
           {/* "+N" indicator if overflow */}
           {remainingCount > 0 && (
-            <div className="w-9 h-9 rounded-full bg-[#2a2a2a] flex items-center justify-center text-gray-200 text-sm font-semibold border-2 border-[#151515] cursor-default">
+            <div className="w-9 h-9 rounded-full bg-[#2a2a2a] flex items-center justify-center text-gray-100 text-sm font-semibold border-2 border-[#151515] cursor-default">
               +{remainingCount}
             </div>
           )}
