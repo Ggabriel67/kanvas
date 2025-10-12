@@ -13,8 +13,8 @@ export interface ColumnResponse {
 
 export interface MoveColumnRequest {
 	columnId: number;
-	precedingColumnId: number;
-	followingColumnId: number;
+	precedingColumnId: number | null;
+	followingColumnId: number | null;
 }
 
 export interface ColumnDto {

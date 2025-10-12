@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { ColumnRequest, ColumnResponse } from "../types/columns";
+import type { ColumnRequest, ColumnResponse, MoveColumnRequest } from "../types/columns";
 
 const api = axios.create({
   baseURL: "http://localhost:8222/api/v1/columns",
@@ -8,7 +8,7 @@ const api = axios.create({
 
 export async function createColumn(request: ColumnRequest) {
   try {
-    const response = await api.post<ColumnResponse>("", request, {headers: {"X-Board-Id": request.boardId}})
+    const response = await api.post<ColumnResponse>("", request, {headers: {"X-Board-Id": request.boardId}});
     return response.data;
   } catch (error: any) {
     if (error.response) {
@@ -20,7 +20,19 @@ export async function createColumn(request: ColumnRequest) {
 
 export async function updateColumnName(columnId: number, request: ColumnRequest) {
   try {
-    await api.patch(`/${columnId}`, request, {headers: {"X-Board-Id": request.boardId}})
+    await api.patch(`/${columnId}`, request, {headers: {"X-Board-Id": request.boardId}});
+  } catch (error: any) {  
+    if (error.response) {
+      throw new Error(error.response.data);
+    }
+    throw error;
+  }
+}
+
+export async function moveColumn(boardId: number, request: MoveColumnRequest) {
+  try {
+    const response = await api.patch<ColumnResponse>("move", request, {headers: {"X-Board-Id": boardId}});
+    return response.data;
   } catch (error: any) {  
     if (error.response) {
       throw new Error(error.response.data);

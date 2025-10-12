@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import type { ColumnDto, ColumnRequest } from '../types/columns'
+import type { ColumnDto, ColumnRequest, MoveColumnRequest } from '../types/columns'
 import type { BoardDto, BoardMember } from '../types/boards';
 import { DragDropContext, Draggable, Droppable, type DropResult } from "@hello-pangea/dnd"
 import { IoMdAdd } from "react-icons/io";
 import toast from 'react-hot-toast';
-import { createColumn, updateColumnName } from '../api/columns';
+import { createColumn, moveColumn, updateColumnName } from '../api/columns';
 import { useQueryClient } from '@tanstack/react-query';
 
 interface ColumnsContainerProps {
@@ -32,36 +32,54 @@ const ColumnsContainer: React.FC<ColumnsContainerProps> = ({ columns: backendCol
   const [editedColumnName, setEditedColumnName] = useState<string>("");
 
   const queryClient = useQueryClient();
-
+  
   useEffect(() => {
+    const sorted = [...backendColumns].sort((a, b) => a.orderIndex - b.orderIndex);
+
     const map: Record<number, ColumnDto> = {};
-    backendColumns.forEach((col) => {
+    sorted.forEach((col) => {
       map[col.columnId] = col;
     });
 
-    const orderedIds = backendColumns.map((col) => col.columnId);
-
     setColumnsMap(map);
-    setOrdered(orderedIds);
+    setOrdered(sorted.map((c) => c.columnId));
   }, [backendColumns]);
 
-  const onDragEnd = (result: DropResult) => {
-    const { destination, source, combine, type } = result;
+  const onDragEnd = async (result: DropResult) => {
+    const { destination, source, type } = result;
+    if (!destination || type !== "COLUMN") return;
+    if (destination.index === source.index) return;
 
-    if (combine && type === "COLUMN") {
-      const newOrdered = [...ordered];
-      newOrdered.splice(source.index, 1);
-      setOrdered(newOrdered);
-      return;
-    }
+    const newOrdered = reorder(ordered, source.index, destination.index);
+    setOrdered(newOrdered);
 
-    if (!destination) return;
-    if (destination.index === source.index && destination.droppableId === source.droppableId) return;
+    const movedId = newOrdered[destination.index];
+    const precedingId = destination.index > 0 ? newOrdered[destination.index - 1] : null;
+    const followingId = destination.index < newOrdered.length - 1 ? newOrdered[destination.index + 1] : null;
 
-    if (type === "COLUMN") {
-      const newOrdered = reorder(ordered, source.index, destination.index);
-      setOrdered(newOrdered);
-      return;
+    const request: MoveColumnRequest = {
+      columnId: movedId,
+      precedingColumnId: precedingId,
+      followingColumnId: followingId,
+    };
+
+    try {
+      const updatedColumn = await moveColumn(boardId, request);
+
+      queryClient.setQueryData<BoardDto>(["board", boardId], (old) => {
+        if (!old) return old;
+
+        const updatedColumns = old.columns.map((col) =>
+          col.columnId === updatedColumn.columnId
+            ? { ...col, orderIndex: updatedColumn.orderIndex }
+            : col
+        );
+
+        return { ...old, columns: updatedColumns };
+      });
+    } catch (error: any) {
+      toast.error("Failed to reorder column");
+      console.error(error);
     }
   };
 
@@ -108,7 +126,6 @@ const ColumnsContainer: React.FC<ColumnsContainerProps> = ({ columns: backendCol
   const handleSaveColumnName = async (columnId: number, oldName: string) => {
     setEditingColumnId(null);
     if ((editedColumnName.trim() === oldName) || (editedColumnName.trim() === "")) {
-      setEditedColumnName("");
       return;
     }
     let request: ColumnRequest = { 
@@ -129,7 +146,7 @@ const ColumnsContainer: React.FC<ColumnsContainerProps> = ({ columns: backendCol
           };
         }
       );
-      setNewColumnName("");
+      toast.success(editedColumnName)
     } catch (error: any) {
       toast.error(error.message);
     }
@@ -163,7 +180,7 @@ const ColumnsContainer: React.FC<ColumnsContainerProps> = ({ columns: backendCol
                         `}
                         style={{ ...provided.draggableProps.style, height: "fit-content" }}
                       >
-                        {editingColumnId === column.columnId  ? (
+                        {editingColumnId === column.columnId ? (
                           <input 
                             type="text" 
                             value={editedColumnName}

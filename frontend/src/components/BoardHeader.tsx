@@ -74,7 +74,7 @@ const BoardHeader: React.FC<BoardHeaderProps> = ({ board }) => {
               if (e.key === "Escape") cancelEdit();
             }}
             autoFocus
-            className="bg-[#1f1f1f] border border-gray-600 text-gray-100 text-2xl font-semibold text-center px-2 rounded w-1/3 outline-none focus:ring-2 focus:ring-purple-500"
+            className="bg-[#1f1f1f] border border-gray-600 text-gray-100 text-2xl font-semibold text-center px-2 rounded w-2/3 outline-none focus:ring-2 focus:ring-purple-500"
           />
         ) : (
           <h1
