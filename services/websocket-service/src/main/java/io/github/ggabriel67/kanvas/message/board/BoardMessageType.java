@@ -1,6 +1,9 @@
 package io.github.ggabriel67.kanvas.message.board;
 
 public enum BoardMessageType {
+    BOARD_UPDATED,
+    MEMBER_JOINED,
+    MEMBER_REMOVED,
     COLUMN_CREATED,
     COLUMN_UPDATED,
     COLUMN_MOVED,
@@ -11,6 +14,4 @@ public enum BoardMessageType {
     TASK_DELETED,
     TASK_ASSIGNED,
     TASK_UNASSIGNED,
-    BOARD_UPDATED,
-    MEMBER_REMOVED
 }

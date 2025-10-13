@@ -62,4 +62,11 @@ public class BoardController
     public ResponseEntity<String> getBoardRole(@PathVariable("boardId") Integer boardId) {
         return ResponseEntity.ok(boardMemberService.getBoardRole(boardId));
     }
+
+    @DeleteMapping("/leave")
+    @PreAuthorize("@boardAuth.isMember(#request.targetMemberId())")
+    public ResponseEntity<Void> leaveBoard(@RequestBody BoardMemberRemoveRequest request) {
+        boardMemberService.leaveBoard(request);
+        return ResponseEntity.ok().build();
+    }
 }

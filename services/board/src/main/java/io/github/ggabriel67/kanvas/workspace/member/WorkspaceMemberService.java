@@ -67,8 +67,7 @@ public class WorkspaceMemberService
     }
 
     public void leaveWorkspace(WorkspaceMemberRemoveRequest request) {
-        WorkspaceMember member = memberRepository.findById(request.targetMemberId())
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
+        WorkspaceMember member = getMemberById(request.targetMemberId());
 
         memberRepository.delete(member);
     }

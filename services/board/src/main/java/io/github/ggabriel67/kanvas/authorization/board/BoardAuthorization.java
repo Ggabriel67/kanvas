@@ -60,6 +60,10 @@ public class BoardAuthorization
                 (board.getVisibility() == BoardVisibility.WORKSPACE_PUBLIC && isWorkspaceMember);
     }
 
+    public boolean isMember(Integer boardId) {
+        return hasRole(getCurrentUserId(), boardId, BoardRole.VIEWER);
+    }
+
     public boolean canModerate(Integer boardId, Integer targetMemberId) {
         Integer callerId = getCurrentUserId();
 

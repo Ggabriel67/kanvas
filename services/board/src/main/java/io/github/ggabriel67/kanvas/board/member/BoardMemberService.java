@@ -5,6 +5,7 @@ import io.github.ggabriel67.kanvas.authorization.board.BoardRole;
 import io.github.ggabriel67.kanvas.board.Board;
 import io.github.ggabriel67.kanvas.board.BoardRepository;
 import io.github.ggabriel67.kanvas.board.invitation.BoardInvitationRepository;
+import io.github.ggabriel67.kanvas.event.board.BoardMemberJoined;
 import io.github.ggabriel67.kanvas.event.board.BoardMemberRemoved;
 import io.github.ggabriel67.kanvas.event.board.RoleChanged;
 import io.github.ggabriel67.kanvas.exception.BoardNotFoundException;
@@ -27,12 +28,17 @@ public class BoardMemberService
     private final BoardInvitationRepository boardInvitationRepository;
 
     public void addBoardMember(Board board, User invitee, BoardRole role) {
-        memberRepository.save(
+        BoardMember member = memberRepository.save(
                 BoardMember.builder()
                         .user(invitee)
                         .board(board)
                         .role(role)
                         .build()
+        );
+
+        boardEventProducer.sendMemberJoined(new BoardMemberJoined(
+                board.getId(), member.getId(), invitee.getId(), invitee.getFirstname(), invitee.getLastname(), invitee.getUsername(),
+                invitee.getAvatarColor(), member.getRole().name())
         );
     }
 
@@ -72,5 +78,17 @@ public class BoardMemberService
 
         return memberRepository.findRoleByUserIdAndBoardId(userId, boardId)
                 .orElseThrow(() -> new BoardRoleNotFoundException("User has no role in this board")).name();
+    }
+
+    public void leaveBoard(BoardMemberRemoveRequest request) {
+        BoardMember member = getMemberById(request.targetMemberId());
+
+        BoardMemberRemoved memberRemoved = new BoardMemberRemoved(
+                member.getId(), member.getUser().getId(), member.getBoard().getId(), null
+        );
+
+        boardEventProducer.sendMemberLeft(memberRemoved);
+
+        memberRepository.delete(member);
     }
 }

@@ -52,4 +52,22 @@ public class BoardEventProducer
                 .build();
         kafkaTemplate.send(message);
     }
+
+    public void sendMemberJoined(BoardMemberJoined memberJoined) {
+        log.info("Sending member joined");
+        Message<Event<BoardMemberJoined>> message = MessageBuilder
+                .withPayload(new Event<>(BoardEventType.MEMBER_JOINED.name(), memberJoined))
+                .setHeader(KafkaHeaders.TOPIC, "board.events")
+                .build();
+        kafkaTemplate.send(message);
+    }
+
+    public void sendMemberLeft(BoardMemberRemoved memberRemoved) {
+        log.info("Sending member left");
+        Message<Event<BoardMemberRemoved>> message = MessageBuilder
+                .withPayload(new Event<>(BoardEventType.MEMBER_LEFT.name(), memberRemoved))
+                .setHeader(KafkaHeaders.TOPIC, "board.events")
+                .build();
+        kafkaTemplate.send(message);
+    }
 }

@@ -30,7 +30,7 @@ public class BoardEventConsumer
                 BoardDeleted boardDeleted = objectMapper.convertValue(event.getPayload(), BoardDeleted.class);
                 handleBoardDeleted(boardDeleted);
             }
-            case MEMBER_REMOVED -> {
+            case MEMBER_REMOVED, MEMBER_LEFT -> {
                 BoardMemberRemoved memberRemoved = objectMapper.convertValue(event.getPayload(), BoardMemberRemoved.class);
                 handleMemberRemoved(memberRemoved);
             }

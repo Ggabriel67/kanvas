@@ -3,12 +3,14 @@ package io.github.ggabriel67.kanvas.kafka.consumer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.ggabriel67.kanvas.event.Event;
 import io.github.ggabriel67.kanvas.event.board.BoardEventType;
+import io.github.ggabriel67.kanvas.event.board.BoardMemberJoined;
 import io.github.ggabriel67.kanvas.event.board.BoardMemberRemoved;
 import io.github.ggabriel67.kanvas.event.board.BoardUpdated;
 import io.github.ggabriel67.kanvas.message.MessageService;
 import io.github.ggabriel67.kanvas.message.board.BoardMessage;
 import io.github.ggabriel67.kanvas.message.board.BoardMessageType;
 import io.github.ggabriel67.kanvas.message.board.board.BoardUpdatedMessage;
+import io.github.ggabriel67.kanvas.message.board.board.MemberJoinedMessage;
 import io.github.ggabriel67.kanvas.message.board.board.MemberRemovedMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +30,7 @@ public class BoardEventConsumer
         log.info("Consuming message from 'board.events' topic");
         BoardEventType eventType = BoardEventType.valueOf(event.getEventType());
         switch (eventType) {
-            case MEMBER_REMOVED -> {
+            case MEMBER_REMOVED, MEMBER_LEFT -> {
                 BoardMemberRemoved memberRemoved = objectMapper.convertValue(event.getPayload(), BoardMemberRemoved.class);
                 handleBoardMemberRemoved(memberRemoved);
             }
@@ -36,7 +38,21 @@ public class BoardEventConsumer
                 BoardUpdated boardUpdated = objectMapper.convertValue(event.getPayload(), BoardUpdated.class);
                 handleBoardUpdated(boardUpdated);
             }
+            case MEMBER_JOINED -> {
+                BoardMemberJoined memberJoined = objectMapper.convertValue(event.getPayload(), BoardMemberJoined.class);
+                handleMemberJoined(memberJoined);
+            }
         }
+    }
+
+    private void handleMemberJoined(BoardMemberJoined memberJoined) {
+        BoardMessage<MemberJoinedMessage> message = new BoardMessage<>(
+                BoardMessageType.MEMBER_JOINED,
+                new MemberJoinedMessage(memberJoined.memberId(), memberJoined.userId(), memberJoined.firstname(), memberJoined.lastname(),
+                        memberJoined.username(), memberJoined.avatarColor(), memberJoined.boardRole()
+                )
+        );
+        messageService.sendBoardMessage(memberJoined.boardId(), message);
     }
 
     private void handleBoardMemberRemoved(BoardMemberRemoved memberRemoved) {
