@@ -1,5 +1,6 @@
 package io.github.ggabriel67.kanvas.workspace;
 
+import io.github.ggabriel67.kanvas.authorization.workspace.WorkspaceAuthorization;
 import io.github.ggabriel67.kanvas.workspace.member.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,8 @@ public class WorkspaceController
 {
     private final WorkspaceService workspaceService;
     private final WorkspaceMemberService workspaceMemberService;
+    private final WorkspaceMemberRepository workspaceMemberRepository;
+    private final WorkspaceAuthorization workspaceAuth;
 
     @PostMapping
     public ResponseEntity<Integer> createWorkspace(@RequestBody @Valid WorkspaceRequest request) {
@@ -64,5 +67,12 @@ public class WorkspaceController
     @GetMapping("/guests/{userId}")
     public ResponseEntity<List<GuestWorkspaceDto>> getGuestWorkspaces(@PathVariable("userId") Integer userId) {
         return ResponseEntity.ok(workspaceService.getGuestWorkspaces(userId));
+    }
+
+    @DeleteMapping("/leave")
+    @PreAuthorize("@workspaceAuth.isMember(#request.targetMemberId())")
+    public ResponseEntity<Void> leaveWorkspace(@RequestBody WorkspaceMemberRemoveRequest request) {
+        workspaceMemberService.leaveWorkspace(request);
+        return ResponseEntity.ok().build();
     }
 }
