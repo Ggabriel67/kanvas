@@ -4,7 +4,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import type { BoardMessage } from '../types/websocketMessages';
 import type { BoardDto } from '../types/boards';
 import toast from 'react-hot-toast';
-import { applyColumnCreated, applyColumnMoved, applyColumnUpdated } from '../utils/boardUpdates';
+import { applyBoardUpdated, applyColumnCreated, applyColumnMoved, applyColumnUpdated, applyMemberJoined } from '../utils/boardUpdates';
 
 const useBoardSocket = (boardId: number | null) => {
 	const { client, connected } = useWebSocket();
@@ -20,6 +20,18 @@ const useBoardSocket = (boardId: number | null) => {
 					const boardMessage: BoardMessage = JSON.parse(message.body);
 
 					switch (boardMessage.type) {
+						case "BOARD_UPDATED": 
+							queryClient.setQueryData(["board", boardId], (old: BoardDto | undefined) => {
+								if (!old) return old;
+								return applyBoardUpdated(old, boardMessage.payload);
+							});
+							break;
+						case "MEMBER_JOINED": 
+							queryClient.setQueryData(["board", boardId], (old: BoardDto | undefined) => {
+								if (!old) return old;
+								return applyMemberJoined(old, boardMessage.payload);
+							});
+							break;
 						case "COLUMN_CREATED":
 							queryClient.setQueryData(["board", boardId], (old: BoardDto | undefined) => {
 								if (!old) return old;

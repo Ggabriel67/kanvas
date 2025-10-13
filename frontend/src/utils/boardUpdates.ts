@@ -1,6 +1,7 @@
-import type { BoardDto } from "../types/boards";
+import toast from "react-hot-toast";
+import type { BoardDto, BoardMember } from "../types/boards";
 import type { ColumnDto } from "../types/columns";
-import type { ColumnCreatedMessage, ColumnMovedMessage, ColumnUpdatedMessage } from "../types/websocketMessages";
+import type { BoardUpdatedMessage, ColumnCreatedMessage, ColumnMovedMessage, ColumnUpdatedMessage, MemberJoinedMessage } from "../types/websocketMessages";
 
 export function applyColumnCreated(board: BoardDto, payload: ColumnCreatedMessage) {
   const exists = board.columns.some(c => c.columnId === payload.columnId);
@@ -20,6 +21,38 @@ export function applyColumnCreated(board: BoardDto, payload: ColumnCreatedMessag
   return {
     ...board,
     columns: updatedColumns,
+  };
+}
+
+export function applyBoardUpdated(board: BoardDto, payload: BoardUpdatedMessage) {
+  return {
+    ...board, 
+    name: payload.name !== null ? payload.name : board.name,
+    description: payload.description !== null ? payload.description : board.description,
+    visibility: payload.visibility !== null ? payload.visibility : board.visibility,
+  };
+}
+
+export function applyMemberJoined(board: BoardDto, payload: MemberJoinedMessage) {
+  const alreadyExists = board.boardMembers.some(m => m.memberId === payload.memberId);
+
+  if (alreadyExists) {
+    return board;
+  }
+
+  const newMember: BoardMember = {
+    memberId: payload.memberId,
+    userId: payload.userId,
+    firstname: payload.firstname,
+    lastname: payload.lastname,
+    username: payload.username,
+    avatarColor: payload.avatarColor,
+    boardRole: payload.boardRole,
+  };
+
+  return {
+    ...board,
+    boardMembers: [...board.boardMembers, newMember],
   };
 }
 

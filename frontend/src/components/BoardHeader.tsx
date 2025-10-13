@@ -81,7 +81,7 @@ const BoardHeader: React.FC<BoardHeaderProps> = ({ board }) => {
             className={`text-2xl font-semibold text-gray-100 text-center rounded inline-block cursor-${isAdmin ? "pointer hover:px-2 hover:bg-[#2a2a2a]" : "default"} hover:text-gray-200`}
             onClick={() => isAdmin && setIsEditingName(true)}
           >
-            {editedName}
+            {board.name}
           </h1>
         )}
       </div>
