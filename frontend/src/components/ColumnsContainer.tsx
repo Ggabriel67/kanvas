@@ -6,6 +6,7 @@ import { IoMdAdd } from "react-icons/io";
 import toast from 'react-hot-toast';
 import { createColumn, moveColumn, updateColumnName } from '../api/columns';
 import { useQueryClient } from '@tanstack/react-query';
+import TaskContainer from './TaskContainer';
 
 interface ColumnsContainerProps {
 	columns: ColumnDto[];
@@ -45,24 +46,7 @@ const ColumnsContainer: React.FC<ColumnsContainerProps> = ({ columns: backendCol
     setOrdered(sorted.map((c) => c.columnId));
   }, [backendColumns]);
 
-  const onDragEnd = async (result: DropResult) => {
-    const { destination, source, type } = result;
-    if (!destination || type !== "COLUMN") return;
-    if (destination.index === source.index) return;
-
-    const newOrdered = reorder(ordered, source.index, destination.index);
-    setOrdered(newOrdered);
-
-    const movedId = newOrdered[destination.index];
-    const precedingId = destination.index > 0 ? newOrdered[destination.index - 1] : null;
-    const followingId = destination.index < newOrdered.length - 1 ? newOrdered[destination.index + 1] : null;
-
-    const request: MoveColumnRequest = {
-      columnId: movedId,
-      precedingColumnId: precedingId,
-      followingColumnId: followingId,
-    };
-
+  const saveMoveColumn = async (request: MoveColumnRequest) => {
     try {
       const updatedColumn = await moveColumn(boardId, request);
 
@@ -80,6 +64,65 @@ const ColumnsContainer: React.FC<ColumnsContainerProps> = ({ columns: backendCol
     } catch (error: any) {
       toast.error("Failed to reorder column");
       console.error(error);
+    }
+  }
+
+  const onDragEnd = async (result: DropResult) => {
+    const { destination, source, type } = result;
+    if (!destination) return;
+    
+    if (type === "COLUMN") {
+      if (destination.index === source.index) return;
+      const newOrdered = reorder(ordered, source.index, destination.index);
+      setOrdered(newOrdered);
+
+      const movedId = newOrdered[destination.index];
+      const precedingId = destination.index > 0 ? newOrdered[destination.index - 1] : null;
+      const followingId = destination.index < newOrdered.length - 1 ? newOrdered[destination.index + 1] : null;
+
+      const request: MoveColumnRequest = {
+        columnId: movedId,
+        precedingColumnId: precedingId,
+        followingColumnId: followingId,
+      };
+
+      saveMoveColumn(request);
+      return;
+    }
+
+    if (type === "TASK") {
+      const sourceColId = parseInt(source.droppableId);
+      const destColId = parseInt(destination.droppableId);
+
+      if (sourceColId === destColId && source.index === destination.index) return;
+
+      const sourceCol = columnsMap[sourceColId];
+      const destCol = columnsMap[destColId];
+
+      // reorder tasks locally
+      const newSourceTasks = Array.from(sourceCol.taskProjections);
+      const [movedTask] = newSourceTasks.splice(source.index, 1);
+
+      if (sourceColId === destColId) {
+        // same column reorder
+        newSourceTasks.splice(destination.index, 0, movedTask);
+        const updatedCol = { ...sourceCol, taskProjections: newSourceTasks };
+        setColumnsMap((prev) => ({ ...prev, [sourceColId]: updatedCol }));
+      } else {
+        // move between columns
+        const newDestTasks = Array.from(destCol.taskProjections);
+        newDestTasks.splice(destination.index, 0, movedTask);
+
+        const updatedColumns = {
+          ...columnsMap,
+          [sourceColId]: { ...sourceCol, taskProjections: newSourceTasks },
+          [destColId]: { ...destCol, taskProjections: newDestTasks },
+        };
+
+        setColumnsMap(updatedColumns);
+      }
+
+      // TODO update backend
     }
   };
 
@@ -194,7 +237,7 @@ const ColumnsContainer: React.FC<ColumnsContainerProps> = ({ columns: backendCol
                             className="bg-[#2b2b2b] border border-gray-600 mb-1.5 text-gray-100 font-semibold px-2 rounded w-full outline-none focus:ring-2 focus:ring-purple-500"
                           />
                         ) : (
-                          <h3 
+                          <h3
                             className="font-semibold mb-2"
                             onClick={() => {
                               setEditingColumnId(column.columnId);
@@ -206,6 +249,9 @@ const ColumnsContainer: React.FC<ColumnsContainerProps> = ({ columns: backendCol
                         )}
 
                         <div className="border-t border-gray-500 mb-4"></div>
+                        
+                        <TaskContainer column={column} boardId={boardId} readonly={readonly}/>
+
                       </div>
                     )}
                   </Draggable>

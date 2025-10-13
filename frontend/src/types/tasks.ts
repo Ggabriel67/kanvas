@@ -31,10 +31,10 @@ export interface TaskProjection {
 	orderIndex: number;
 	columnId: number;
 	title: string;
-	deadline: string;
+	deadline: string | null;
 	status: "ACTIVE" | "DONE";
-	priority: "HIGH" | "MEDIUM" | "LOW";
-	assigneeIds: number[];
+	priority: "HIGH" | "MEDIUM" | "LOW" | null;
+	assigneeIds: number[] | null;
 	isExpired: boolean;
 }
 
