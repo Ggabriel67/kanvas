@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import type { ColumnDto } from '../types/columns';
 import { Draggable, Droppable } from '@hello-pangea/dnd';
 import { useQueryClient } from '@tanstack/react-query';
@@ -18,8 +18,9 @@ const TaskContainer: React.FC<TaskContainerProps> = ({ column, boardId, readonly
   const [isCreatingTask, setIsCreatingTask] = useState(false);
   const [newTaskTitle, setNewTaskTitle] = useState<string>("");
 
-  const sortedTasks = [...column.taskProjections].sort( 
-    (a, b) => a.orderIndex - b.orderIndex 
+  const sortedTasks = useMemo(
+    () => [...column.taskProjections].sort((a, b) => a.orderIndex - b.orderIndex),
+    [column.taskProjections]
   );
 
 	const queryClient = useQueryClient();
@@ -76,7 +77,7 @@ const TaskContainer: React.FC<TaskContainerProps> = ({ column, boardId, readonly
           ref={provided.innerRef}
           {...provided.droppableProps}
           className={`flex flex-col gap-2 ${
-            snapshot.isDraggingOver ? "bg-[#383838]" : ""
+            snapshot.isDraggingOver ? "bg-[#383838] rounded-md" : ""
           }`}
         >
           {sortedTasks.map((task, index) => (
@@ -94,7 +95,7 @@ const TaskContainer: React.FC<TaskContainerProps> = ({ column, boardId, readonly
                     snapshot.isDragging ? "opacity-60 scale-[0.98]" : ""
                   }`}
                 >
-                  <p className="text-sm font-medium">{task.title}</p>
+                  <p className="text-sm break-words whitespace-normal font-medium">{task.title}</p>
                 </div>
               )}
             </Draggable>
@@ -139,7 +140,7 @@ const TaskContainer: React.FC<TaskContainerProps> = ({ column, boardId, readonly
                     setIsCreatingTask(true);
                     setNewTaskTitle("");
                   }}
-                  className="text-purple-400 flex space-x-1 w-full hover:text-purple-300 text-sm p-2 rounded-md cursor-pointer hover:bg-[#262626]"
+                  className="text-purple-400 items-center flex space-x-1 w-full hover:text-purple-300 text-sm p-2 rounded-md cursor-pointer hover:bg-[#262626]"
                 >
                   <IoMdAdd size={20} />
                   <span>New Task</span>

@@ -1,7 +1,8 @@
 import toast from "react-hot-toast";
 import type { BoardDto, BoardMember } from "../types/boards";
 import type { ColumnDto } from "../types/columns";
-import type { BoardUpdatedMessage, ColumnCreatedMessage, ColumnMovedMessage, ColumnUpdatedMessage, MemberJoinedMessage } from "../types/websocketMessages";
+import type { BoardUpdatedMessage, ColumnCreatedMessage, ColumnMovedMessage, ColumnUpdatedMessage, MemberJoinedMessage, TaskCreatedMessage, TaskMovedMessage } from "../types/websocketMessages";
+import type { TaskProjection } from "../types/tasks";
 
 export function applyColumnCreated(board: BoardDto, payload: ColumnCreatedMessage) {
   const exists = board.columns.some(c => c.columnId === payload.columnId);
@@ -81,5 +82,94 @@ export function applyColumnMoved(board: BoardDto, payload: ColumnMovedMessage) {
   return {
     ...board,
     columns: updatedColumns,
+  };
+}
+
+export function applyTaskCreated(board: BoardDto, payload: TaskCreatedMessage) {
+  const { columnId, taskId, orderIndex, title } = payload;
+
+  const newTask: TaskProjection = {
+    taskId,
+    orderIndex,
+    columnId,
+    title,
+    deadline: null,
+    status: "ACTIVE",
+    priority: null,
+    assigneeIds: null,
+    isExpired: false,
+  };
+
+  return {
+    ...board,
+    columns: board.columns.map((col) => {
+      if (col.columnId !== columnId) return col;
+
+      const alreadyExists = col.taskProjections.some(
+        (t) => t.taskId === taskId
+      );
+      if (alreadyExists) return col;
+
+      const updatedTasks = [...col.taskProjections, newTask].sort(
+        (a, b) => a.orderIndex - b.orderIndex
+      );
+
+      return {
+        ...col,
+        taskProjections: updatedTasks,
+      };
+    }),
+  };
+}
+
+export function applyTaskMoved(board: BoardDto, payload: TaskMovedMessage) {
+  const { beforeColumnId, targetColumnId, taskId, newOrderIndex } = payload;
+
+  const sourceCol = board.columns.find((col) => col.columnId === beforeColumnId);
+  const targetCol = board.columns.find((col) => col.columnId === targetColumnId);
+
+  if (!sourceCol || !targetCol) return board;
+
+  if (beforeColumnId === targetColumnId) {
+    const updatedTasks = sourceCol.taskProjections.map((t) =>
+      t.taskId === taskId ? { ...t, orderIndex: newOrderIndex } : t
+    );
+
+    const sortedTasks = [...updatedTasks].sort((a, b) => a.orderIndex - b.orderIndex);
+
+    return {
+      ...board,
+      columns: board.columns.map((col) =>
+        col.columnId === sourceCol.columnId
+          ? { ...col, taskProjections: sortedTasks }
+          : col
+      ),
+    };
+  }
+
+  const movedTask = sourceCol.taskProjections.find((t) => t.taskId === taskId);
+  if (!movedTask) return board;
+
+  const newTask: TaskProjection = {
+    ...movedTask,
+    columnId: targetColumnId,
+    orderIndex: newOrderIndex,
+  };
+
+  const newSourceTasks = sourceCol.taskProjections.filter((t) => t.taskId !== taskId);
+
+  const newTargetTasks = [...targetCol.taskProjections, newTask].sort(
+    (a, b) => a.orderIndex - b.orderIndex
+  );
+
+  return {
+    ...board,
+    columns: board.columns.map((col) => {
+      if (col.columnId === beforeColumnId)
+        return { ...col, taskProjections: newSourceTasks };
+      if (col.columnId === targetColumnId)
+        return { ...col, taskProjections: newTargetTasks };
+      return col;
+    }),
   };
 }

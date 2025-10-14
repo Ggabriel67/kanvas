@@ -68,6 +68,71 @@ const ColumnsContainer: React.FC<ColumnsContainerProps> = ({ columns: backendCol
     }
   }
 
+  const saveMoveTaskSameColumn = async (request: MoveTaskRequest, sourceColId: number) => {
+    try {
+      const response: TaskResponse = await moveTask(request, boardId);  
+
+      queryClient.setQueryData<BoardDto | undefined>(["board", boardId], (old) => {
+        if (!old) return old;
+        return {
+          ...old,
+          columns: old.columns.map((col) =>
+            col.columnId === sourceColId
+              ? {
+                  ...col,
+                  taskProjections: col.taskProjections.map((t) =>
+                    t.taskId === response.taskId
+                      ? { ...t, orderIndex: response.orderIndex }
+                      : t
+                  ),
+                }
+              : col
+          ),
+        };
+      });
+    } catch (error: any) {
+      toast.error(error.message);
+    }
+  }
+
+  const saveMoveTaskDifferentColumn = async (request: MoveTaskRequest, sourceColId: number, destColId: number) => {
+    try {
+      const response: TaskResponse = await moveTask(request, boardId);
+
+      queryClient.setQueryData<BoardDto | undefined>(["board", boardId], (old) => {
+        if (!old) return old;
+        return {
+          ...old,
+          columns: old.columns.map((col) => {
+            if (col.columnId === sourceColId)
+              return {
+                ...col,
+                taskProjections: col.taskProjections.filter(
+                  (t) => t.taskId !== response.taskId
+                ),
+              };
+            if (col.columnId === destColId)
+              return {
+                ...col,
+                taskProjections: col.taskProjections.map((t) =>
+                  t.taskId === response.taskId
+                    ? {
+                        ...t,
+                        columnId: response.columnId,
+                        orderIndex: response.orderIndex,
+                      }
+                    : t
+                ),
+              };
+            return col;
+          }),
+        };
+      });
+    } catch (error: any) {
+      toast.error(error.message);
+    }
+  }
+
   const onDragEnd = async (result: DropResult) => {
     const { destination, source, type } = result;
     if (!destination) return;
@@ -99,18 +164,30 @@ const ColumnsContainer: React.FC<ColumnsContainerProps> = ({ columns: backendCol
 
       const sourceCol = columnsMap[sourceColId];
       const destCol = columnsMap[destColId];
+      if (!sourceCol || !destCol) return;
+
       const newSourceTasks = Array.from(sourceCol.taskProjections);
       const [movedTask] = newSourceTasks.splice(source.index, 1);
-
       if (!movedTask) return;
 
-      // --- Move within same column ---
+      // --- move inside same column ---
       if (sourceColId === destColId) {
         newSourceTasks.splice(destination.index, 0, movedTask);
         const updatedCol = { ...sourceCol, taskProjections: newSourceTasks };
         setColumnsMap((prev) => ({ ...prev, [sourceColId]: updatedCol }));
 
-        // Determine new neighbors
+        queryClient.setQueryData<BoardDto | undefined>(["board", boardId], (old) => {
+          if (!old) return old;
+          return {
+            ...old,
+            columns: old.columns.map((col) =>
+              col.columnId === sourceColId
+                ? { ...col, taskProjections: newSourceTasks }
+                : col
+            ),
+          };
+        });
+
         const precedingTask = destination.index > 0 ? newSourceTasks[destination.index - 1] : null;
         const followingTask = destination.index < newSourceTasks.length - 1 ? newSourceTasks[destination.index + 1] : null;
 
@@ -120,26 +197,11 @@ const ColumnsContainer: React.FC<ColumnsContainerProps> = ({ columns: backendCol
           precedingTaskId: precedingTask ? precedingTask.taskId : null,
           followingTaskId: followingTask ? followingTask.taskId : null,
         };
-        
-        try {
-          const response: TaskResponse = await moveTask(request, boardId);
 
-          // Update orderIndex in state
-          setColumnsMap((prev) => {
-            const col = prev[sourceColId];
-            const updatedTasks = col.taskProjections.map((t) =>
-              t.taskId === response.taskId
-                ? { ...t, orderIndex: response.orderIndex }
-                : t
-            );
-            return { ...prev, [sourceColId]: { ...col, taskProjections: updatedTasks } };
-          });
-        } catch (error: any) {
-          toast.error(error.message);
-        }
+        saveMoveTaskSameColumn(request, sourceColId);
       }
 
-      // --- Move between columns ---
+      // --- move between columns ---
       else {
         const newDestTasks = Array.from(destCol.taskProjections);
         newDestTasks.splice(destination.index, 0, movedTask);
@@ -151,7 +213,20 @@ const ColumnsContainer: React.FC<ColumnsContainerProps> = ({ columns: backendCol
         };
         setColumnsMap(updatedColumns);
 
-        // Determine new neighbors
+        queryClient.setQueryData<BoardDto | undefined>(["board", boardId], (old) => {
+          if (!old) return old;
+          return {
+            ...old,
+            columns: old.columns.map((col) => {
+              if (col.columnId === sourceColId)
+                return { ...col, taskProjections: newSourceTasks };
+              if (col.columnId === destColId)
+                return { ...col, taskProjections: newDestTasks };
+              return col;
+            }),
+          };
+        });
+
         const precedingTask = destination.index > 0 ? newDestTasks[destination.index - 1] : null;
         const followingTask = destination.index < newDestTasks.length - 1 ? newDestTasks[destination.index + 1] : null;
 
@@ -161,43 +236,8 @@ const ColumnsContainer: React.FC<ColumnsContainerProps> = ({ columns: backendCol
           precedingTaskId: precedingTask ? precedingTask.taskId : null,
           followingTaskId: followingTask ? followingTask.taskId : null,
         };
-        console.log(`targetColumnId: ${request.targetColumnId}`);
-        console.log(`taskId: ${request.taskId}`);
-        console.log(`precedingTaskId: ${request.precedingTaskId}`);
-        console.log(`followingTaskId: ${request.followingTaskId}`);
 
-        try {
-          const response: TaskResponse = await moveTask(request, boardId);
-
-          setColumnsMap((prev) => {
-            const srcCol = prev[sourceColId];
-            const dstCol = prev[destColId];
-
-            // remove task from source (just in case)
-            const newSrcTasks = srcCol.taskProjections.filter(
-              (t) => t.taskId !== response.taskId
-            );
-
-            // update order index & insert into dest
-            const updatedTask = {
-              ...movedTask,
-              orderIndex: response.orderIndex,
-              columnId: response.columnId,
-            };
-
-            const newDstTasks = dstCol.taskProjections.map((t) =>
-              t.taskId === response.taskId ? updatedTask : t
-            );
-
-            return {
-              ...prev,
-              [sourceColId]: { ...srcCol, taskProjections: newSrcTasks },
-              [destColId]: { ...dstCol, taskProjections: newDstTasks },
-            };
-          });
-        } catch (error: any) {
-          toast.error(error.message);
-        }
+        saveMoveTaskDifferentColumn(request, sourceColId, destColId)
       }
     }
   };
@@ -265,7 +305,6 @@ const ColumnsContainer: React.FC<ColumnsContainerProps> = ({ columns: backendCol
           };
         }
       );
-      toast.success(editedColumnName)
     } catch (error: any) {
       toast.error(error.message);
     }
@@ -292,7 +331,7 @@ const ColumnsContainer: React.FC<ColumnsContainerProps> = ({ columns: backendCol
                         ref={provided.innerRef}
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
-                        className={`bg-[#2b2b2b] rounded-xl p-2 min-w-[280px] flex-shrink-0
+                        className={`bg-[#2b2b2b] rounded-xl p-2 min-w-[280px] max-w-[280px] flex-shrink-0
                           cursor-grab select-none shadow-md transition-all duration-200
                           text-gray-100
                           ${snapshot.isDragging ? "opacity-50 scale-[0.98]" : "hover:bg-[#333333]"}
@@ -314,7 +353,7 @@ const ColumnsContainer: React.FC<ColumnsContainerProps> = ({ columns: backendCol
                           />
                         ) : (
                           <h3
-                            className="font-semibold mb-2 pt-2 px-2"
+                            className="font-semibold break-words whitespace-normal mb-2 pt-2 px-2"
                             onClick={() => {
                               setEditingColumnId(column.columnId);
                               setEditedColumnName(column.name);

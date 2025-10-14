@@ -62,7 +62,7 @@ const Sidebar = () => {
       >
         <IoHomeOutline size={20} />
         <span>Home</span>
-      </NavLink> 
+      </NavLink>
       
       {/* My Workspaces Section */}
       <div>

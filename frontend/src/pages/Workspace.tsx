@@ -133,11 +133,13 @@ const Workspace = () => {
           {/* Create Board Button */}
           <button
             onClick={() => setIsCreateBoardModalOpen(true)}
-            className="bg-purple-700 w-[300px] h-[100px] flex items-center justify-center space-x-1 text-white rounded-lg font-semibold hover:bg-purple-600 cursor-pointer"
+            className="bg-[#1f1f1f] hover:bg-[#272727] w-[300px] h-[100px] border border-purple-500 flex items-center justify-center space-x-1 text-purple-400 rounded-lg font-semibold cursor-pointer"
           >
             <IoMdAdd size={20} />
             <span>New Board</span>
           </button>
+
+          {/* className="min-h-[50px] cursor-pointer flex w-full items-center justify-center bg-[#1f1f1f] hover:bg-[#272727] border border-purple-500 text-purple-400 font-medium rounded-xl gap-1" */}
 
           <CreateBoardModal
             isOpen={isCreateBoardModalOpen}
