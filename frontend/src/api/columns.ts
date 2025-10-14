@@ -40,3 +40,14 @@ export async function moveColumn(boardId: number, request: MoveColumnRequest) {
     throw error;
   }
 }
+
+export async function deleteColumn(columnId: number, boardId: number) {
+  try {
+    await api.delete(`/${columnId}`, {headers: {"X-Board-Id": boardId}});
+  } catch (error: any) {  
+    if (error.response) {
+      throw new Error(error.response.data);
+    }
+    throw error;
+  }
+}

@@ -5,7 +5,7 @@ export type BoardMessage =
   | { type: "COLUMN_CREATED"; payload: ColumnCreatedMessage }
   | { type: "COLUMN_UPDATED"; payload: ColumnUpdatedMessage }
   | { type: "COLUMN_MOVED"; payload: ColumnMovedMessage }
-	// todo COLUMN_DELETED
+	| { type: "COLUMN_DELETED"; payload: ColumnDeletedMessage }
 	| { type: "TASK_CREATED"; payload: TaskCreatedMessage }
 	// todo TASK_UPDATED
 	| { type: "TASK_MOVED"; payload: TaskMovedMessage };
@@ -43,6 +43,10 @@ export interface ColumnUpdatedMessage {
 export interface ColumnMovedMessage {
 	columnId: number;
 	newOrderIndex: number;
+}
+
+export interface ColumnDeletedMessage {
+	columnId: number;
 }
 
 export interface TaskCreatedMessage {

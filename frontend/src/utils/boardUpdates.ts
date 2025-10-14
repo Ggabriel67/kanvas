@@ -1,7 +1,7 @@
 import toast from "react-hot-toast";
 import type { BoardDto, BoardMember } from "../types/boards";
 import type { ColumnDto } from "../types/columns";
-import type { BoardUpdatedMessage, ColumnCreatedMessage, ColumnMovedMessage, ColumnUpdatedMessage, MemberJoinedMessage, TaskCreatedMessage, TaskMovedMessage } from "../types/websocketMessages";
+import type { BoardUpdatedMessage, ColumnCreatedMessage, ColumnDeletedMessage, ColumnMovedMessage, ColumnUpdatedMessage, MemberJoinedMessage, TaskCreatedMessage, TaskMovedMessage } from "../types/websocketMessages";
 import type { TaskProjection } from "../types/tasks";
 
 export function applyColumnCreated(board: BoardDto, payload: ColumnCreatedMessage) {
@@ -82,6 +82,15 @@ export function applyColumnMoved(board: BoardDto, payload: ColumnMovedMessage) {
   return {
     ...board,
     columns: updatedColumns,
+  };
+}
+
+export function applyColumnDeleted(board: BoardDto, payload: ColumnDeletedMessage) {
+  const { columnId } = payload;
+
+  return {
+    ...board,
+    columns: board.columns.filter((col) => col.columnId !== columnId),
   };
 }
 

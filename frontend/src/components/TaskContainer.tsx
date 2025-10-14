@@ -95,7 +95,7 @@ const TaskContainer: React.FC<TaskContainerProps> = ({ column, boardId, readonly
                     snapshot.isDragging ? "opacity-60 scale-[0.98]" : ""
                   }`}
                 >
-                  <p className="text-sm break-words whitespace-normal font-medium">{task.title}</p>
+                  <p className="text-sm break-all whitespace-normal font-medium">{task.title}</p>
                 </div>
               )}
             </Draggable>

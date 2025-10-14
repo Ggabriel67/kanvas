@@ -4,7 +4,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import type { BoardMessage } from '../types/websocketMessages';
 import type { BoardDto } from '../types/boards';
 import toast from 'react-hot-toast';
-import { applyBoardUpdated, applyColumnCreated, applyColumnMoved, applyColumnUpdated, applyMemberJoined, applyTaskCreated, applyTaskMoved } from '../utils/boardUpdates';
+import { applyBoardUpdated, applyColumnCreated, applyColumnDeleted, applyColumnMoved, applyColumnUpdated, applyMemberJoined, applyTaskCreated, applyTaskMoved } from '../utils/boardUpdates';
 
 const useBoardSocket = (boardId: number | null) => {
 	const { client, connected } = useWebSocket();
@@ -51,7 +51,12 @@ const useBoardSocket = (boardId: number | null) => {
 								return applyColumnMoved(old, boardMessage.payload);
 							});
 							break;
-
+						case "COLUMN_DELETED":
+							queryClient.setQueryData(["board", boardId], (old: BoardDto | undefined) => {
+								if (!old) return old;
+								return applyColumnDeleted(old, boardMessage.payload);
+							});
+							break;
 						case "TASK_CREATED":
 							queryClient.setQueryData(["board", boardId], (old: BoardDto | undefined) => {
 								if (!old) return old;

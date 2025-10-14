@@ -4,11 +4,12 @@ import type { BoardDto, BoardMember } from '../types/boards';
 import { DragDropContext, Draggable, Droppable, type DropResult } from "@hello-pangea/dnd"
 import { IoMdAdd } from "react-icons/io";
 import toast from 'react-hot-toast';
-import { createColumn, moveColumn, updateColumnName } from '../api/columns';
+import { createColumn, deleteColumn, moveColumn, updateColumnName } from '../api/columns';
 import { useQueryClient } from '@tanstack/react-query';
 import TaskContainer from './TaskContainer';
 import type { MoveTaskRequest, TaskResponse } from '../types/tasks';
 import { moveTask } from '../api/tasks';
+import { IoMdClose } from "react-icons/io";
 
 interface ColumnsContainerProps {
 	columns: ColumnDto[];
@@ -310,6 +311,28 @@ const ColumnsContainer: React.FC<ColumnsContainerProps> = ({ columns: backendCol
     }
   }
 
+  const handleDeleteColumn = async (columnId: number) => {
+    const prevColumnsMap = columnsMap;
+    const prevOrdered = ordered;
+
+    setColumnsMap((prev) => {
+      const newMap = { ...prev };
+      delete newMap[columnId];
+      return newMap;
+    });
+
+    setOrdered((prev) => prev.filter((id) => id !== columnId));
+
+    try {
+      await deleteColumn(columnId, boardId);
+      toast.success("Column deleted");
+    } catch (error: any) {
+      toast.error(error.message);
+      setColumnsMap(prevColumnsMap);
+      setOrdered(prevOrdered);
+    }
+  }
+
   return (
     <div className="flex flex-col gap-4 h-full">
       <DragDropContext onDragEnd={onDragEnd}>
@@ -325,51 +348,85 @@ const ColumnsContainer: React.FC<ColumnsContainerProps> = ({ columns: backendCol
                 if (!column) return null;
 
                 return (
-                  <Draggable key={column.columnId.toString()} draggableId={column.columnId.toString()} index={index}>
-                    {(provided, snapshot) => (
-                      <div
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                        className={`bg-[#2b2b2b] rounded-xl p-2 min-w-[280px] max-w-[280px] flex-shrink-0
-                          cursor-grab select-none shadow-md transition-all duration-200
-                          text-gray-100
-                          ${snapshot.isDragging ? "opacity-50 scale-[0.98]" : "hover:bg-[#333333]"}
-                        `}
-                        style={{ ...provided.draggableProps.style, height: "fit-content" }}
-                      >
-                        {editingColumnId === column.columnId ? (
-                          <input 
-                            type="text" 
-                            value={editedColumnName}
-                            onChange={(e) => setEditedColumnName(e.target.value)}
-                            onBlur={() => handleSaveColumnName(column.columnId, column.name)}
-                             onKeyDown={(e) => {
-                              if (e.key === "Enter") handleSaveColumnName(column.columnId, column.name);
-                              if (e.key === "Escape") setEditingColumnId(null);
-                            }}
-                            autoFocus
-                            className="bg-[#2b2b2b] border border-gray-600 mb-1.5 text-gray-100 font-semibold px-2 rounded w-full outline-none focus:ring-2 focus:ring-purple-500"
-                          />
-                        ) : (
-                          <h3
-                            className="font-semibold break-words whitespace-normal mb-2 pt-2 px-2"
-                            onClick={() => {
-                              setEditingColumnId(column.columnId);
-                              setEditedColumnName(column.name);
-                            }}
-                          >
-                            {column.name}
-                          </h3>
-                        )}
-
-                        <div className="border-t border-gray-500 mb-4"></div>
-                        
-                        <TaskContainer column={column} boardId={boardId} readonly={readonly}/>
-
+                  readonly ? (
+                    <div
+                      key={column.columnId}
+                      className="bg-[#2b2b2b] rounded-xl p-2 w-[280px] flex-shrink-0 shadow-md text-gray-100"
+                    >
+                      <div className="flex items-center justify-between mb-2 pt-2 px-2">
+                        <h3 className="font-semibold break-all whitespace-normal flex-1">
+                          {column.name}
+                        </h3>
                       </div>
-                    )}
-                  </Draggable>
+
+                      <div className="border-t border-gray-500 mb-4"></div>
+
+                      <TaskContainer column={column} boardId={boardId} readonly={readonly} />
+                    </div>
+                  ) : (
+                    <Draggable
+                      key={column.columnId.toString()}
+                      draggableId={column.columnId.toString()}
+                      index={index}
+                    >
+                      {(provided, snapshot) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                          className={`bg-[#2b2b2b] rounded-xl p-2 min-w-[280px] max-w-[280px] flex-shrink-0
+                            cursor-grab select-none shadow-md text-gray-100
+                            ${
+                              snapshot.isDragging
+                                ? "opacity-50 scale-[0.98]"
+                                : "hover:bg-[#333333]"
+                            }
+                          `}
+                          style={{ ...provided.draggableProps.style, height: "fit-content" }}
+                        >
+                          <div className="flex items-center justify-between mb-2 pt-2 px-2">
+                            {editingColumnId === column.columnId ? (
+                              <input
+                                type="text"
+                                value={editedColumnName}
+                                onChange={(e) => setEditedColumnName(e.target.value)}
+                                onBlur={() => handleSaveColumnName(column.columnId, column.name)}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter")
+                                    handleSaveColumnName(column.columnId, column.name);
+                                  if (e.key === "Escape") setEditingColumnId(null);
+                                }}
+                                autoFocus
+                                className="bg-[#2b2b2b] border border-gray-600 text-gray-100 font-semibold px-2 rounded w-full outline-none focus:ring-2 focus:ring-purple-500"
+                              />
+                            ) : (
+                              <h3
+                                className="font-semibold break-all whitespace-normal flex-1 cursor-pointer"
+                                onClick={() => {
+                                  setEditingColumnId(column.columnId);
+                                  setEditedColumnName(column.name);
+                                }}
+                              >
+                                {column.name}
+                              </h3>
+                            )}
+
+                            <button
+                              onClick={() => handleDeleteColumn(column.columnId)}
+                              className="ml-2 text-gray-400 hover:text-red-500 font-bold"
+                              title="Delete column"
+                            >
+                              ×
+                            </button>
+                          </div>
+
+                          <div className="border-t border-gray-500 mb-4"></div>
+
+                          <TaskContainer column={column} boardId={boardId} readonly={readonly} />
+                        </div>
+                      )}
+                    </Draggable>
+                  )
                 );
               })}
 
