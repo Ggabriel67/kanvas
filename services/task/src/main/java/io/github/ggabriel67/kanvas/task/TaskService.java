@@ -94,7 +94,10 @@ public class TaskService
                 .orElseThrow(() -> new ColumnNotFoundException("Column not found"));
 
         Task preceding, following;
-        if (request.precedingTaskId() == null) {
+        if (request.precedingTaskId() == null && request.followingTaskId() == null) {
+            newOrderIndex = step;
+        }
+        else if (request.precedingTaskId() == null) {
             following = getTaskById(request.followingTaskId());
             newOrderIndex = following.getOrderIndex() - step;
         }

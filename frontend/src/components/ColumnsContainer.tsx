@@ -7,6 +7,8 @@ import toast from 'react-hot-toast';
 import { createColumn, moveColumn, updateColumnName } from '../api/columns';
 import { useQueryClient } from '@tanstack/react-query';
 import TaskContainer from './TaskContainer';
+import type { MoveTaskRequest, TaskResponse } from '../types/tasks';
+import { moveTask } from '../api/tasks';
 
 interface ColumnsContainerProps {
 	columns: ColumnDto[];
@@ -62,8 +64,7 @@ const ColumnsContainer: React.FC<ColumnsContainerProps> = ({ columns: backendCol
         return { ...old, columns: updatedColumns };
       });
     } catch (error: any) {
-      toast.error("Failed to reorder column");
-      console.error(error);
+      toast.error(error.message);
     }
   }
 
@@ -98,18 +99,48 @@ const ColumnsContainer: React.FC<ColumnsContainerProps> = ({ columns: backendCol
 
       const sourceCol = columnsMap[sourceColId];
       const destCol = columnsMap[destColId];
-
-      // reorder tasks locally
       const newSourceTasks = Array.from(sourceCol.taskProjections);
       const [movedTask] = newSourceTasks.splice(source.index, 1);
 
+      if (!movedTask) return;
+
+      // --- Move within same column ---
       if (sourceColId === destColId) {
-        // same column reorder
         newSourceTasks.splice(destination.index, 0, movedTask);
         const updatedCol = { ...sourceCol, taskProjections: newSourceTasks };
         setColumnsMap((prev) => ({ ...prev, [sourceColId]: updatedCol }));
-      } else {
-        // move between columns
+
+        // Determine new neighbors
+        const precedingTask = destination.index > 0 ? newSourceTasks[destination.index - 1] : null;
+        const followingTask = destination.index < newSourceTasks.length - 1 ? newSourceTasks[destination.index + 1] : null;
+
+        const request: MoveTaskRequest = {
+          targetColumnId: sourceColId,
+          taskId: movedTask.taskId,
+          precedingTaskId: precedingTask ? precedingTask.taskId : null,
+          followingTaskId: followingTask ? followingTask.taskId : null,
+        };
+        
+        try {
+          const response: TaskResponse = await moveTask(request, boardId);
+
+          // Update orderIndex in state
+          setColumnsMap((prev) => {
+            const col = prev[sourceColId];
+            const updatedTasks = col.taskProjections.map((t) =>
+              t.taskId === response.taskId
+                ? { ...t, orderIndex: response.orderIndex }
+                : t
+            );
+            return { ...prev, [sourceColId]: { ...col, taskProjections: updatedTasks } };
+          });
+        } catch (error: any) {
+          toast.error(error.message);
+        }
+      }
+
+      // --- Move between columns ---
+      else {
         const newDestTasks = Array.from(destCol.taskProjections);
         newDestTasks.splice(destination.index, 0, movedTask);
 
@@ -118,11 +149,56 @@ const ColumnsContainer: React.FC<ColumnsContainerProps> = ({ columns: backendCol
           [sourceColId]: { ...sourceCol, taskProjections: newSourceTasks },
           [destColId]: { ...destCol, taskProjections: newDestTasks },
         };
-
         setColumnsMap(updatedColumns);
-      }
 
-      // TODO update backend
+        // Determine new neighbors
+        const precedingTask = destination.index > 0 ? newDestTasks[destination.index - 1] : null;
+        const followingTask = destination.index < newDestTasks.length - 1 ? newDestTasks[destination.index + 1] : null;
+
+        const request: MoveTaskRequest = {
+          targetColumnId: destColId,
+          taskId: movedTask.taskId,
+          precedingTaskId: precedingTask ? precedingTask.taskId : null,
+          followingTaskId: followingTask ? followingTask.taskId : null,
+        };
+        console.log(`targetColumnId: ${request.targetColumnId}`);
+        console.log(`taskId: ${request.taskId}`);
+        console.log(`precedingTaskId: ${request.precedingTaskId}`);
+        console.log(`followingTaskId: ${request.followingTaskId}`);
+
+        try {
+          const response: TaskResponse = await moveTask(request, boardId);
+
+          setColumnsMap((prev) => {
+            const srcCol = prev[sourceColId];
+            const dstCol = prev[destColId];
+
+            // remove task from source (just in case)
+            const newSrcTasks = srcCol.taskProjections.filter(
+              (t) => t.taskId !== response.taskId
+            );
+
+            // update order index & insert into dest
+            const updatedTask = {
+              ...movedTask,
+              orderIndex: response.orderIndex,
+              columnId: response.columnId,
+            };
+
+            const newDstTasks = dstCol.taskProjections.map((t) =>
+              t.taskId === response.taskId ? updatedTask : t
+            );
+
+            return {
+              ...prev,
+              [sourceColId]: { ...srcCol, taskProjections: newSrcTasks },
+              [destColId]: { ...dstCol, taskProjections: newDstTasks },
+            };
+          });
+        } catch (error: any) {
+          toast.error(error.message);
+        }
+      }
     }
   };
 
@@ -148,11 +224,11 @@ const ColumnsContainer: React.FC<ColumnsContainerProps> = ({ columns: backendCol
             taskProjections: [],
           };
 
-        return {
-          ...old,
-          columns: [...old.columns, newColumn],
-        };
-      }
+          return {
+            ...old,
+            columns: [...old.columns, newColumn],
+          };
+        }
       );
 
       toast.success(`Column "${newColumnName}" created!`);
@@ -216,7 +292,7 @@ const ColumnsContainer: React.FC<ColumnsContainerProps> = ({ columns: backendCol
                         ref={provided.innerRef}
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
-                        className={`bg-[#2b2b2b] rounded-xl p-4 min-w-[280px] flex-shrink-0
+                        className={`bg-[#2b2b2b] rounded-xl p-2 min-w-[280px] flex-shrink-0
                           cursor-grab select-none shadow-md transition-all duration-200
                           text-gray-100
                           ${snapshot.isDragging ? "opacity-50 scale-[0.98]" : "hover:bg-[#333333]"}
@@ -238,7 +314,7 @@ const ColumnsContainer: React.FC<ColumnsContainerProps> = ({ columns: backendCol
                           />
                         ) : (
                           <h3
-                            className="font-semibold mb-2"
+                            className="font-semibold mb-2 pt-2 px-2"
                             onClick={() => {
                               setEditingColumnId(column.columnId);
                               setEditedColumnName(column.name);

@@ -13,8 +13,8 @@ export interface TaskResponse {
 export interface MoveTaskRequest {
 	targetColumnId: number;
 	taskId: number;
-	precedingTaskId: number;
-	followingTaskId: number;
+	precedingTaskId: number | null;
+	followingTaskId: number | null;
 }
 
 export interface TaskUpdateRequest {
