@@ -1,7 +1,8 @@
 export type BoardMessage =
 	| { type: "BOARD_UPDATED"; payload: BoardUpdatedMessage }
 	| { type: "MEMBER_JOINED"; payload: MemberJoinedMessage }
-	// TODO MEMBER_REMOVED
+	| { type: "MEMBER_REMOVED"; payload: MemberRemovedMessage }
+	| { type: "ROLE_CHANGED"; payload: RoleChangedMessage }
   | { type: "COLUMN_CREATED"; payload: ColumnCreatedMessage }
   | { type: "COLUMN_UPDATED"; payload: ColumnUpdatedMessage }
   | { type: "COLUMN_MOVED"; payload: ColumnMovedMessage }
@@ -27,6 +28,16 @@ export interface MemberJoinedMessage {
 	username: string;
 	avatarColor: string;
 	boardRole: "ADMIN" | "EDITOR" | "VIEWER";
+	joinedAt: string;
+}
+
+export interface RoleChangedMessage {
+	memberId: number;
+	role: "ADMIN" | "EDITOR" | "VIEWER";
+}
+
+export interface MemberRemovedMessage {
+	memberId: number;
 }
 
 export interface ColumnCreatedMessage {

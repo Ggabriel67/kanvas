@@ -76,7 +76,7 @@ const NotificationPanel: React.FC<NotificationPanelProps> = ({ notifications, on
 						You have no unread notifications
 					</div>
 				) : (
-					<ul className="divide-y divide-gray-700">
+					<ul className={ notifications.length > 1 ? "divide-y divide-gray-700" : ""}>
 						{notifications.map((n) => {
 							if (n.type === "INVITATION") {
 								const inviterUsername = n.payload["inviterUsername"] as string;
@@ -121,6 +121,7 @@ const NotificationPanel: React.FC<NotificationPanelProps> = ({ notifications, on
 
 										<span className="text-xs text-gray-500">
 											{timeAgo(n.sentAt)}
+											{notifications.length}
 										</span>
 									</li>
 								);

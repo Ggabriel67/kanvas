@@ -4,7 +4,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import type { BoardMessage } from '../types/websocketMessages';
 import type { BoardDto } from '../types/boards';
 import toast from 'react-hot-toast';
-import { applyBoardUpdated, applyColumnCreated, applyColumnDeleted, applyColumnMoved, applyColumnUpdated, applyMemberJoined, applyTaskCreated, applyTaskMoved } from '../utils/boardUpdates';
+import { applyBoardUpdated, applyColumnCreated, applyColumnDeleted, applyColumnMoved, applyColumnUpdated, applyMemberJoined, applyMemberRemoved, applyRoleChanged, applyTaskCreated, applyTaskMoved } from '../utils/boardUpdates';
 
 const useBoardSocket = (boardId: number | null) => {
 	const { client, connected } = useWebSocket();
@@ -32,7 +32,18 @@ const useBoardSocket = (boardId: number | null) => {
 								return applyMemberJoined(old, boardMessage.payload);
 							});
 							break;
-
+						case "MEMBER_REMOVED": 
+							queryClient.setQueryData(["board", boardId], (old: BoardDto | undefined) => {
+								if (!old) return old;
+								return applyMemberRemoved(old, boardMessage.payload);
+							});
+							break;
+						case "ROLE_CHANGED": 
+							queryClient.setQueryData(["board", boardId], (old: BoardDto | undefined) => {
+								if (!old) return old;
+								return applyRoleChanged(old, boardMessage.payload);
+							});
+							break;
 						case "COLUMN_CREATED":
 							queryClient.setQueryData(["board", boardId], (old: BoardDto | undefined) => {
 								if (!old) return old;

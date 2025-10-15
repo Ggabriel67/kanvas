@@ -55,7 +55,7 @@ const Sidebar = () => {
         to="/app"
         end
         className={({ isActive }) =>
-          `w-full text-left mt-3 px-3 py-2 rounded-lg cursor-pointer flex space-x-2 items-center ${
+          `block mx-2 text-left mt-3 px-2 py-2 rounded-lg cursor-pointer flex space-x-2 items-center ${
             isActive ? "bg-purple-900" : "hover:bg-[#2a2a2a]"
           }`
         }
@@ -76,7 +76,7 @@ const Sidebar = () => {
                 <NavLink
                   to={`/app/workspaces/${ws.id}`}
                   className={({ isActive }) =>
-                    `w-full text-left px-7 py-2 rounded-lg cursor-pointer flex space-x-2 items-center ${
+                    `block mx-2 text-left px-5 py-2 rounded-lg cursor-pointer flex space-x-2 items-center ${
                       isActive ? "bg-purple-900" : "hover:bg-[#2a2a2a]"
                     }`
                   }
@@ -118,7 +118,7 @@ const Sidebar = () => {
                 <NavLink
                   to={`/app/workspaces/${ws.id}`}
                   className={({ isActive }) =>
-                    `w-full text-left px-7 py-2 rounded-lg cursor-pointer flex space-x-2 items-center ${
+                    `block mx-2 text-left px-5 py-2 rounded-lg cursor-pointer flex space-x-2 items-center ${
                       isActive ? "bg-purple-900" : "hover:bg-[#2a2a2a]"
                     }`
                   }
@@ -139,7 +139,7 @@ const Sidebar = () => {
       <NavLink
         to="/app/guest-workspaces"
         className={({ isActive }) =>
-          `w-full text-left px-3 py-2 rounded-lg cursor-pointer flex space-x-2 items-center ${
+          `block mx-2 text-left px-2 py-2 rounded-lg cursor-pointer flex space-x-2 items-center ${
             isActive ? "bg-purple-900" : "hover:bg-[#2a2a2a]"
           }`
         }

@@ -1,7 +1,6 @@
-import toast from "react-hot-toast";
 import type { BoardDto, BoardMember } from "../types/boards";
 import type { ColumnDto } from "../types/columns";
-import type { BoardUpdatedMessage, ColumnCreatedMessage, ColumnDeletedMessage, ColumnMovedMessage, ColumnUpdatedMessage, MemberJoinedMessage, TaskCreatedMessage, TaskMovedMessage } from "../types/websocketMessages";
+import type { BoardUpdatedMessage, ColumnCreatedMessage, ColumnDeletedMessage, ColumnMovedMessage, ColumnUpdatedMessage, MemberJoinedMessage, MemberRemovedMessage, RoleChangedMessage, TaskCreatedMessage, TaskMovedMessage } from "../types/websocketMessages";
 import type { TaskProjection } from "../types/tasks";
 
 export function applyColumnCreated(board: BoardDto, payload: ColumnCreatedMessage) {
@@ -49,11 +48,32 @@ export function applyMemberJoined(board: BoardDto, payload: MemberJoinedMessage)
     username: payload.username,
     avatarColor: payload.avatarColor,
     boardRole: payload.boardRole,
+    joinedAt: payload.joinedAt
   };
 
   return {
     ...board,
     boardMembers: [...board.boardMembers, newMember],
+  };
+}
+
+export function applyMemberRemoved(board: BoardDto, payload: MemberRemovedMessage) {
+  const { memberId } = payload;
+
+  return {
+    ...board,
+    boardMembers: board.boardMembers.filter((m) => m.memberId !== memberId),
+  };
+}
+
+export function applyRoleChanged(board: BoardDto, payload: RoleChangedMessage) {
+  const { memberId, role } = payload;
+
+  return {
+    ...board,
+    boardMembers: board.boardMembers.map((m) =>
+      m.memberId === memberId ? { ...m, boardRole: role } : m
+    ),
   };
 }
 

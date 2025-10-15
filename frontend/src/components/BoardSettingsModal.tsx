@@ -8,6 +8,7 @@ import toast from 'react-hot-toast';
 import { deleteBoard, updateBoard } from '../api/boards';
 import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
+import BoardMembersTab from './BoardMembersTab';
 
 interface WorkspaceSettingsModalProps {
   isOpen: boolean;
@@ -18,21 +19,6 @@ interface WorkspaceSettingsModalProps {
 type FormFields = {
   name: string;
   description: string;
-};
-
-const canChangeRole = (currentRole: string, targetRole: string) => {
-  if (targetRole === "ADMIN") return false;
-  if (currentRole === "ADMIN") return true;
-  if (currentRole === "ADMIN" && (targetRole === "EDITOR" || targetRole === "VIEWER") ) return true;
-  return false;
-};
-
-const canRemove = (currentRole: string, targetRole: string, isSelf: boolean) => {
-  if (isSelf) return false;
-  if (targetRole === "OWNER") return false;
-  if (currentRole === "OWNER") return true;
-  if (currentRole === "ADMIN" && targetRole === "MEMBER") return true;
-  return false;
 };
 
 const BoardSettingsModal: React.FC<WorkspaceSettingsModalProps> = ({ isOpen, onClose, board }) => {
@@ -118,7 +104,6 @@ const BoardSettingsModal: React.FC<WorkspaceSettingsModalProps> = ({ isOpen, onC
         {/* Separator */}
         <div className="border-t border-gray-700 mb-4"></div>
 
-        {/* Tabs */}
         <div className="flex space-x-6 mb-6">
           {[
             { id: "board", label: "Board details" },
@@ -137,6 +122,8 @@ const BoardSettingsModal: React.FC<WorkspaceSettingsModalProps> = ({ isOpen, onC
             </button>
           ))}
         </div>
+        {/* Tabs */}
+        <div>
           {activeTab === "board" && (
             <div className="space-y-7">
               {isEditing ? (
@@ -156,7 +143,7 @@ const BoardSettingsModal: React.FC<WorkspaceSettingsModalProps> = ({ isOpen, onC
                       <div className="text-red-500 text-sm mt-1">{errors.name.message}</div>
                     )}
                   </div>
-        
+                   
                   <div>
                     <label className="block text-gray-400 mb-1">Description (optional)</label>
                     <textarea
@@ -168,7 +155,7 @@ const BoardSettingsModal: React.FC<WorkspaceSettingsModalProps> = ({ isOpen, onC
                       <div className="text-red-500 text-sm mt-1">{errors.description.message}</div>
                     )}
                   </div>
-        
+                   
                   <div className="flex space-x-3">
                     <button
                       type="submit"
@@ -205,7 +192,7 @@ const BoardSettingsModal: React.FC<WorkspaceSettingsModalProps> = ({ isOpen, onC
                   </p>
                 </div>
               )}
-        
+
               {isAdmin && (
                 <div>
                   <div className="border-t border-gray-700 mb-4"></div>
@@ -218,14 +205,20 @@ const BoardSettingsModal: React.FC<WorkspaceSettingsModalProps> = ({ isOpen, onC
                   </button>
                 </div>
               )}
-            </div>
-          )}
-        <div>
+             </div>
+            )}
 
+            {activeTab === "members" && (
+              <BoardMembersTab
+                boardId={board.boardId}
+                members={board.boardMembers}
+                currentRole={board.boardRole}
+              />
+            )}
         </div>
       </div>
     </div>
   )
 }
 
-export default BoardSettingsModal
+export default BoardSettingsModal;

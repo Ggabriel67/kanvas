@@ -32,6 +32,18 @@ export interface BoardMember {
 	firstname: string;
 	lastname: string;
 	username: string;
-	avatarColor: string
-	boardRole: "ADMIN" | "EDITOR" | "VIEWER"
+	avatarColor: string;
+	boardRole: "ADMIN" | "EDITOR" | "VIEWER";
+	joinedAt: string;
+}
+
+export interface BoardRoleChangeRequest {
+	targetMemberId: number;
+	boardId: number;
+	newRole: string;
+}
+
+export interface BoardMemberRemoveRequest {
+	targetMemberId: number;
+	boardId: number;
 }
