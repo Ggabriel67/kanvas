@@ -9,6 +9,7 @@ import BoardVisibilitySelector from './BoardVisibilitySelector';
 import toast from 'react-hot-toast';
 import { updateBoard } from '../api/boards';
 import { useQueryClient } from '@tanstack/react-query';
+import BoardSettingsModal from './BoardSettingsModal';
 
 interface BoardHeaderProps {
   board: BoardDto;
@@ -19,6 +20,8 @@ const BoardHeader: React.FC<BoardHeaderProps> = ({ board }) => {
   const [hoveredMemberId, setHoveredMemberId] = useState<number | null>(null);
   const [isEditingName, setIsEditingName] = useState(false);
   const [editedName, setEditedName] = useState(board.name);
+
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState<boolean>(false);
 
   const isAdmin = board.boardRole === "ADMIN";
 
@@ -149,11 +152,18 @@ const BoardHeader: React.FC<BoardHeaderProps> = ({ board }) => {
 
         {/* More (sidebar/details) */}
         <button
+          onClick={() => setIsSettingsModalOpen(true)}
           className="p-1.5 hover:bg-[#2a2a2a] rounded cursor-pointer hover:text-white"
           title="Board details"
         >
           <IoMdMore size={24} />
         </button>
+        <BoardSettingsModal
+          isOpen={isSettingsModalOpen}
+          onClose={() => setIsSettingsModalOpen(false)}
+          board={board}
+        />
+
       </div>
     </div>
   );

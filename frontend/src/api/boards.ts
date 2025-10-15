@@ -30,6 +30,17 @@ export async function updateBoard(boardId: number, request: BoardUpdateRequest) 
   }
 }
 
+export async function deleteBoard(boardId: number) {
+  try {
+    await api.delete(`/${boardId}`);
+  } catch (error: any) {  
+    if (error.response) {
+      throw new Error(error.response.data);
+    }
+    throw error;
+  }
+}
+
 export const useBoardQuery = (boardId: number | null) => {
   return useQuery<BoardDto>({
     queryKey: ["board", boardId],

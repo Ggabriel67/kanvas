@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -83,7 +84,8 @@ public class BoardService
 
     private void mergeBoard(Board board, BoardUpdateRequest request) {
         if (request.name() != null) {
-            if (boardRepository.findByNameAndWorkspace(request.name(), board.getWorkspace()).isPresent()) {
+            Optional<Board> existingBoard = boardRepository.findByNameAndWorkspace(request.name(), board.getWorkspace());
+            if (existingBoard.isPresent() && (!Objects.equals(existingBoard.get().getId(), board.getId()))) {
                 throw new NameAlreadyInUseException("Board with name " +  request.name() + " already exists in this workspace");
             }
             board.setName(request.name());

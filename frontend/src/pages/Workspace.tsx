@@ -19,7 +19,7 @@ const Workspace = () => {
 
   const [workspace, setWorkspace] = useState<WorkspaceDto>();
   const [isInviteModalOpen, setIsInviteModalOpen] = useState<boolean>(false);
-  const [isMembersModalOpen, setisMembersModalOpen] = useState<boolean>(false);
+  const [isMembersModalOpen, setIsMembersModalOpen] = useState<boolean>(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState<boolean>(false);
   const [isCreateBoardModalOpen, setIsCreateBoardModalOpen] = useState<boolean>(false);
 
@@ -71,7 +71,7 @@ const Workspace = () => {
           />
 
           <button
-            onClick={() => setisMembersModalOpen(true)}
+            onClick={() => setIsMembersModalOpen(true)}
             className="px-4 py-2 bg-[#222222] text-white flex space-x-1 rounded-lg font-medium shadow-md items-center hover:bg-[#2a2a2a] cursor-pointer"
           >
             <PiUsersThree size={20} />
@@ -79,7 +79,7 @@ const Workspace = () => {
           </button>
           <WorkspaceMembersModal
             isOpen={isMembersModalOpen}
-            onClose={() => setisMembersModalOpen(false)}
+            onClose={() => setIsMembersModalOpen(false)}
             workspaceId={workspace.id}
             workspaceRole={workspace.workspaceRole}
           />

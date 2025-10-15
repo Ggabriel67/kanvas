@@ -58,8 +58,10 @@ const TaskContainer: React.FC<TaskContainerProps> = ({ column, boardId, readonly
                 : col
             ),
           };
-        });
+        }
+      );
 
+      toast.success("Task created");
     } catch (error: any) {
       toast.error(error.message);
     }

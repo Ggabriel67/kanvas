@@ -142,7 +142,7 @@ const Navbar = () => {
             )}
           </div>
           {isNotifOpen && (
-            <div className="absolute right-0 translate-x-14 mt-4 w-100 bg-[#1a1a1a] border border-gray-600 rounded-lg shadow-lg z-50">
+            <div className="absolute right-0 translate-x-15 mt-4 w-100 bg-[#1a1a1a] border border-gray-600 rounded-lg shadow-lg z-50">
               <NotificationPanel
                 notifications={notifications}
                 onRemove={removeNotification}
