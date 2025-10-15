@@ -12,7 +12,8 @@ public class BoardMemberMapper {
                 boardMember.getUser().getLastname(),
                 boardMember.getUser().getUsername(),
                 boardMember.getUser().getAvatarColor(),
-                boardMember.getRole()
+                boardMember.getRole(),
+                boardMember.getJoinedAt()
         );
     }
 }

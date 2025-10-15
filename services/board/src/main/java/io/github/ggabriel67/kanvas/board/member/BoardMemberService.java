@@ -38,7 +38,7 @@ public class BoardMemberService
 
         boardEventProducer.sendMemberJoined(new BoardMemberJoined(
                 board.getId(), member.getId(), invitee.getId(), invitee.getFirstname(), invitee.getLastname(), invitee.getUsername(),
-                invitee.getAvatarColor(), member.getRole().name())
+                invitee.getAvatarColor(), member.getRole().name(), member.getJoinedAt())
         );
     }
 
@@ -52,12 +52,16 @@ public class BoardMemberService
         memberRepository.save(member);
 
         boardEventProducer.sendRoleChanged(new RoleChanged(
-                member.getId(), request.newRole().name()
+                member.getBoard().getId(), member.getId(), request.newRole().name()
         ));
     }
 
     @Transactional
     public void removeMember(BoardMemberRemoveRequest request) {
+        if (boardRepository.findById(request.boardId()).isEmpty()) {
+            throw new BoardNotFoundException("Board not found");
+        }
+
         BoardMember member = getMemberById(request.targetMemberId());
         BoardMemberRemoved memberRemoved = new BoardMemberRemoved(
                 member.getId(), member.getUser().getId(), member.getBoard().getId(), member.getBoard().getName()

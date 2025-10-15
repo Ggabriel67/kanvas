@@ -1,5 +1,7 @@
 package io.github.ggabriel67.kanvas.event.board;
 
+import java.time.LocalDateTime;
+
 public record BoardMemberJoined(
         Integer boardId,
         Integer memberId,
@@ -8,6 +10,7 @@ public record BoardMemberJoined(
         String lastname,
         String username,
         String avatarColor,
-        String boardRole
+        String boardRole,
+        LocalDateTime joinedAt
 ) {
 }

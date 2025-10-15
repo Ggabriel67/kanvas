@@ -39,7 +39,7 @@ public class BoardController
 
     @PatchMapping("/members")
     @PreAuthorize("@boardAuth.canModerate(#request.boardId(), #request.targetMemberId())")
-    public ResponseEntity<Void> changeBoardMemberRole(BoardRoleChangeRequest request) {
+    public ResponseEntity<Void> changeBoardMemberRole(@RequestBody BoardRoleChangeRequest request) {
         boardMemberService.changeMemberRole(request);
         return ResponseEntity.ok().build();
     }

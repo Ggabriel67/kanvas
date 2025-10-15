@@ -1,5 +1,7 @@
 package io.github.ggabriel67.kanvas.message.board.board;
 
+import java.time.LocalDateTime;
+
 public record MemberJoinedMessage(
         Integer memberId,
         Integer userId,
@@ -7,6 +9,7 @@ public record MemberJoinedMessage(
         String lastname,
         String username,
         String avatarColor,
-        String boardRole
+        String boardRole,
+        LocalDateTime joinedAt
 ) {
 }

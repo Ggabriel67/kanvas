@@ -2,16 +2,14 @@ package io.github.ggabriel67.kanvas.kafka.consumer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.ggabriel67.kanvas.event.Event;
-import io.github.ggabriel67.kanvas.event.board.BoardEventType;
-import io.github.ggabriel67.kanvas.event.board.BoardMemberJoined;
-import io.github.ggabriel67.kanvas.event.board.BoardMemberRemoved;
-import io.github.ggabriel67.kanvas.event.board.BoardUpdated;
+import io.github.ggabriel67.kanvas.event.board.*;
 import io.github.ggabriel67.kanvas.message.MessageService;
 import io.github.ggabriel67.kanvas.message.board.BoardMessage;
 import io.github.ggabriel67.kanvas.message.board.BoardMessageType;
 import io.github.ggabriel67.kanvas.message.board.board.BoardUpdatedMessage;
 import io.github.ggabriel67.kanvas.message.board.board.MemberJoinedMessage;
 import io.github.ggabriel67.kanvas.message.board.board.MemberRemovedMessage;
+import io.github.ggabriel67.kanvas.message.board.board.RoleChangedMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -42,6 +40,10 @@ public class BoardEventConsumer
                 BoardMemberJoined memberJoined = objectMapper.convertValue(event.getPayload(), BoardMemberJoined.class);
                 handleMemberJoined(memberJoined);
             }
+            case ROLE_CHANGED -> {
+                RoleChanged roleChanged = objectMapper.convertValue(event.getPayload(), RoleChanged.class);
+                handleRoleChanged(roleChanged);
+            }
         }
     }
 
@@ -49,7 +51,7 @@ public class BoardEventConsumer
         BoardMessage<MemberJoinedMessage> message = new BoardMessage<>(
                 BoardMessageType.MEMBER_JOINED,
                 new MemberJoinedMessage(memberJoined.memberId(), memberJoined.userId(), memberJoined.firstname(), memberJoined.lastname(),
-                        memberJoined.username(), memberJoined.avatarColor(), memberJoined.boardRole()
+                        memberJoined.username(), memberJoined.avatarColor(), memberJoined.boardRole(), memberJoined.joinedAt()
                 )
         );
         messageService.sendBoardMessage(memberJoined.boardId(), message);
@@ -69,5 +71,13 @@ public class BoardEventConsumer
                 new BoardUpdatedMessage(boardUpdated.name(), boardUpdated.description(), boardUpdated.visibility())
         );
         messageService.sendBoardMessage(boardUpdated.boardId(), message);
+    }
+
+    private void handleRoleChanged(RoleChanged roleChanged) {
+        BoardMessage<RoleChangedMessage> message = new BoardMessage<>(
+                BoardMessageType.ROLE_CHANGED,
+                new RoleChangedMessage(roleChanged.memberId(), roleChanged.role())
+        );
+        messageService.sendBoardMessage(roleChanged.boardId(), message);
     }
 }
