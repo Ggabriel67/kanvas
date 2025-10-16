@@ -62,8 +62,8 @@ public class WorkspaceService
         workspace.setDescription(request.description());
     }
 
-    public Workspace getWorkspaceById(Integer id) {
-        return workspaceRepository.findById(id)
+    public Workspace getWorkspaceById(Integer workspaceId) {
+        return workspaceRepository.findById(workspaceId)
                 .orElseThrow(() -> new WorkspaceNotFoundException("Workspace not found"));
     }
 
@@ -75,13 +75,7 @@ public class WorkspaceService
                 .map(WorkspaceMember::getRole)
                 .orElseThrow(() -> new ForbiddenException("Not a member"));
 
-        List<BoardDtoProjection> boardProjections;
-        if (workspaceRole == WorkspaceRole.OWNER || workspaceRole == WorkspaceRole.ADMIN) {
-            boardProjections = boardService.getAllBoardsByWorkspace(workspace);
-        }
-        else {
-            boardProjections = boardService.getPublicBoardsByWorkspaceAndMember(userId, workspace);
-        }
+        List<BoardDtoProjection> boardProjections = boardService.getMemberAndPublicBoards(userId, workspace);
 
         return new WorkspaceDto(
                 workspace.getId(),
@@ -91,6 +85,26 @@ public class WorkspaceService
                 workspaceRole,
                 boardProjections
         );
+    }
+
+    public List<BoardDtoProjection> getAllWorkspaceBoards(Integer workspaceId) {
+        Integer userId = workspaceAuth.getCurrentUserId();
+
+        Workspace workspace = getWorkspaceById(workspaceId);
+
+        WorkspaceRole workspaceRole = workspaceMemberRepository.findByUserIdAndWorkspaceId(userId, workspaceId)
+                .map(WorkspaceMember::getRole)
+                .orElseThrow(() -> new ForbiddenException("Not a member"));
+
+        List<BoardDtoProjection> boardProjections;
+        if (workspaceRole == WorkspaceRole.OWNER || workspaceRole == WorkspaceRole.ADMIN) {
+            boardProjections = boardService.getAllBoardsByWorkspace(workspace);
+        }
+        else {
+            boardProjections = boardService.getMemberAndPublicBoards(userId, workspace);
+        }
+
+        return boardProjections;
     }
 
     public List<WorkspaceDtoProjection> getAllUserWorkspaces(Integer userId) {

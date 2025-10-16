@@ -186,25 +186,25 @@ class BoardServiceTest
                     new BoardDtoProjection(2, "Board 2")
             );
 
-            when(boardRepository.findByWorkspace(workspace)).thenReturn(boards);
+            when(boardRepository.findBoardsByWorkspace(workspace)).thenReturn(boards);
 
             List<BoardDtoProjection> result = boardService.getAllBoardsByWorkspace(workspace);
 
             assertThat(result.size() == 2);
             assertThat(result.containsAll(boards));
-            verify(boardRepository).findByWorkspace(workspace);
+            verify(boardRepository).findBoardsByWorkspace(workspace);
         }
 
         @Test
         void shouldReturnEmptyList_WhenNoBoardsExist() {
             Workspace workspace = Workspace.builder().id(200).build();
 
-            when(boardRepository.findByWorkspace(workspace)).thenReturn(Collections.emptyList());
+            when(boardRepository.findBoardsByWorkspace(workspace)).thenReturn(Collections.emptyList());
 
             List<BoardDtoProjection> result = boardService.getAllBoardsByWorkspace(workspace);
 
             assertThat(result.isEmpty());
-            verify(boardRepository).findByWorkspace(workspace);
+            verify(boardRepository).findBoardsByWorkspace(workspace);
         }
     }
 
@@ -220,15 +220,15 @@ class BoardServiceTest
                     new BoardDtoProjection(201, "Public Board 2")
             );
 
-            when(boardRepository.findBoardsForMemberByVisibility(userId, workspace, BoardVisibility.WORKSPACE_PUBLIC))
+            when(boardRepository.findBoardsByMembershipAndVisibility(userId, workspace, BoardVisibility.WORKSPACE_PUBLIC))
                     .thenReturn(visibleBoards);
 
-            List<BoardDtoProjection> result = boardService.getPublicBoardsByWorkspaceAndMember(userId, workspace);
+            List<BoardDtoProjection> result = boardService.getMemberAndPublicBoards(userId, workspace);
 
             assertThat(result.size() == 2);
             assertThat(result.containsAll(visibleBoards));
 
-            verify(boardRepository).findBoardsForMemberByVisibility(userId, workspace, BoardVisibility.WORKSPACE_PUBLIC);
+            verify(boardRepository).findBoardsByMembershipAndVisibility(userId, workspace, BoardVisibility.WORKSPACE_PUBLIC);
         }
 
         @Test
@@ -236,13 +236,13 @@ class BoardServiceTest
             Integer userId = 1;
             Workspace workspace = Workspace.builder().id(100).build();
 
-            when(boardRepository.findBoardsForMemberByVisibility(userId, workspace, BoardVisibility.WORKSPACE_PUBLIC))
+            when(boardRepository.findBoardsByMembershipAndVisibility(userId, workspace, BoardVisibility.WORKSPACE_PUBLIC))
                     .thenReturn(List.of());
 
-            List<BoardDtoProjection> result = boardService.getPublicBoardsByWorkspaceAndMember(userId, workspace);
+            List<BoardDtoProjection> result = boardService.getMemberAndPublicBoards(userId, workspace);
 
             assertThat(result.isEmpty());
-            verify(boardRepository).findBoardsForMemberByVisibility(userId, workspace, BoardVisibility.WORKSPACE_PUBLIC);
+            verify(boardRepository).findBoardsByMembershipAndVisibility(userId, workspace, BoardVisibility.WORKSPACE_PUBLIC);
         }
     }
 

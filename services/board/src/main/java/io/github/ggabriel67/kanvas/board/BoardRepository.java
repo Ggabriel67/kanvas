@@ -23,7 +23,7 @@ SELECT NEW io.github.ggabriel67.kanvas.board.BoardDtoProjection(
 FROM Board b
 WHERE b.workspace = :workspace
 """)
-    List<BoardDtoProjection> findByWorkspace(@Param("workspace") Workspace workspace);
+    List<BoardDtoProjection> findBoardsByWorkspace(@Param("workspace") Workspace workspace);
 
     @Query("""
 SELECT NEW io.github.ggabriel67.kanvas.board.BoardDtoProjection(
@@ -34,7 +34,7 @@ LEFT JOIN BoardMember bm ON bm.board = b AND bm.user.id = :userId
 WHERE b.workspace = :workspace
 AND (b.visibility = :visibility OR bm.user.id IS NOT NULL)
 """)
-    List<BoardDtoProjection> findBoardsForMemberByVisibility(
+    List<BoardDtoProjection> findBoardsByMembershipAndVisibility(
             @Param("userId") Integer userId,
             @Param("workspace") Workspace workspace,
             @Param("visibility") BoardVisibility visibility

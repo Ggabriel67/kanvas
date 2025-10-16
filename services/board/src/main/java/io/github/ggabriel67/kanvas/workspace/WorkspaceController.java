@@ -1,6 +1,8 @@
 package io.github.ggabriel67.kanvas.workspace;
 
 import io.github.ggabriel67.kanvas.authorization.workspace.WorkspaceAuthorization;
+import io.github.ggabriel67.kanvas.board.BoardDto;
+import io.github.ggabriel67.kanvas.board.BoardDtoProjection;
 import io.github.ggabriel67.kanvas.workspace.member.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,8 +20,6 @@ public class WorkspaceController
 {
     private final WorkspaceService workspaceService;
     private final WorkspaceMemberService workspaceMemberService;
-    private final WorkspaceMemberRepository workspaceMemberRepository;
-    private final WorkspaceAuthorization workspaceAuth;
 
     @PostMapping
     public ResponseEntity<Integer> createWorkspace(@RequestBody @Valid WorkspaceRequest request) {
@@ -37,6 +37,12 @@ public class WorkspaceController
     @PreAuthorize("@workspaceAuth.isMember(#workspaceId)")
     public ResponseEntity<WorkspaceDto> getWorkspace(@PathVariable("workspaceId") Integer workspaceId) {
         return ResponseEntity.ok(workspaceService.getWorkspace(workspaceId));
+    }
+
+    @GetMapping("/{workspaceId}/boards")
+    @PreAuthorize("@workspaceAuth.isMember(#workspaceId)")
+    public ResponseEntity<List<BoardDtoProjection>> getAllWorkspaceBoards(@PathVariable("workspaceId") Integer workspaceId) {
+        return ResponseEntity.ok(workspaceService.getAllWorkspaceBoards(workspaceId));
     }
 
     @GetMapping("/{userId}/workspaces")

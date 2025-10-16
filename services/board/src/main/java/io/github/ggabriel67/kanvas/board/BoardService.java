@@ -100,11 +100,11 @@ public class BoardService
     }
 
     public List<BoardDtoProjection> getAllBoardsByWorkspace(Workspace workspace) {
-        return boardRepository.findByWorkspace(workspace);
+        return boardRepository.findBoardsByWorkspace(workspace);
     }
 
-    public List<BoardDtoProjection> getPublicBoardsByWorkspaceAndMember(Integer userId, Workspace workspace) {
-        return boardRepository.findBoardsForMemberByVisibility(userId, workspace, BoardVisibility.WORKSPACE_PUBLIC);
+    public List<BoardDtoProjection> getMemberAndPublicBoards(Integer userId, Workspace workspace) {
+        return boardRepository.findBoardsByMembershipAndVisibility(userId, workspace, BoardVisibility.WORKSPACE_PUBLIC);
     }
 
     public BoardDto getBoard(Integer boardId) {
