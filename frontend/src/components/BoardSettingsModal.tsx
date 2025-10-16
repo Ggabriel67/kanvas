@@ -211,6 +211,7 @@ const BoardSettingsModal: React.FC<WorkspaceSettingsModalProps> = ({ isOpen, onC
             {activeTab === "members" && (
               <BoardMembersTab
                 boardId={board.boardId}
+                boardName={board.name}
                 members={board.boardMembers}
                 currentRole={board.boardRole}
               />

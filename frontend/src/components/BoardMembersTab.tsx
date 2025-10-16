@@ -3,11 +3,13 @@ import type { BoardDto, BoardMember, BoardMemberRemoveRequest, BoardRoleChangeRe
 import useAuth from '../hooks/useAuth';
 import { IoMdClose } from "react-icons/io";
 import toast from 'react-hot-toast';
-import { changeBoardMemberRole, removeBoardMember } from '../api/boards';
+import { changeBoardMemberRole, leaveBoard, removeBoardMember } from '../api/boards';
 import { useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 
 interface BoardMembersTabProps {
   boardId: number;
+  boardName: string;
   members: BoardMember[];
   currentRole: "ADMIN" | "EDITOR" | "VIEWER"; 
 }
@@ -26,8 +28,9 @@ const canRemove = (currentRole: string, targetRole: string, isSelf: boolean) => 
   return false;
 };
 
-const BoardMembersTab: React.FC<BoardMembersTabProps> = ({ boardId, members, currentRole }) => {
+const BoardMembersTab: React.FC<BoardMembersTabProps> = ({ boardId, members, currentRole, boardName }) => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   const handleRoleChange = async (memberId: number, newRole: string) => {
@@ -76,6 +79,22 @@ const BoardMembersTab: React.FC<BoardMembersTabProps> = ({ boardId, members, cur
     } catch (error: any) {
 			toast.error(error.message);
 		}
+  }
+
+  const handleLeaveBoard = async (memberId: number) => {
+    let request: BoardMemberRemoveRequest = {
+      targetMemberId: memberId,
+      boardId: boardId
+    }
+
+    try {
+      await leaveBoard(request);
+
+      toast.success(`You left ${boardName} board`);      
+      navigate("/app", { replace: true});
+    } catch (error: any) {
+      toast.error(error.message);
+    }
   }
 
   return (
@@ -135,6 +154,7 @@ const BoardMembersTab: React.FC<BoardMembersTabProps> = ({ boardId, members, cur
       
               {user?.id === m.userId ? (
                 <button
+                  onClick={() => handleLeaveBoard(m.memberId)}
                   className="min-w-[175px] flex items-center justify-center space-x-1 px-3 py-1.5 text-base bg-[#4a4a4a] rounded hover:bg-red-700 cursor-pointer"
                 >
                   <IoMdClose size={18}/>

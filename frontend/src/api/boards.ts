@@ -64,6 +64,17 @@ export async function removeBoardMember(request: BoardMemberRemoveRequest) {
   }
 }
 
+export async function leaveBoard(request: BoardMemberRemoveRequest) {
+  try {
+    await api.delete("/leave", {data: request});
+  } catch (error: any) {  
+    if (error.response) {
+      throw new Error(error.response.data);
+    }
+    throw error;
+  } 
+}
+
 export const useBoardQuery = (boardId: number | null) => {
   return useQuery<BoardDto>({
     queryKey: ["board", boardId],

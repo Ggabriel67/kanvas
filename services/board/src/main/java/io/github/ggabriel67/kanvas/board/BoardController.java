@@ -64,7 +64,7 @@ public class BoardController
     }
 
     @DeleteMapping("/leave")
-    @PreAuthorize("@boardAuth.isMember(#request.targetMemberId())")
+    @PreAuthorize("@boardAuth.isMember(#request.boardId())")
     public ResponseEntity<Void> leaveBoard(@RequestBody BoardMemberRemoveRequest request) {
         boardMemberService.leaveBoard(request);
         return ResponseEntity.ok().build();
