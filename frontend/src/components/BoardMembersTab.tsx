@@ -99,7 +99,7 @@ const BoardMembersTab: React.FC<BoardMembersTabProps> = ({ boardId, members, cur
 
   return (
     <div className="h-80">
-      <h3 className="text-xl font-semibold mb-4">Board Members</h3>
+      <h3 className="text-xl font-semibold mb-4">Board Members ({members.length})</h3>
       <ul className="space-y-2 max-h-full overflow-y-auto mb-10">
         {members
           .slice()

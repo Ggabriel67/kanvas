@@ -197,7 +197,7 @@ const BoardSettingsModal: React.FC<WorkspaceSettingsModalProps> = ({ isOpen, onC
                 <div>
                   <div className="border-t border-gray-700 mb-4"></div>
                   <button
-                    className="flex items-center space-x-1 bg-[#4a4a4a] hover:bg-red-700 text-white px-4 py-2 rounded  cursor-pointer"
+                    className="flex items-center space-x-1 bg-[#4a4a4a] hover:bg-red-700 text-white px-4 py-2 rounded font-medium cursor-pointer"
                     onClick={handleDeleteBoard}
                   >
                     <IoMdClose size={18}/>

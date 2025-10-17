@@ -56,6 +56,9 @@ public class TaskService
                         .orderIndex(orderIndex)
                         .title(request.title())
                         .status(TaskStatus.ACTIVE)
+                        .description(null)
+                        .deadline(null)
+                        .priority(null)
                         .build()
         );
 
@@ -72,16 +75,18 @@ public class TaskService
         mergeTask(task, request);
         taskRepository.save(task);
 
+        String priority = request.priority() != null ? request.priority().name() : null;
+        String status = request.status() != null ? request.status().name() : null;
         taskEventProducer.sendTaskUpdated(new TaskUpdated(task.getColumn().getBoardId(), task.getId(),
-                request.title(), request.deadline(), request.priority().name(), request.status().name(), task.isExpired()
+                request.title(), request.deadline(), priority, status, task.isExpired()
         ));
 
         return new TaskResponse(task.getId(), task.getColumn().getId(), task.getOrderIndex(), task.isExpired());
     }
 
     private void mergeTask(Task task, TaskUpdateRequest request) {
-        if (StringUtils.isNotBlank(request.title())) task.setTitle(request.title());
-        if (StringUtils.isNotBlank(request.description())) task.setDescription(request.description());
+        if (request.title() != null && StringUtils.isNotBlank(request.title())) task.setTitle(request.title());
+        if (request.description() != null && StringUtils.isNotBlank(request.description())) task.setDescription(request.description());
         if (request.deadline() != null) task.setDeadline(request.deadline());
         if (request.priority() != null) task.setPriority(request.priority());
         if (request.status() != null) task.setStatus(request.status());

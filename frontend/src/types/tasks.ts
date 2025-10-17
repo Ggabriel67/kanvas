@@ -19,11 +19,11 @@ export interface MoveTaskRequest {
 
 export interface TaskUpdateRequest {
 	taskId: number;
-	title: string;
-	description: string;
-	deadline: string;
-	priority: "HIGH" | "MEDIUM" | "LOW";
-	status: "ACTIVE" | "DONE";
+	title: string | null;
+	description: string | null;
+	deadline: Date | null;
+	priority: "HIGH" | "MEDIUM" | "LOW" | null;
+	status: "ACTIVE" | "DONE"| null;
 }
 
 export interface TaskProjection {
@@ -51,11 +51,11 @@ export interface TaskDto {
 	orderIndex: number;
 	columnId: number;
 	title: string;
-	description: string
+	description: string | null;
 	createdAt: string;
-	deadline: string;
+	deadline: string | null;
 	status: "ACTIVE" | "DONE";
-	priority: "HIGH" | "MEDIUM" | "LOW";
+	priority: "HIGH" | "MEDIUM" | "LOW" | null;
 	assigneeIds: number[];
 	isExpired: boolean;
 }

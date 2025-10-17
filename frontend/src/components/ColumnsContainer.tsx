@@ -9,7 +9,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import TaskContainer from './TaskContainer';
 import type { MoveTaskRequest, TaskResponse } from '../types/tasks';
 import { moveTask } from '../api/tasks';
-import { IoMdClose } from "react-icons/io";
+import { FaRegTrashAlt } from "react-icons/fa";
 
 interface ColumnsContainerProps {
 	columns: ColumnDto[];
@@ -25,7 +25,7 @@ const reorder = (list: number[], startIndex: number, endIndex: number): number[]
   return result;
 };
 
-const ColumnsContainer: React.FC<ColumnsContainerProps> = ({ columns: backendColumns, boardId, readonly }) => {
+const ColumnsContainer: React.FC<ColumnsContainerProps> = ({ columns: backendColumns, boardId, readonly, boardMembers }) => {
   const [columnsMap, setColumnsMap] = useState<Record<number, ColumnDto>>({});
   const [ordered, setOrdered] = useState<number[]>([]);
 
@@ -361,7 +361,7 @@ const ColumnsContainer: React.FC<ColumnsContainerProps> = ({ columns: backendCol
 
                       <div className="border-t border-gray-500 mb-4"></div>
 
-                      <TaskContainer column={column} boardId={boardId} readonly={readonly} />
+                      <TaskContainer column={column} boardId={boardId} readonly={readonly} boardMembers={boardMembers} />
                     </div>
                   ) : (
                     <Draggable
@@ -422,7 +422,7 @@ const ColumnsContainer: React.FC<ColumnsContainerProps> = ({ columns: backendCol
 
                           <div className="border-t border-gray-500 mb-4"></div>
 
-                          <TaskContainer column={column} boardId={boardId} readonly={readonly} />
+                          <TaskContainer column={column} boardId={boardId} readonly={readonly} boardMembers={boardMembers} />
                         </div>
                       )}
                     </Draggable>

@@ -87,13 +87,13 @@ const Sidebar = () => {
               </li>
             ))}
           </ul>
-          <button 
+          <div 
             onClick={() => setIsModalOpen(true)}
-            className="w-full text-left px-7 py-2 text-purple-300 hover:text-purple-200 hover:bg-[#2a2a2a] rounded-lg cursor-pointer flex items-center space-x-1"
+            className="block mx-2 text-left px-5 py-2 text-purple-300 hover:text-purple-200 hover:bg-[#2a2a2a] rounded-lg cursor-pointer flex items-center space-x-1"
           >
             <IoMdAdd size={20} />
             <span>New Workspace</span>
-          </button>
+          </div>
           <CreateWorkspaceModal 
             isOpen={isModalOpen}
             onClose={() => setIsModalOpen(false)}
