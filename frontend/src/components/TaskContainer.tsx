@@ -9,6 +9,8 @@ import toast from 'react-hot-toast';
 import { createTask } from '../api/tasks';
 import TaskDetailsModal from './TaskDetailsModal';
 import { createPortal } from "react-dom"
+import { FaRegCheckCircle } from "react-icons/fa";
+import { IoAlarmOutline } from "react-icons/io5";
 
 interface TaskContainerProps {
   column: ColumnDto;
@@ -78,6 +80,12 @@ const TaskContainer: React.FC<TaskContainerProps> = ({ column, boardId, boardNam
     setNewTaskTitle("");
   };
 
+  const priorityColors: Record<"HIGH" | "MEDIUM" | "LOW", string> = {
+    HIGH: "bg-red-500",
+    MEDIUM: "bg-yellow-500",
+    LOW: "bg-green-500",
+  };
+
 	return (
     <div>
       <Droppable droppableId={column.columnId.toString()} type="TASK">
@@ -89,29 +97,92 @@ const TaskContainer: React.FC<TaskContainerProps> = ({ column, boardId, boardNam
               snapshot.isDraggingOver ? "bg-[#383838] rounded-md" : ""
             }`}
           >
-            {column.taskProjections.map((task, index) => (
-              <div>
-                <Draggable
-                key={task.taskId.toString()}
-                draggableId={task.taskId.toString()}
-                index={index}
-                >
-                  {(provided, snapshot) => (
-                    <div
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
-                      onClick={() => handleTaskClick(task.taskId)}
-                      className={`bg-[#1f1f1f] border border-2 border-transparent rounded-lg p-2.5 shadow text-gray-200 hover:border-purple-500 ${
-                        snapshot.isDragging ? "opacity-60 scale-[0.98]" : ""
-                      }`}
-                    >
-                      <p className="text-sm break-all whitespace-normal font-medium">{task.title}</p>
-                    </div>
-                  )}
-                </Draggable>
-              </div>
-            ))}
+            {column.taskProjections.map((task, index) => {
+              const MAX_VISIBLE_ASSIGNEES = 3;
+              const assignedMembers = boardMembers.filter((m) =>task.assigneeIds?.includes(m.memberId));
+              const visibleMembers = assignedMembers.slice(0, MAX_VISIBLE_ASSIGNEES);
+              const remainingCount = assignedMembers.length - MAX_VISIBLE_ASSIGNEES;
+
+              return (
+                <div key={task.taskId}>
+                  <Draggable
+                    draggableId={task.taskId.toString()}
+                    index={index}
+                  >
+                    {(provided, snapshot) => (
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                        onClick={() => handleTaskClick(task.taskId)}
+                        className={`bg-[#1f1f1f] border border-2 border-transparent rounded-lg px-2.5 py-1.5 shadow text-gray-200 hover:border-purple-500 
+                          ${snapshot.isDragging ? "opacity-60 scale-[0.98]" : ""}`}
+                      >
+                        {/* Priority Bar */}
+                        {task.priority && (
+                          <div
+                            className={`h-2 w-1/3 my-2 rounded ${priorityColors[task.priority]}`}
+                            title={`Priority: ${task.priority}`}
+                          />
+                        )}
+
+                        {/* Title Row */}
+                        <div className="flex items-center space-x-2 my-1">
+                          {task.status === "DONE" && (
+                            <FaRegCheckCircle size={18} className="text-green-400 flex-shrink-0" />
+                          )}
+                          <p className="text-base break-words whitespace-normal font-medium">
+                            {task.title}
+                          </p>
+                        </div>
+
+                        {/* Bottom Row: Deadline + Assignees */}
+                        <div className="flex items-center justify-between mt-2">
+                          {/* Deadline */}
+                          {task.deadline ? (
+                            <div className={`flex items-center text-sm space-x-1 ${
+                              task.status === "DONE"
+                                ? "text-green-400"
+                                : task.isExpired
+                                ? "text-red-400"
+                                : "text-gray-400"
+                            }`}>
+                              <IoAlarmOutline size={20} />
+                              <span>
+                                {new Date(task.deadline).toLocaleDateString("en-GB")}
+                              </span>
+                            </div>
+                          ) : (
+                            <div>
+                            </div>
+                          )}
+
+                          {/* Assigned Users */}
+                          <div className="flex items-center -space-x-2">
+                            {visibleMembers.map((m) => (
+                              <div
+                                key={m.memberId}
+                                title={`${m.firstname} ${m.lastname} (${m.username})`}
+                                className="w-8 h-8 rounded-full border-2 border-[#1f1f1f] flex items-center justify-center text-xs font-bold text-white"
+                                style={{ backgroundColor: m.avatarColor }}
+                              >
+                                {m.firstname[0].toUpperCase()}
+                              </div>
+                            ))}
+
+                            {remainingCount > 0 && (
+                              <div className="w-8 h-8 rounded-full bg-[#2a2a2a] flex items-center justify-center text-gray-100 text-xs font-semibold border-2 border-[#1f1f1f] cursor-default">
+                                +{remainingCount}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </Draggable>
+                </div>
+              );
+            })}
 
             {provided.placeholder}
 
@@ -155,7 +226,7 @@ const TaskContainer: React.FC<TaskContainerProps> = ({ column, boardId, boardNam
                     className="text-purple-400 items-center flex space-x-1 w-full hover:text-purple-300 text-sm p-2 rounded-md cursor-pointer hover:bg-[#262626]"
                   >
                     <IoMdAdd size={20} />
-                    <span>New Task</span>
+                    <span className="text-base">New Task</span>
                   </button>
                 )}
               </div>

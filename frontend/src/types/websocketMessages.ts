@@ -76,7 +76,7 @@ export interface TaskMovedMessage {
 
 export interface TaskUpdatedMessage {
 	taskId: number;
-	title: string | null;
+	title: string;
 	deadline: string | null;
 	priority: "HIGH" | "MEDIUM" | "LOW" | null;
 	taskStatus: "ACTIVE" | "DONE" | null;

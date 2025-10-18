@@ -18,12 +18,12 @@ export interface MoveTaskRequest {
 }
 
 export interface TaskUpdateRequest {
-	taskId: number;
-	title: string | null;
-	description: string | null;
-	deadline: Date | null;
-	priority: "HIGH" | "MEDIUM" | "LOW" | null;
-	status: "ACTIVE" | "DONE"| null;
+  taskId: number;
+  title?: string | null;
+  description?: string | null;
+  deadline?: Date | null;
+  priority?: "HIGH" | "MEDIUM" | "LOW" | null;
+  status?: "ACTIVE" | "DONE" | null;
 }
 
 export interface TaskProjection {

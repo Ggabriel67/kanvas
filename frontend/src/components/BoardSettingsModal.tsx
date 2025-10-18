@@ -187,7 +187,7 @@ const BoardSettingsModal: React.FC<WorkspaceSettingsModalProps> = ({ isOpen, onC
                       </button>
                     )}
                   </div>
-                  <p className="mt-2 text-gray-300 text-md">
+                  <p className={`mt-2 ${board.description ? "text-gray-300 text-md" : "text-gray-500 italic text=sm"}`}>
                     {board.description || "* This board has no description"}
                   </p>
                 </div>

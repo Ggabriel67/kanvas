@@ -6,7 +6,9 @@ const BoardLayout = () => {
   return (
     <div className="flex flex-col h-screen bg-[#121212] text-gray-100">
       {/* Top navbar always full width */}
-      <Navbar />
+      <div className="sticky top-0 z-50">
+        <Navbar />
+      </div>
 
       {/* Rest of the app below the navbar */}
       <div className="flex flex-1">

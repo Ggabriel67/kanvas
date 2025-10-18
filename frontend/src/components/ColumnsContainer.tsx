@@ -342,7 +342,7 @@ const ColumnsContainer: React.FC<ColumnsContainerProps> = ({ columns: backendCol
             <div
               ref={provided.innerRef}
               {...provided.droppableProps}
-              className="flex overflow-x-auto p-4 gap-4 scrollbar-thin scrollbar-thumb-[#444] scrollbar-track-[#222]"
+              className="flex overflow-x-auto h-full p-4 gap-4 scrollbar-thin scrollbar-thumb-[#444] scrollbar-track-[#222]"
             >
               {ordered.map((columnId, index) => {
                 const column = columnsMap[columnId];
@@ -402,7 +402,7 @@ const ColumnsContainer: React.FC<ColumnsContainerProps> = ({ columns: backendCol
                               />
                             ) : (
                               <h3
-                                className="font-semibold break-all whitespace-normal flex-1 cursor-pointer"
+                                className="font-semibold break-all text-lg whitespace-normal flex-1 cursor-pointer"
                                 onClick={() => {
                                   setEditingColumnId(column.columnId);
                                   setEditedColumnName(column.name);
@@ -446,7 +446,7 @@ const ColumnsContainer: React.FC<ColumnsContainerProps> = ({ columns: backendCol
                           if (e.key === "Escape") handleCancelNewCol();
                         }}
                         autoFocus
-                        className="bg-[#2b2b2b] border border-gray-600 text-gray-100 px-2 py-1 rounded outline-none focus:ring-2 focus:ring-purple-500"
+                        className="bg-[#2b2b2b] border text-lg border-gray-600 text-gray-100 px-2 py-1 rounded outline-none focus:ring-2 focus:ring-purple-500"
                         placeholder="Column name..."
                       />
                       <div className="flex gap-2">

@@ -137,8 +137,9 @@ const BoardHeader: React.FC<BoardHeaderProps> = ({ board }) => {
         {/* Add member */}
         <button
           onClick={() => setIsInviteModalOpen(true)}
-          className={`p-1.5 bg-[#222222] px-4 text-white rounded cursor-pointer shadow-md flex items-center space-x-1
-            ${isAdmin ? "hover:bg-[#2a2a2a]" : "opacity-50 pointer-events-none"}
+          disabled={!isAdmin}
+          className={`p-1.5 bg-[#222222] px-4 rounded cursor-pointer shadow-md flex items-center space-x-1 hover:bg-[#2a2a2a]
+            ${isAdmin ? "text-white" : "pointer-events-none text-gray-400"}
           `}
         >
           <AiOutlineUserAdd size={20} />

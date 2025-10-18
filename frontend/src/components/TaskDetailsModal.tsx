@@ -59,7 +59,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ isOpen, onClose, bo
 
     if (editedTitle.trim() === task.title || editedTitle.trim() === "") return;
     let request: TaskUpdateRequest = {
-      taskId: taskId, title: editedTitle, description: null, deadline: null, priority: null, status: null
+      taskId: taskId, title: editedTitle, description: task.description, deadline: selectedDeadline, priority: task.priority, status: task.status
     }
     try {
       const res = await updateTask(request, boardId);
@@ -90,10 +90,10 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ isOpen, onClose, bo
     if ((editedDescription || null) === task.description) return;
 
     let request: TaskUpdateRequest = {
-      taskId: taskId, title: null, description: editedDescription, deadline: null, priority: null, status: null
+      taskId: taskId, title: task.title, description: editedDescription, deadline: selectedDeadline, priority: task.priority, status: task.status
     }
     try {
-      const res = await updateTask(request, boardId);
+      await updateTask(request, boardId);
 
       setTask((prev) => prev && { ...prev, description: editedDescription });
     } catch (error: any) {
@@ -106,7 +106,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ isOpen, onClose, bo
     const newStatus = task.status === "ACTIVE" ? "DONE" : "ACTIVE";
 
     let request: TaskUpdateRequest = {
-      taskId: taskId, title: null, description: null, deadline: null, priority: null, status: newStatus
+      taskId: taskId, title: task.title, description: task.description, deadline: selectedDeadline, priority: task.priority, status: newStatus
     }
     try {
       const data = await updateTask(request, boardId);
@@ -120,7 +120,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ isOpen, onClose, bo
               ? {
                   ...col,
                   taskProjections: col.taskProjections.map((t) =>
-                    t.taskId === task.taskId ? { ...t, status: newStatus } : t
+                    t.taskId === task.taskId ? { ...t, status: newStatus, isExpired: data.isExpired } : t
                   ),
                 }
               : col
@@ -137,9 +137,10 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ isOpen, onClose, bo
     try {
       const isoString = date ? date.toISOString() : null;
       let request: TaskUpdateRequest = {
-        taskId: taskId, title: null, description: null, deadline: date, priority: null, status: null
+        taskId: taskId, title: task.title, description: task.description, deadline: date, priority: task.priority, status: task.status
       }
       const data = await updateTask(request, boardId);
+
       setTask((prev) => (prev ? { ...prev, deadline: isoString } : prev));
       setSelectedDeadline(date);
       
@@ -152,7 +153,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ isOpen, onClose, bo
               ? {
                   ...col,
                   taskProjections: col.taskProjections.map((t) =>
-                    t.taskId === task.taskId ? { ...t, deadline: isoString } : t
+                    t.taskId === task.taskId ? { ...t, deadline: isoString, isExpired: data.isExpired } : t
                   ),
                 }
               : col
@@ -167,10 +168,10 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ isOpen, onClose, bo
   const handleSavePriority = async (newPriority: "HIGH" | "MEDIUM" | "LOW" | null) => {
     if (!task || readonly) return;
     let request: TaskUpdateRequest = {
-      taskId: taskId, title: null, description: null, deadline: null, priority: newPriority, status: null
+      taskId: taskId, title: task.title, description: task.description, deadline: selectedDeadline, priority: newPriority, status: task.status
     }
     try {
-      const data = await updateTask(request, boardId);
+      await updateTask(request, boardId);
       setTask((prev) => prev ? { ...prev, priority: newPriority } : prev);
 
       queryClient.setQueryData<BoardDto>(["board", boardId], (old) => {
@@ -237,7 +238,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ isOpen, onClose, bo
       <div className="fixed inset-0 bg-black/75" onClick={onClose} />
 
       {/* Modal content */}
-      <div className="relative bg-[#1e1e1e] text-gray-200 rounded-xl min-h-[600px] max-h-[750px] overflow-y-auto shadow-xl w-full max-w-3xl p-6 z-10 pb-8">
+      <div className="relative bg-[#1e1e1e] text-gray-200 rounded-xl min-h-[750px] max-h-[750px] overflow-y-auto shadow-xl w-full max-w-3xl p-6 z-10 pb-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-5">
           <h2 className="text-xl font-semibold">Task Details</h2>
@@ -329,14 +330,16 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ isOpen, onClose, bo
             />
           ) : (
             <p
-              className={`text-base text-gray-300 ${
-                readonly ? "cursor-default" : "cursor-pointer hover:underline"
-                }`}
+              className={`w-fit text-base ${
+                task.description ? "text-gray-300" : "text-gray-500 italic"
+              } ${readonly ? "cursor-default" : "cursor-pointer hover:underline"}`}
               title="Edit description"
               onClick={() => {
-                !readonly && setIsEditingDescription(true)
-                if (task.description) setEditedDescription(task.description)}
-              }
+                if (!readonly) {
+                  setIsEditingDescription(true);
+                  if (task.description) setEditedDescription(task.description);
+                }
+              }}
             >
               {task.description || "* This task has no description"}
             </p>

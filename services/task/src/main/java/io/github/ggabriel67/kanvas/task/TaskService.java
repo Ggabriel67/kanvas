@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -75,21 +76,21 @@ public class TaskService
         mergeTask(task, request);
         taskRepository.save(task);
 
-        String priority = request.priority() != null ? request.priority().name() : null;
-        String status = request.status() != null ? request.status().name() : null;
+        String priority = task.getPriority() != null ? task.getPriority().name() : null;
+        String status = task.getStatus() != null ? task.getStatus().name() : null;
         taskEventProducer.sendTaskUpdated(new TaskUpdated(task.getColumn().getBoardId(), task.getId(),
-                request.title(), request.deadline(), priority, status, task.isExpired()
+                task.getTitle(), task.getDeadline(), priority, status, task.isExpired()
         ));
 
         return new TaskResponse(task.getId(), task.getColumn().getId(), task.getOrderIndex(), task.isExpired());
     }
 
     private void mergeTask(Task task, TaskUpdateRequest request) {
-        if (request.title() != null && StringUtils.isNotBlank(request.title())) task.setTitle(request.title());
-        if (request.description() != null && StringUtils.isNotBlank(request.description())) task.setDescription(request.description());
-        if (request.deadline() != null) task.setDeadline(request.deadline());
-        if (request.priority() != null) task.setPriority(request.priority());
-        if (request.status() != null) task.setStatus(request.status());
+        task.setTitle(request.title());
+        task.setDescription(request.description());
+        task.setDeadline(request.deadline());
+        task.setPriority(request.priority());
+        task.setStatus(request.status());
     }
 
     @Transactional

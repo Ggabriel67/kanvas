@@ -183,7 +183,7 @@ const WorkspaceSettingsModal: React.FC<WorkspaceSettingsModalProps> = ({
                       </button>
                     )}
                   </div>
-                  <p className="mt-2 text-gray-300 text-md">
+                  <p className={`mt-2 ${workspace.description ? "text-gray-300 text-md" : "text-gray-500 italic text=sm"}`}>
                     {workspace.description || "* This workspace has no description"}
                   </p>
                 </div>

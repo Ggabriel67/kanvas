@@ -216,10 +216,10 @@ export function applyTaskUpdated(board: BoardDto, payload: TaskUpdatedMessage) {
         return {
           ...task,
           ...(title !== null && { title }),
-          ...(deadline !== null && { deadline }),
-          ...(priority !== null && { priority }),
+          deadline: deadline,
+          priority: priority,
           ...(taskStatus !== null && { status: taskStatus }),
-          isExpired,
+          isExpired: isExpired,
         };
       }),
     })),
