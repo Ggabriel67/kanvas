@@ -15,6 +15,7 @@ interface ColumnsContainerProps {
 	columns: ColumnDto[];
 	boardMembers: BoardMember[];
 	boardId: number;
+  boardName: string;
   readonly: boolean;
 }
 
@@ -25,7 +26,7 @@ const reorder = (list: number[], startIndex: number, endIndex: number): number[]
   return result;
 };
 
-const ColumnsContainer: React.FC<ColumnsContainerProps> = ({ columns: backendColumns, boardId, readonly, boardMembers }) => {
+const ColumnsContainer: React.FC<ColumnsContainerProps> = ({ columns: backendColumns, boardId, boardName, readonly, boardMembers }) => {
   const [columnsMap, setColumnsMap] = useState<Record<number, ColumnDto>>({});
   const [ordered, setOrdered] = useState<number[]>([]);
 
@@ -361,7 +362,7 @@ const ColumnsContainer: React.FC<ColumnsContainerProps> = ({ columns: backendCol
 
                       <div className="border-t border-gray-500 mb-4"></div>
 
-                      <TaskContainer column={column} boardId={boardId} readonly={readonly} boardMembers={boardMembers} />
+                      <TaskContainer column={column} boardId={boardId} boardName={boardName} readonly={readonly} boardMembers={boardMembers} />
                     </div>
                   ) : (
                     <Draggable
@@ -422,7 +423,7 @@ const ColumnsContainer: React.FC<ColumnsContainerProps> = ({ columns: backendCol
 
                           <div className="border-t border-gray-500 mb-4"></div>
 
-                          <TaskContainer column={column} boardId={boardId} readonly={readonly} boardMembers={boardMembers} />
+                          <TaskContainer column={column} boardId={boardId} boardName={boardName} readonly={readonly} boardMembers={boardMembers} />
                         </div>
                       )}
                     </Draggable>

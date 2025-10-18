@@ -1,6 +1,6 @@
 import type { BoardDto, BoardMember } from "../types/boards";
 import type { ColumnDto } from "../types/columns";
-import type { BoardUpdatedMessage, ColumnCreatedMessage, ColumnDeletedMessage, ColumnMovedMessage, ColumnUpdatedMessage, MemberJoinedMessage, MemberRemovedMessage, RoleChangedMessage, TaskCreatedMessage, TaskDeletedMessage, TaskMovedMessage, TaskUpdatedMessage } from "../types/websocketMessages";
+import type { BoardUpdatedMessage, ColumnCreatedMessage, ColumnDeletedMessage, ColumnMovedMessage, ColumnUpdatedMessage, MemberJoinedMessage, MemberRemovedMessage, RoleChangedMessage, TaskAssignment, TaskCreatedMessage, TaskDeletedMessage, TaskMovedMessage, TaskUpdatedMessage } from "../types/websocketMessages";
 import type { TaskProjection } from "../types/tasks";
 
 export function applyColumnCreated(board: BoardDto, payload: ColumnCreatedMessage) {
@@ -234,6 +234,50 @@ export function applyTaskDeleted(board: BoardDto, payload: TaskDeletedMessage) {
     columns: board.columns.map((col) => ({
       ...col,
       taskProjections: col.taskProjections.filter((task) => task.taskId !== taskId),
+    })),
+  };
+}
+
+export function applyTaskAssigned(board: BoardDto, payload: TaskAssignment) {
+  const { taskId, boardMemberId } = payload;
+
+  return {
+    ...board,
+    columns: board.columns.map((col) => ({
+      ...col,
+      taskProjections: col.taskProjections.map((t) =>
+        t.taskId === taskId
+          ? {
+              ...t,
+              assigneeIds: t.assigneeIds
+                ? t.assigneeIds.includes(boardMemberId)
+                  ? t.assigneeIds
+                  : [...t.assigneeIds, boardMemberId]
+                : [boardMemberId],
+            }
+          : t
+      ),
+    })),
+  };
+}
+
+export function applyTaskUnassigned(board: BoardDto, payload: TaskAssignment) {
+  const { taskId, boardMemberId } = payload;
+
+  return {
+    ...board,
+    columns: board.columns.map((col) => ({
+      ...col,
+      taskProjections: col.taskProjections.map((t) =>
+        t.taskId === taskId
+          ? {
+              ...t,
+              assigneeIds: (t.assigneeIds || []).filter(
+                (id) => id !== boardMemberId
+              ),
+            }
+          : t
+      ),
     })),
   };
 }

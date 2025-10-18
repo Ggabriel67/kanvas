@@ -10,9 +10,9 @@ export type BoardMessage =
 	| { type: "TASK_CREATED"; payload: TaskCreatedMessage }
 	| { type: "TASK_MOVED"; payload: TaskMovedMessage }
 	| { type: "TASK_UPDATED"; payload: TaskUpdatedMessage }
-	| { type: "TASK_DELETED"; payload: TaskDeletedMessage };
-	// TASK_ASSIGNED
-	// TASK_UNASSIGNED
+	| { type: "TASK_DELETED"; payload: TaskDeletedMessage }
+	| { type: "TASK_ASSIGNED"; payload: TaskAssignment }
+	| { type: "TASK_UNASSIGNED"; payload: TaskAssignment };
 
 export interface BoardUpdatedMessage {
 	name: string | null;
@@ -85,4 +85,9 @@ export interface TaskUpdatedMessage {
 
 export interface TaskDeletedMessage {
 	taskId: number;
+}
+
+export interface TaskAssignment {
+	taskId: number;
+	boardMemberId: number;
 }

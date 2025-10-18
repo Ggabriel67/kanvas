@@ -13,11 +13,12 @@ import { createPortal } from "react-dom"
 interface TaskContainerProps {
   column: ColumnDto;
 	boardId: number;
+  boardName: string
 	readonly: boolean;
   boardMembers: BoardMember[];
 }
 
-const TaskContainer: React.FC<TaskContainerProps> = ({ column, boardId, readonly, boardMembers }) => {
+const TaskContainer: React.FC<TaskContainerProps> = ({ column, boardId, boardName, readonly, boardMembers }) => {
   const [isCreatingTask, setIsCreatingTask] = useState(false);
   const [newTaskTitle, setNewTaskTitle] = useState<string>("");
   const [isTaskModalOpen, setIsTaskModalOpen] = useState<boolean>(false);
@@ -169,6 +170,7 @@ const TaskContainer: React.FC<TaskContainerProps> = ({ column, boardId, readonly
           isOpen={isTaskModalOpen}
           onClose={() => setIsTaskModalOpen(false)}
           boardId={boardId}
+          boardName={boardName}
           taskId={selectedTaskId}
           boardMembers={boardMembers}
           readonly={readonly}

@@ -13,17 +13,19 @@ import "react-datepicker/dist/react-datepicker.css";
 import { MdOutlineDescription } from "react-icons/md";
 import PriorityDropdown from './PriorityDropdown';
 import { useQueryClient } from '@tanstack/react-query';
+import AssigneeSelector from './AssigneeSelector';
 
 interface TaskDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
   boardId: number;
+  boardName: string;
   taskId: number;
   boardMembers: BoardMember[];
   readonly: boolean;
 }
 
-const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ isOpen, onClose, boardId, taskId, boardMembers, readonly }) => {
+const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ isOpen, onClose, boardId, boardName, taskId, boardMembers, readonly }) => {
   if (!isOpen) { return null; }
 
   const [task, setTask] = useState<TaskDto>();
@@ -235,7 +237,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ isOpen, onClose, bo
       <div className="fixed inset-0 bg-black/75" onClick={onClose} />
 
       {/* Modal content */}
-      <div className="relative bg-[#1e1e1e] text-gray-200 rounded-xl min-h-[750px] max-h-[750px] overflow-y-auto shadow-xl w-full max-w-3xl p-6 z-10 pb-8">
+      <div className="relative bg-[#1e1e1e] text-gray-200 rounded-xl min-h-[600px] max-h-[750px] overflow-y-auto shadow-xl w-full max-w-3xl p-6 z-10 pb-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-5">
           <h2 className="text-xl font-semibold">Task Details</h2>
@@ -343,12 +345,12 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ isOpen, onClose, bo
 
         {/* Task Meta Section */}
         <div className="mb-10 grid grid-cols-3 gap-5 items-start">
+          {/* Priority */}
           <div>
             <div className="flex items-center space-x-1 mb-2">
               <MdOutlinePriorityHigh />
               <span className="font-medium ">Priority</span>
             </div>
-            {/* Priority */}
             <PriorityDropdown
               value={task.priority}
               readonly={readonly}
@@ -374,21 +376,27 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ isOpen, onClose, bo
                 showTimeSelect
                 dateFormat="Pp"
                 placeholderText="No deadline set"
-                className="w-full bg-[#2b2b2b] border border-gray-600 rounded p-2 outline-none focus:ring-2 focus:ring-purple-500 text-gray-200"
+                className="w-[185px] bg-[#2b2b2b] border border-gray-600 rounded p-2 outline-none focus:ring-2 focus:ring-purple-500 text-gray-200"
               />
             )}
           </div>
 
-          {/* Assignees (placeholder) */}
+          {/* Assignees */}
           <div>
             <div className="flex space-x-2 items-center mb-2">
               <PiUsers size={20}/>
               <span className="font-medium">Assignees</span>
             </div>
             
-            <div className="bg-[#2b2b2b] border border-gray-700 rounded p-3 text-gray-400">
-              (Assignees)
-            </div>
+            <AssigneeSelector
+              boardId={boardId}
+              boardName={boardName}
+              taskId={taskId}
+              boardMembers={boardMembers}
+              assigneeIds={task.assigneeIds}
+              readonly={readonly}
+              setTask={setTask}
+            />
           </div>
         </div>
 

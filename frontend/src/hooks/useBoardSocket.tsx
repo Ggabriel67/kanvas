@@ -5,7 +5,7 @@ import type { BoardMessage } from '../types/websocketMessages';
 import type { BoardDto } from '../types/boards';
 import toast from 'react-hot-toast';
 import { applyBoardUpdated, applyColumnCreated, applyColumnDeleted, applyColumnMoved, applyColumnUpdated, applyMemberJoined,
-	 applyMemberRemoved, applyRoleChanged, applyTaskCreated, applyTaskDeleted, applyTaskMoved, applyTaskUpdated } from '../utils/boardUpdates';
+	 applyMemberRemoved, applyRoleChanged, applyTaskAssigned, applyTaskCreated, applyTaskDeleted, applyTaskMoved, applyTaskUnassigned, applyTaskUpdated } from '../utils/boardUpdates';
 
 const useBoardSocket = (boardId: number | null) => {
 	const { client, connected } = useWebSocket();
@@ -91,6 +91,18 @@ const useBoardSocket = (boardId: number | null) => {
 							queryClient.setQueryData(["board", boardId], (old: BoardDto | undefined) => {
 								if (!old) return old;
 								return applyTaskDeleted(old, boardMessage.payload);
+							});
+							break;
+						case "TASK_ASSIGNED":
+							queryClient.setQueryData(["board", boardId], (old: BoardDto | undefined) => {
+								if (!old) return old;
+								return applyTaskAssigned(old, boardMessage.payload);
+							});
+							break;
+						case "TASK_UNASSIGNED":
+							queryClient.setQueryData(["board", boardId], (old: BoardDto | undefined) => {
+								if (!old) return old;
+								return applyTaskUnassigned(old, boardMessage.payload);
 							});
 							break;
 					}

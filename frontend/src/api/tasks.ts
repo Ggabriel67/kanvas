@@ -67,7 +67,7 @@ export async function updateTask(request: TaskUpdateRequest, boardId: number) {
 
 export async function assignTask(request: AssignmentRequest, boardId: number) {
   try {
-    await api.patch("/assignees", request, {headers: {"X-Board-Id": boardId}});
+    await api.post("/assignees", request, {headers: {"X-Board-Id": boardId}});
   } catch (error: any) {
     if (error.response) {
       throw new Error(error.response.data);

@@ -21,6 +21,7 @@ const Board = () => {
         columns={board.columns}
         boardMembers={board.boardMembers}
         boardId={board.boardId}
+        boardName={board.name}
         readonly={board.readonly}
       />
     </div>
