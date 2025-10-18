@@ -36,7 +36,7 @@ const GuestWorkspaces = () => {
 			{/* Separator */}
       <hr className="border-gray-600 mb-5" />
 			{guestWorkspaces.length === 0 ? (
-				<p className="text-gray-400 text-center mt-10">
+				<p className="text-gray-400 text-center mt-10 italic">
 					You are not a guest in any workspace
 				</p>
 			) : (

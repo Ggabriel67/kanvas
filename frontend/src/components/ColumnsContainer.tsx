@@ -352,7 +352,7 @@ const ColumnsContainer: React.FC<ColumnsContainerProps> = ({ columns: backendCol
                   readonly ? (
                     <div
                       key={column.columnId}
-                      className="bg-[#2b2b2b] rounded-xl p-2 w-[280px] flex-shrink-0 shadow-md text-gray-100"
+                      className="bg-[#2b2b2b] rounded-xl p-2 w-[280px] shadow-md text-gray-100"
                     >
                       <div className="flex items-center justify-between mb-2 pt-2 px-2">
                         <h3 className="font-semibold break-all whitespace-normal flex-1">

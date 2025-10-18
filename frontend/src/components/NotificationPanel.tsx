@@ -3,6 +3,8 @@ import type { Notification } from '../types/notifications';
 import toast from 'react-hot-toast';
 import { acceptBoardInvitation, acceptWorkspaceInvitation, declineBoardInvitation, declineWorkspaceInvitation } from '../api/invitations';
 import { useWorkspaceStore } from '../hooks/useWorkspaceStore';
+import { IoMdClose } from "react-icons/io";
+import { dismissNotification } from '../api/notifications';
 
 interface NotificationPanelProps {
   notifications: Notification[];
@@ -60,6 +62,14 @@ const NotificationPanel: React.FC<NotificationPanelProps> = ({ notifications, on
 			toast.error(error.message);
 		}
 	}
+
+	const handleDismissNotification = async (notificationId: number) => {
+		try {
+			await dismissNotification(notificationId);
+		} catch (error: any) {
+			toast.error(error.message);
+		}
+	} 
 
   return (
     <div>
@@ -121,8 +131,73 @@ const NotificationPanel: React.FC<NotificationPanelProps> = ({ notifications, on
 
 										<span className="text-xs text-gray-500">
 											{timeAgo(n.sentAt)}
-											{notifications.length}
 										</span>
+									</li>
+								);
+							}
+
+							else if (n.type === "ASSIGNMENT") {
+								const taskTitle = n.payload["taskTitle"] as string;
+								const boardName = n.payload["boardName"] as string;
+								const assigned = n.payload["assigned"] as boolean;
+
+								return (
+									<li
+										key={n.notificationId}
+										className="p-3 pl-4 hover:bg-[#2a2a2a] flex justify-between items-start"
+									>
+										<div>
+											<p className="text-gray-200 text-sm mb-2">
+												<span>
+													You have been{assigned ? " assigned to " : " unassigned from "}task&nbsp;
+												</span>
+												<span className="font-semibold text-purple-400">{taskTitle}</span>{" "}
+												in board&nbsp;
+												<span className="font-semibold text-purple-400">{boardName}</span>
+											</p>
+
+											<span className="text-xs text-gray-500">{timeAgo(n.sentAt)}</span>
+										</div>
+
+										<button
+											onClick={() => {
+												handleDismissNotification(n.notificationId);
+												onRemove(n.notificationId);}
+											}
+											className="text-gray-400 hover:text-red-500 cursor-pointer ml-3"
+										>
+											<IoMdClose size={18} />
+										</button>
+									</li>
+								);
+							}
+
+							else if (n.type === "REMOVED_FROM_BOARD") {
+								const boardName = n.payload["boardName"] as string;
+
+								return (
+									<li
+										key={n.notificationId}
+										className="p-3 pl-4 hover:bg-[#2a2a2a] flex justify-between items-start"
+									>
+										<div>
+											<p className="text-gray-200 text-sm mb-2">
+												<span>You have been removed from board&nbsp;</span>
+												<span className="font-semibold text-purple-400">{boardName}</span>
+											</p>
+
+											<span className="text-xs text-gray-500">{timeAgo(n.sentAt)}</span>
+										</div>
+
+										<button
+											onClick={() => {
+												handleDismissNotification(n.notificationId);
+												onRemove(n.notificationId);}
+											}
+											className="text-gray-400 hover:text-red-500 cursor-pointer ml-3"
+										>
+											<IoMdClose size={18} />
+										</button>
 									</li>
 								);
 							}

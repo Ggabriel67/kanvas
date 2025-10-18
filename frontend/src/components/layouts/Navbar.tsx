@@ -14,7 +14,7 @@ import useWebSocket from '../../hooks/useWebSocket';
 interface NotificationMessage {
 	notificationId: number;
 	userId: number;
-	type: string;
+	type: "INVITATION" | "ASSIGNMENT" | "REMOVED_FROM_BOARD";
 	status: string;
 	sentAt: string;
 	payload: Record<string, unknown>;
