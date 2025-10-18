@@ -23,11 +23,6 @@ const TaskContainer: React.FC<TaskContainerProps> = ({ column, boardId, readonly
   const [isTaskModalOpen, setIsTaskModalOpen] = useState<boolean>(false);
   const [selectedTaskId, setSelectedTaskId] = useState<number>(0);
 
-  // const sortedTasks = useMemo(
-  //   () => [...column.taskProjections].sort((a, b) => a.orderIndex - b.orderIndex),
-  //   [column.taskProjections]
-  // );
-
 	const queryClient = useQueryClient();
 
   const handleTaskClick = (taskId: number) => {

@@ -8,9 +8,9 @@ export type BoardMessage =
   | { type: "COLUMN_MOVED"; payload: ColumnMovedMessage }
 	| { type: "COLUMN_DELETED"; payload: ColumnDeletedMessage }
 	| { type: "TASK_CREATED"; payload: TaskCreatedMessage }
-	// todo TASK_UPDATED
-	| { type: "TASK_MOVED"; payload: TaskMovedMessage };
-	// todo TASK_DELETED
+	| { type: "TASK_MOVED"; payload: TaskMovedMessage }
+	| { type: "TASK_UPDATED"; payload: TaskUpdatedMessage }
+	| { type: "TASK_DELETED"; payload: TaskDeletedMessage };
 	// TASK_ASSIGNED
 	// TASK_UNASSIGNED
 
@@ -72,4 +72,17 @@ export interface TaskMovedMessage {
 	targetColumnId: number;
 	taskId: number;
 	newOrderIndex: number;
+}
+
+export interface TaskUpdatedMessage {
+	taskId: number;
+	title: string | null;
+	deadline: string | null;
+	priority: "HIGH" | "MEDIUM" | "LOW" | null;
+	taskStatus: "ACTIVE" | "DONE" | null;
+	isExpired: boolean;
+}
+
+export interface TaskDeletedMessage {
+	taskId: number;
 }

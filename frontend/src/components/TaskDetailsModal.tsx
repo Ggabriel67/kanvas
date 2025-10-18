@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import type { BoardMember } from '../types/boards';
+import type { BoardDto, BoardMember } from '../types/boards';
 import { IoMdClose } from "react-icons/io";
 import toast from 'react-hot-toast';
 import type { TaskDto, TaskUpdateRequest } from '../types/tasks';
@@ -12,6 +12,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { MdOutlineDescription } from "react-icons/md";
 import PriorityDropdown from './PriorityDropdown';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface TaskDetailsModalProps {
   isOpen: boolean;
@@ -33,6 +34,8 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ isOpen, onClose, bo
   const [selectedDeadline, setSelectedDeadline] = useState<Date | null>(
     task?.deadline ? new Date(task.deadline) : null
   );
+
+  const queryClient = useQueryClient();
 
   const fetchTaskDetails = async () => {
     try {
@@ -59,6 +62,22 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ isOpen, onClose, bo
     try {
       const res = await updateTask(request, boardId);
       setTask((prev) => prev && { ...prev, title: editedTitle });
+      queryClient.setQueryData<BoardDto>(["board", boardId], (old) => {
+        if (!old) return old;
+        return {
+          ...old,
+          columns: old.columns.map((col) =>
+            col.columnId === task.columnId
+              ? {
+                  ...col,
+                  taskProjections: col.taskProjections.map((t) =>
+                    t.taskId === task.taskId ? { ...t, title: editedTitle } : t
+                  ),
+                }
+              : col
+          ),
+        };
+      });
     } catch (error: any) {
       toast.error(error.message);
     }
@@ -90,12 +109,29 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ isOpen, onClose, bo
     try {
       const data = await updateTask(request, boardId);
       setTask((prev) => prev && { ...prev, status: newStatus });
+      queryClient.setQueryData<BoardDto>(["board", boardId], (old) => {
+        if (!old) return old;
+        return {
+          ...old,
+          columns: old.columns.map((col) =>
+            col.columnId === task.columnId
+              ? {
+                  ...col,
+                  taskProjections: col.taskProjections.map((t) =>
+                    t.taskId === task.taskId ? { ...t, status: newStatus } : t
+                  ),
+                }
+              : col
+          ),
+        };
+      });
     } catch (error: any) {
       toast.error(error.message);
     }
   };
 
   const handleSaveDeadline = async (date: Date | null) => {
+    if (!task || readonly) return;
     try {
       const isoString = date ? date.toISOString() : null;
       let request: TaskUpdateRequest = {
@@ -104,18 +140,53 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ isOpen, onClose, bo
       const data = await updateTask(request, boardId);
       setTask((prev) => (prev ? { ...prev, deadline: isoString } : prev));
       setSelectedDeadline(date);
+      
+      queryClient.setQueryData<BoardDto>(["board", boardId], (old) => {
+        if (!old) return old;
+        return {
+          ...old,
+          columns: old.columns.map((col) =>
+            col.columnId === task.columnId
+              ? {
+                  ...col,
+                  taskProjections: col.taskProjections.map((t) =>
+                    t.taskId === task.taskId ? { ...t, deadline: isoString } : t
+                  ),
+                }
+              : col
+          ),
+        };
+      });
     } catch (error: any) {
       toast.error(error.message);
     }
   };
 
   const handleSavePriority = async (newPriority: "HIGH" | "MEDIUM" | "LOW" | null) => {
+    if (!task || readonly) return;
     let request: TaskUpdateRequest = {
       taskId: taskId, title: null, description: null, deadline: null, priority: newPriority, status: null
     }
     try {
-    const data = await updateTask(request, boardId);
+      const data = await updateTask(request, boardId);
       setTask((prev) => prev ? { ...prev, priority: newPriority } : prev);
+
+      queryClient.setQueryData<BoardDto>(["board", boardId], (old) => {
+        if (!old) return old;
+        return {
+          ...old,
+          columns: old.columns.map((col) =>
+            col.columnId === task.columnId
+              ? {
+                  ...col,
+                  taskProjections: col.taskProjections.map((t) =>
+                    t.taskId === task.taskId ? { ...t, priority: newPriority } : t
+                  ),
+                }
+              : col
+          ),
+        };
+      });
     } catch (error: any) {
       toast.error(error.message);
     }
@@ -127,6 +198,21 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ isOpen, onClose, bo
       await deleteTask(task.taskId, boardId);
       toast.success("Task deleted");
       onClose();
+      queryClient.setQueryData<BoardDto>(["board", boardId], (old) => {
+        if (!old) return old;
+        return {
+          ...old,
+          columns: old.columns.map((col) =>
+            col.columnId === task.columnId
+              ? {
+                  ...col,
+                  taskProjections: col.taskProjections.filter((t) =>
+                    t.taskId !== task.taskId),
+                }
+              : col
+          ),
+        };
+      });
     } catch (error: any) {
       toast.error(error.message);
     }

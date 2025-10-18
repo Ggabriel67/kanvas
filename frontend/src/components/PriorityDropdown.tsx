@@ -24,7 +24,7 @@ const PriorityDropdown: React.FC<PriorityDropdownProps> = ({ value, readonly, on
     LOW: "bg-green-500",
   };
 
-   useEffect(() => {
+  useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setIsOpen(false);

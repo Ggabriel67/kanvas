@@ -1,6 +1,6 @@
 import type { BoardDto, BoardMember } from "../types/boards";
 import type { ColumnDto } from "../types/columns";
-import type { BoardUpdatedMessage, ColumnCreatedMessage, ColumnDeletedMessage, ColumnMovedMessage, ColumnUpdatedMessage, MemberJoinedMessage, MemberRemovedMessage, RoleChangedMessage, TaskCreatedMessage, TaskMovedMessage } from "../types/websocketMessages";
+import type { BoardUpdatedMessage, ColumnCreatedMessage, ColumnDeletedMessage, ColumnMovedMessage, ColumnUpdatedMessage, MemberJoinedMessage, MemberRemovedMessage, RoleChangedMessage, TaskCreatedMessage, TaskDeletedMessage, TaskMovedMessage, TaskUpdatedMessage } from "../types/websocketMessages";
 import type { TaskProjection } from "../types/tasks";
 
 export function applyColumnCreated(board: BoardDto, payload: ColumnCreatedMessage) {
@@ -200,5 +200,40 @@ export function applyTaskMoved(board: BoardDto, payload: TaskMovedMessage) {
         return { ...col, taskProjections: newTargetTasks };
       return col;
     }),
+  };
+}
+
+export function applyTaskUpdated(board: BoardDto, payload: TaskUpdatedMessage) {
+  const { taskId, title, deadline, priority, taskStatus, isExpired } = payload;
+
+  return {
+    ...board,
+    columns: board.columns.map((col) => ({
+      ...col,
+      taskProjections: col.taskProjections.map((task) => {
+        if (task.taskId !== taskId) return task;
+
+        return {
+          ...task,
+          ...(title !== null && { title }),
+          ...(deadline !== null && { deadline }),
+          ...(priority !== null && { priority }),
+          ...(taskStatus !== null && { status: taskStatus }),
+          isExpired,
+        };
+      }),
+    })),
+  };
+}
+
+export function applyTaskDeleted(board: BoardDto, payload: TaskDeletedMessage) {
+  const { taskId } = payload;
+
+  return {
+    ...board,
+    columns: board.columns.map((col) => ({
+      ...col,
+      taskProjections: col.taskProjections.filter((task) => task.taskId !== taskId),
+    })),
   };
 }
