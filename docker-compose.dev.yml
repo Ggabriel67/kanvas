@@ -1,3 +1,4 @@
+# Docker Compose containing whole system (infrastructure with spring boot microservices)
 services:
   user-service-db:
     container_name: user-service-db
@@ -97,6 +98,90 @@ services:
       KAFKA_NUM_PARTITIONS: 3
     networks:
       - kanvas-net
+
+  config-server:
+    container_name: config-server
+    image: kanvas/config-server
+    networks:
+      - kanvas-net
+
+  discovery-server:
+    container_name: discovery-server
+    image: kanvas/discovery-server
+    networks:
+      - kanvas-net
+    depends_on:
+      - config-server
+
+  user-service:
+    container_name: user-service
+    image: kanvas/user-service
+    networks:
+      - kanvas-net
+    depends_on:
+      - config-server
+      - discovery-server
+      - user-service-db
+      - kafka
+
+  board-service:
+    container_name: board-service
+    image: kanvas/board-service
+    networks:
+      - kanvas-net
+    depends_on:
+      - config-server
+      - discovery-server
+      - board-service-db
+      - kafka
+
+  task-service:
+    container_name: task-service
+    image: kanvas/task-service
+    networks:
+      - kanvas-net
+    depends_on:
+      - config-server
+      - discovery-server
+      - task-service-db
+      - kafka
+
+  notification-service:
+    container_name: notification-service
+    image: kanvas/notification-service
+    networks:
+      - kanvas-net
+    depends_on:
+      - config-server
+      - discovery-server
+      - notification-service-db
+      - kafka
+
+  websocket-service:
+    container_name: websocket-service
+    image: kanvas/websocket-service
+    networks:
+      - kanvas-net
+    depends_on:
+      - config-server
+      - discovery-server
+      - kafka
+
+  gateway-service:
+    container_name: gateway-service
+    image: kanvas/gateway-service
+    networks:
+      - kanvas-net
+    ports:
+      - 8222:8222
+    depends_on:
+      - config-server
+      - discovery-server
+      - user-service
+      - board-service
+      - task-service
+      - notification-service
+      - websocket-service
 
 networks:
   kanvas-net:

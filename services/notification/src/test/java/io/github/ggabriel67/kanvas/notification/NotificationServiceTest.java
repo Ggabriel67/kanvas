@@ -223,7 +223,7 @@ class NotificationServiceTest
 
     @Test
     void shouldDismissInvitationNotification_WhenUpdateIsCalled() {
-        InvitationUpdate invUpdate = new InvitationUpdate(55, 10, "ACCEPTED");
+        InvitationUpdate invUpdate = new InvitationUpdate(55, 10, "ACCEPTED", "WORKSPACE");
 
         Notification existing = Notification.builder()
                 .id(200)
@@ -233,14 +233,14 @@ class NotificationServiceTest
                 .payload(Map.of("invitationId", invUpdate.invitationId()))
                 .build();
 
-        when(repository.findByInvitationIdAndUserId(invUpdate.invitationId(), invUpdate.inviteeId()))
+        when(repository.findByInvitationIdAndUserId(invUpdate.invitationId(), invUpdate.inviteeId(), "WORKSPACE"))
                 .thenReturn(existing);
 
         notificationService.updateInvitationNotification(invUpdate);
 
         assertThat(existing.getStatus()).isEqualTo(NotificationStatus.DISMISSED);
 
-        verify(repository).findByInvitationIdAndUserId(invUpdate.invitationId(), invUpdate.inviteeId());
+        verify(repository).findByInvitationIdAndUserId(invUpdate.invitationId(), invUpdate.inviteeId(), "WORKSPACE");
         verify(repository).save(existing);
     }
 
