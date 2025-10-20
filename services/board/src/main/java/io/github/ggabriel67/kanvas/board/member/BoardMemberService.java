@@ -4,6 +4,7 @@ import io.github.ggabriel67.kanvas.authorization.board.BoardAuthorization;
 import io.github.ggabriel67.kanvas.authorization.board.BoardRole;
 import io.github.ggabriel67.kanvas.board.Board;
 import io.github.ggabriel67.kanvas.board.BoardRepository;
+import io.github.ggabriel67.kanvas.board.BoardVisibility;
 import io.github.ggabriel67.kanvas.board.invitation.BoardInvitationRepository;
 import io.github.ggabriel67.kanvas.event.board.BoardMemberJoined;
 import io.github.ggabriel67.kanvas.event.board.BoardMemberRemoved;
@@ -13,6 +14,9 @@ import io.github.ggabriel67.kanvas.exception.BoardRoleNotFoundException;
 import io.github.ggabriel67.kanvas.exception.UserNotFoundException;
 import io.github.ggabriel67.kanvas.kafka.producer.BoardEventProducer;
 import io.github.ggabriel67.kanvas.user.User;
+import io.github.ggabriel67.kanvas.workspace.member.WorkspaceMember;
+import io.github.ggabriel67.kanvas.workspace.member.WorkspaceMemberRepository;
+import jakarta.ws.rs.ForbiddenException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +30,7 @@ public class BoardMemberService
     private final BoardEventProducer boardEventProducer;
     private final BoardAuthorization boardAuthorization;
     private final BoardInvitationRepository boardInvitationRepository;
+    private final WorkspaceMemberRepository workspaceMemberRepository;
 
     public void addBoardMember(Board board, User invitee, BoardRole role) {
         BoardMember member = memberRepository.save(
@@ -80,8 +85,25 @@ public class BoardMemberService
     public String getBoardRole(Integer boardId) {
         Integer userId = boardAuthorization.getCurrentUserId();
 
-        return memberRepository.findRoleByUserIdAndBoardId(userId, boardId)
-                .orElseThrow(() -> new BoardRoleNotFoundException("User has no role in this board")).name();
+        BoardRole role = memberRepository.findRoleByUserIdAndBoardId(userId, boardId)
+                .orElse(null);
+
+        if (role == null) {
+            Board board = boardRepository.findById(boardId)
+                    .orElseThrow(() -> new BoardNotFoundException("Board not found"));
+
+            WorkspaceMember workspaceMember = workspaceMemberRepository.findByUserIdAndWorkspaceId(userId, board.getWorkspace().getId())
+                    .orElse(null);
+
+            boolean canView = (board.getVisibility() == BoardVisibility.WORKSPACE_PUBLIC && workspaceMember != null);
+
+            if (!canView) {
+                throw new BoardRoleNotFoundException("User has no permissions in this board");
+            }
+            return BoardRole.VIEWER.name();
+        }
+
+        return role.name();
     }
 
     public void leaveBoard(BoardMemberRemoveRequest request) {

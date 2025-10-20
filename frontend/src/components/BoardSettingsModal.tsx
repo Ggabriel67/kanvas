@@ -27,10 +27,16 @@ const BoardSettingsModal: React.FC<WorkspaceSettingsModalProps> = ({ isOpen, onC
   const [activeTab, setActiveTab] = useState<"board" | "members">("board");
   const [isEditing, setIsEditing] = useState(false);
 
+  const { user } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  const isAdmin = board.boardRole === "ADMIN";
+  
+
+  const currentMember = board.boardMembers.find((bm) => bm.userId === user?.id);
+  const currentMemberRole = currentMember?.boardRole || "VIEWER";
+
+  const isAdmin = currentMemberRole === "ADMIN";
 
   const { 
     register, handleSubmit, reset, formState: { errors },
@@ -213,7 +219,7 @@ const BoardSettingsModal: React.FC<WorkspaceSettingsModalProps> = ({ isOpen, onC
                 boardId={board.boardId}
                 boardName={board.name}
                 members={board.boardMembers}
-                currentRole={board.boardRole}
+                currentRole={currentMemberRole}
               />
             )}
         </div>

@@ -52,7 +52,8 @@ public class NotificationService
                         .payload(Map.of(
                                 "taskTitle", assignment.taskTitle(),
                                 "boardName", assignment.boardName(),
-                                "assigned", assignment.assigned()
+                                "assigned", assignment.assigned(),
+                                "boardId", assignment.boardId()
                                 )
                         )
                         .build()

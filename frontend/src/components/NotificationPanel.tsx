@@ -5,6 +5,7 @@ import { acceptBoardInvitation, acceptWorkspaceInvitation, declineBoardInvitatio
 import { useWorkspaceStore } from '../hooks/useWorkspaceStore';
 import { IoMdClose } from "react-icons/io";
 import { dismissNotification } from '../api/notifications';
+import { Link } from 'react-router-dom';
 
 interface NotificationPanelProps {
   notifications: Notification[];
@@ -140,24 +141,29 @@ const NotificationPanel: React.FC<NotificationPanelProps> = ({ notifications, on
 								const taskTitle = n.payload["taskTitle"] as string;
 								const boardName = n.payload["boardName"] as string;
 								const assigned = n.payload["assigned"] as boolean;
+								const boardId = n.payload["boardId"] as boolean;
 
 								return (
 									<li
 										key={n.notificationId}
 										className="p-3 pl-4 hover:bg-[#2a2a2a] flex justify-between items-start"
 									>
-										<div>
-											<p className="text-gray-200 text-sm mb-2">
-												<span>
-													You have been{assigned ? " assigned to " : " unassigned from "}task&nbsp;
-												</span>
-												<span className="font-semibold text-purple-400">{taskTitle}</span>{" "}
-												in board&nbsp;
-												<span className="font-semibold text-purple-400">{boardName}</span>
-											</p>
+										<Link
+											to={`/app/boards/${boardId}`}
+										>
+											<div>
+												<p className="text-gray-200 text-sm mb-2">
+													<span>
+														You have been{assigned ? " assigned to " : " unassigned from "}task&nbsp;
+													</span>
+													<span className="font-semibold text-purple-400">{taskTitle}</span>{" "}
+													in board&nbsp;
+													<span className="font-semibold text-purple-400">{boardName}</span>
+												</p>
 
-											<span className="text-xs text-gray-500">{timeAgo(n.sentAt)}</span>
-										</div>
+												<span className="text-xs text-gray-500">{timeAgo(n.sentAt)}</span>
+											</div>
+										</Link>
 
 										<button
 											onClick={() => {

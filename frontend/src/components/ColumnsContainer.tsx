@@ -159,8 +159,8 @@ const ColumnsContainer: React.FC<ColumnsContainerProps> = ({ columns: backendCol
     }
 
     if (type === "TASK") {
-      const sourceColId = parseInt(source.droppableId);
-      const destColId = parseInt(destination.droppableId);
+      const sourceColId = parseInt(source.droppableId.replace("column-", ""));
+      const destColId = parseInt(destination.droppableId.replace("column-", ""));
 
       if (sourceColId === destColId && source.index === destination.index) return;
 
@@ -352,7 +352,7 @@ const ColumnsContainer: React.FC<ColumnsContainerProps> = ({ columns: backendCol
                   readonly ? (
                     <div
                       key={column.columnId}
-                      className="bg-[#2b2b2b] rounded-xl p-2 w-[280px] shadow-md text-gray-100"
+                      className="bg-[#2b2b2b] rounded-xl p-2 w-[280px] shadow-md text-gray-100 h-fit"
                     >
                       <div className="flex items-center justify-between mb-2 pt-2 px-2">
                         <h3 className="font-semibold break-all whitespace-normal flex-1">
@@ -367,7 +367,7 @@ const ColumnsContainer: React.FC<ColumnsContainerProps> = ({ columns: backendCol
                   ) : (
                     <Draggable
                       key={column.columnId.toString()}
-                      draggableId={column.columnId.toString()}
+                      draggableId={`column-${column.columnId}`}
                       index={index}
                     >
                       {(provided, snapshot) => (
@@ -393,12 +393,11 @@ const ColumnsContainer: React.FC<ColumnsContainerProps> = ({ columns: backendCol
                                 onChange={(e) => setEditedColumnName(e.target.value)}
                                 onBlur={() => handleSaveColumnName(column.columnId, column.name)}
                                 onKeyDown={(e) => {
-                                  if (e.key === "Enter")
-                                    handleSaveColumnName(column.columnId, column.name);
+                                  if (e.key === "Enter") handleSaveColumnName(column.columnId, column.name);
                                   if (e.key === "Escape") setEditingColumnId(null);
                                 }}
                                 autoFocus
-                                className="bg-[#2b2b2b] border border-gray-600 text-gray-100 font-semibold px-2 rounded w-full outline-none focus:ring-2 focus:ring-purple-500"
+                                className="bg-[#2b2b2b] border text-lg border-gray-600 text-gray-100 font-semibold px-2 rounded w-full outline-none focus:ring-2 focus:ring-purple-500"
                               />
                             ) : (
                               <h3

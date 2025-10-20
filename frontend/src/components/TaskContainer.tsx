@@ -33,6 +33,11 @@ const TaskContainer: React.FC<TaskContainerProps> = ({ column, boardId, boardNam
     setIsTaskModalOpen(true);
   };
 
+  // const sortedTasks = useMemo(
+  //   () => [...column.taskProjections].sort((a, b) => a.orderIndex - b.orderIndex),
+  //   [column.taskProjections]
+  // );
+
   const handleCreateTask = async () => {
     setIsCreatingTask(false);
     if (newTaskTitle.trim() === "") return;
@@ -88,7 +93,7 @@ const TaskContainer: React.FC<TaskContainerProps> = ({ column, boardId, boardNam
 
 	return (
     <div>
-      <Droppable droppableId={column.columnId.toString()} type="TASK">
+      <Droppable droppableId={`column-${column.columnId}`} type="TASK">
         {(provided, snapshot) => (
           <div
             ref={provided.innerRef}
@@ -106,7 +111,7 @@ const TaskContainer: React.FC<TaskContainerProps> = ({ column, boardId, boardNam
               return (
                 <div key={task.taskId}>
                   <Draggable
-                    draggableId={task.taskId.toString()}
+                    draggableId={`task-${task.taskId}`}
                     index={index}
                   >
                     {(provided, snapshot) => (

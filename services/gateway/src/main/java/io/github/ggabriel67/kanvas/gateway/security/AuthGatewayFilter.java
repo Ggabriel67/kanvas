@@ -65,7 +65,7 @@ public class AuthGatewayFilter implements GlobalFilter
                     .uri("http://board-service/api/v1/boards/{boardId}/roles", boardId)
                     .header("X-User-Id", String.valueOf(userId))
                     .retrieve()
-                    .onStatus(HttpStatusCode::is4xxClientError, resp -> Mono.error(new ResponseStatusException(HttpStatus.FORBIDDEN, "User has no role in this board")))
+                    .onStatus(HttpStatusCode::is4xxClientError, resp -> Mono.error(new ResponseStatusException(HttpStatus.FORBIDDEN, "User has has no permissions in this board")))
                     .bodyToMono(String.class)
                     .flatMap(boardRole -> {
                         ServerWebExchange mutated = exchange.mutate()
