@@ -180,7 +180,7 @@ const AssigneeSelector: React.FC<AssigneeSelectorProps> = ({ boardId, boardName,
             {assignedMembers.map((m) => (
               <li
                 key={m.memberId}
-                className="flex items-center justify-between p-2 hover:bg-[#2b2b2b]"
+                className="flex items-center justify-between p-2 px-3 hover:bg-[#2b2b2b]"
               >
                 <div className="flex items-center space-x-3">
                   <div
@@ -208,7 +208,7 @@ const AssigneeSelector: React.FC<AssigneeSelectorProps> = ({ boardId, boardName,
             {unassignedMembers.map((m) => (
               <li
                 key={m.memberId}
-                className="flex items-center justify-between p-2 hover:bg-[#2a2a2a]"
+                className="flex items-center justify-between p-2 px-3 hover:bg-[#2a2a2a]"
               >
                 <div className="flex items-center space-x-3">
                   <div

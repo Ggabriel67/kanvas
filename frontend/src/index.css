@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@import "react-datepicker/dist/react-datepicker.css";
+@import "./DatePickerDark.css";
 
 body {
   @apply min-h-screen bg-[#121212] font-sans;

@@ -33,11 +33,6 @@ const TaskContainer: React.FC<TaskContainerProps> = ({ column, boardId, boardNam
     setIsTaskModalOpen(true);
   };
 
-  // const sortedTasks = useMemo(
-  //   () => [...column.taskProjections].sort((a, b) => a.orderIndex - b.orderIndex),
-  //   [column.taskProjections]
-  // );
-
   const handleCreateTask = async () => {
     setIsCreatingTask(false);
     if (newTaskTitle.trim() === "") return;
@@ -74,7 +69,7 @@ const TaskContainer: React.FC<TaskContainerProps> = ({ column, boardId, boardNam
         }
       );
 
-      toast.success("Task created");
+      // toast.success("Task created");
     } catch (error: any) {
       toast.error(error.message);
     }
@@ -120,7 +115,7 @@ const TaskContainer: React.FC<TaskContainerProps> = ({ column, boardId, boardNam
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
                         onClick={() => handleTaskClick(task.taskId)}
-                        className={`bg-[#1f1f1f] border border-2 border-transparent rounded-lg px-2.5 py-1.5 shadow text-gray-200 hover:border-purple-500 
+                        className={`bg-[#1f1f1f] border border-2 border-transparent rounded-lg px-2.5 py-2 shadow text-gray-200 hover:border-purple-500 
                           ${snapshot.isDragging ? "opacity-60 scale-[0.98]" : ""}`}
                       >
                         {/* Priority Bar */}
@@ -142,7 +137,7 @@ const TaskContainer: React.FC<TaskContainerProps> = ({ column, boardId, boardNam
                         </div>
 
                         {/* Bottom Row: Deadline + Assignees */}
-                        <div className="flex items-center justify-between mt-2">
+                        <div className="flex items-center justify-between mt-1">
                           {/* Deadline */}
                           {task.deadline ? (
                             <div className={`flex items-center text-sm space-x-1 ${
@@ -168,7 +163,7 @@ const TaskContainer: React.FC<TaskContainerProps> = ({ column, boardId, boardNam
                               <div
                                 key={m.memberId}
                                 title={`${m.firstname} ${m.lastname} (${m.username})`}
-                                className="w-8 h-8 rounded-full border-2 border-[#1f1f1f] flex items-center justify-center text-xs font-bold text-white"
+                                className="w-8 h-8 rounded-full border-2 border-[#1f1f1f] flex items-center justify-center text-sm font-bold text-white"
                                 style={{ backgroundColor: m.avatarColor }}
                               >
                                 {m.firstname[0].toUpperCase()}

@@ -14,6 +14,7 @@ import { MdOutlineDescription } from "react-icons/md";
 import PriorityDropdown from './PriorityDropdown';
 import { useQueryClient } from '@tanstack/react-query';
 import AssigneeSelector from './AssigneeSelector';
+import { FaRegCheckCircle } from "react-icons/fa";
 
 interface TaskDetailsModalProps {
   isOpen: boolean;
@@ -253,14 +254,20 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ isOpen, onClose, bo
 
         {/* Task title + status */}
         <div className="flex items-center gap-3 mb-3">
-          <input
-            type="checkbox"
-            checked={task.status === "DONE"}
-            onChange={handleToggleStatus}
+          <button
+            onClick={handleToggleStatus}
             disabled={readonly}
-            title="Mark task as done"
-            className="w-5 h-5 text-green-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-green-500 dark:focus:ring-green-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-          />
+            title={task.status === "DONE" ? "Unmark task as done" : "Mark task as done"}
+            className={`
+              flex items-center justify-center w-5 h-5 rounded-full border-2
+              ${readonly ? "cursor-not-allowed opacity-60" : "cursor-pointer"}
+              ${task.status === "DONE"
+                ? "border-green-400"
+                : "bg-transparent border-gray-400 text-gray-400 hover:border-green-400 hover:text-green-400"}
+            `}
+          >
+            {task.status === "DONE" && <FaRegCheckCircle size={20} className="text-green-400 flex-shrink-0" />}
+          </button>
           {isEditingTitle && !readonly ? (
             <input
               type="text"

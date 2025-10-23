@@ -273,7 +273,7 @@ const ColumnsContainer: React.FC<ColumnsContainerProps> = ({ columns: backendCol
         }
       );
 
-      toast.success(`Column "${newColumnName}" created!`);
+      // toast.success(`Column "${newColumnName}" created!`);
       setNewColumnName("");
     } catch (error: any) {
       toast.error(error.message);
@@ -326,7 +326,7 @@ const ColumnsContainer: React.FC<ColumnsContainerProps> = ({ columns: backendCol
 
     try {
       await deleteColumn(columnId, boardId);
-      toast.success("Column deleted");
+      // toast.success("Column deleted");
     } catch (error: any) {
       toast.error(error.message);
       setColumnsMap(prevColumnsMap);
