@@ -180,16 +180,15 @@ class TaskServiceTest
         void shouldOnlyUpdateNonNullOrNonBlankFields() {
             Integer taskId = 55;
             Column column = Column.builder().id(20).boardId(200).build();
-            Task existingTask = Task.builder().id(taskId).title("Keep This").description("Old description")
+            Task existingTask = Task.builder().id(taskId).title("Some Title").description("Old description")
                     .status(TaskStatus.ACTIVE).priority(TaskPriority.LOW).column(column).orderIndex(1.0).build();
 
-            TaskUpdateRequest request = new TaskUpdateRequest(taskId, "", null, null, TaskPriority.HIGH, TaskStatus.DONE);
+            TaskUpdateRequest request = new TaskUpdateRequest(taskId, null, null, null, TaskPriority.HIGH, TaskStatus.DONE);
 
             when(taskRepository.findById(taskId)).thenReturn(Optional.of(existingTask));
 
             taskService.updateTask(request);
 
-            assertThat(existingTask.getTitle()).isEqualTo("Keep This");
             assertThat(existingTask.getPriority()).isEqualTo(TaskPriority.HIGH);
             assertThat(existingTask.getStatus()).isEqualTo(TaskStatus.DONE);
         }

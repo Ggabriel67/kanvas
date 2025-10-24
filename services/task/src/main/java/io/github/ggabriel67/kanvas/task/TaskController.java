@@ -57,6 +57,7 @@ public class TaskController
     }
 
     @GetMapping("/{taskId}")
+    @PreAuthorize("@boardAuth.canView()")
     public ResponseEntity<TaskDto> getTask(@PathVariable("taskId") Integer taskId) {
         return ResponseEntity.ok(taskService.getTask(taskId));
     }

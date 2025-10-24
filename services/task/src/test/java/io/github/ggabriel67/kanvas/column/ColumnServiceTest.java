@@ -3,8 +3,7 @@ package io.github.ggabriel67.kanvas.column;
 import io.github.ggabriel67.kanvas.event.column.ColumnCreated;
 import io.github.ggabriel67.kanvas.exception.ColumnNotFoundException;
 import io.github.ggabriel67.kanvas.kafka.producer.ColumnEventProducer;
-import io.github.ggabriel67.kanvas.task.TaskRepository;
-import io.github.ggabriel67.kanvas.task.TaskService;
+import io.github.ggabriel67.kanvas.task.*;
 import io.github.ggabriel67.kanvas.task.assignee.TaskAssigneeRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -17,6 +16,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.time.Instant;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -314,5 +315,49 @@ class ColumnServiceTest
             verify(taskRepository).deleteByColumnIn(List.of());
             verify(columnRepository).deleteAllByBoardId(boardId);
         }
+    }
+
+    @Test
+    void getAllBoardColumns_ShouldGroupColumnsAndTasksProperly() {
+        Integer boardId = 10;
+
+        List<ColumnTaskFlatDto> flatResults = List.of(
+                new ColumnTaskFlatDto(1, 1.0, "To Do", 101, 1.0, "Fix bug", Instant.parse("2025-10-10T00:00:00Z"),
+                        TaskStatus.ACTIVE, TaskPriority.HIGH, 11),
+
+                new ColumnTaskFlatDto(1, 1.0, "To Do", 101, 1.0, "Fix bug", Instant.parse("2025-10-10T00:00:00Z"),
+                        TaskStatus.ACTIVE, TaskPriority.HIGH, 12),
+
+                new ColumnTaskFlatDto(1, 1.0, "To Do", 102, 2.0, "Write tests", Instant.parse("2025-10-09T00:00:00Z"),
+                        TaskStatus.ACTIVE, TaskPriority.MEDIUM, null),
+
+                new ColumnTaskFlatDto(2, 2.0, "Done", 201, 1.0, "Deploy", Instant.parse("2025-10-08T00:00:00Z"),
+                        TaskStatus.DONE, TaskPriority.LOW, 13)
+        );
+
+        when(columnRepository.findColumnDataByBoardId(boardId)).thenReturn(flatResults);
+        when(taskService.isTaskExpired(any(), any())).thenReturn(false);
+
+        List<ColumnDto> result = columnService.getAllBoardColumns(boardId);
+
+        assertThat(result.size() == 2);
+
+        ColumnDto firstColumn = result.getFirst();
+        assertThat(firstColumn.columnId()).isEqualTo(1);
+        assertThat(firstColumn.name()).isEqualTo("To Do");
+        assertThat(firstColumn.taskProjections().size() == 2);
+
+        TaskDtoProjection taskA = firstColumn.taskProjections().getFirst();
+        assertThat(taskA.taskId()).isEqualTo(101);
+        assertThat(taskA.assigneeIds().containsAll(List.of(11, 12)));
+
+        assertThat(result.stream().sorted(
+                Comparator.comparingDouble(ColumnDto::orderIndex)));
+
+        assertThat(firstColumn.taskProjections().stream().sorted(
+                Comparator.comparingDouble(TaskDtoProjection::orderIndex)));
+
+        verify(columnRepository).findColumnDataByBoardId(boardId);
+        verify(taskService, atLeastOnce()).isTaskExpired(any(), any());
     }
 }

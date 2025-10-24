@@ -25,7 +25,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("Notification Service tests")
+@DisplayName("NotificationService Unit Tests")
 class NotificationServiceTest
 {
     @Mock private NotificationRepository repository;
