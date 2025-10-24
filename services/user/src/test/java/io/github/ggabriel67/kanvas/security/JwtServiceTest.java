@@ -2,6 +2,7 @@ package io.github.ggabriel67.kanvas.security;
 
 import io.github.ggabriel67.kanvas.user.User;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -10,6 +11,7 @@ import java.util.Map;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
+@DisplayName("JwtService Unit Tests")
 class JwtServiceTest
 {
     private JwtService jwtService;
