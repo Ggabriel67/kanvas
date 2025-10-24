@@ -2,6 +2,7 @@ package io.github.ggabriel67.kanvas.workspace;
 
 import io.github.ggabriel67.kanvas.authorization.workspace.WorkspaceAuthorization;
 import io.github.ggabriel67.kanvas.authorization.workspace.WorkspaceRole;
+import io.github.ggabriel67.kanvas.board.BoardDtoProjection;
 import io.github.ggabriel67.kanvas.board.BoardRepository;
 import io.github.ggabriel67.kanvas.board.BoardService;
 import io.github.ggabriel67.kanvas.exception.UserNotFoundException;
@@ -10,6 +11,8 @@ import io.github.ggabriel67.kanvas.user.User;
 import io.github.ggabriel67.kanvas.user.UserService;
 import io.github.ggabriel67.kanvas.workspace.member.WorkspaceMember;
 import io.github.ggabriel67.kanvas.workspace.member.WorkspaceMemberRepository;
+import jakarta.ws.rs.ForbiddenException;
+import org.jose4j.jwk.Use;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -20,6 +23,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -226,6 +230,112 @@ class WorkspaceServiceTest
                     .hasMessageContaining("User not found");
 
             verify(boardRepository, never()).findGuestWorkspacesBoardData(any());
+        }
+    }
+
+    @Nested
+    class GetWorkspaceTests {
+        @Test
+        void shouldReturnWorkspaceDto_WhenUserIsMember() {
+            Integer workspaceId = 10;
+            Integer userId = 5;
+
+            User user = User.builder().id(userId).build();
+            Workspace workspace = Workspace.builder().id(workspaceId).name("Team Space").description("Engineering workspace").createdAt(LocalDateTime.now()).build();
+
+            WorkspaceMember member = WorkspaceMember.builder().user(user).workspace(workspace).role(WorkspaceRole.ADMIN).build();
+
+            List<BoardDtoProjection> boardProjections = List.of(
+                    new BoardDtoProjection(1, "Board X"),
+                    new BoardDtoProjection(2, "Board Y")
+            );
+
+            when(workspaceAuth.getCurrentUserId()).thenReturn(userId);
+            when(workspaceRepository.findById(workspaceId)).thenReturn(Optional.of(workspace));
+            when(workspaceMemberRepository.findByUserIdAndWorkspaceId(userId, workspaceId))
+                    .thenReturn(Optional.of(member));
+            when(boardService.getMemberAndPublicBoards(userId, workspace)).thenReturn(boardProjections);
+
+            WorkspaceDto dto = workspaceService.getWorkspace(workspaceId);
+
+            assertThat(dto.id()).isEqualTo(workspaceId);
+            assertThat(dto.name()).isEqualTo("Team Space");
+            assertThat(dto.description()).isEqualTo("Engineering workspace");
+            assertThat(dto.workspaceRole()).isEqualTo(WorkspaceRole.ADMIN);
+            assertThat(dto.boardProjections().containsAll(boardProjections));
+
+            verify(workspaceAuth).getCurrentUserId();
+            verify(workspaceRepository).findById(workspaceId);
+            verify(workspaceMemberRepository).findByUserIdAndWorkspaceId(userId, workspaceId);
+            verify(boardService).getMemberAndPublicBoards(userId, workspace);
+        }
+    }
+
+    @Nested
+    class GetAllWorkspaceBoardsTests {
+        @Test
+        void shouldReturnAllBoards_WhenUserIsOwnerOrAdmin() {
+            Integer workspaceId = 10;
+            Integer userId = 5;
+
+            User user = User.builder().id(userId).build();
+
+            Workspace workspace = Workspace.builder().id(workspaceId).name("Dev Workspace").build();
+
+            WorkspaceMember member = WorkspaceMember.builder().workspace(workspace).user(user).role(WorkspaceRole.ADMIN).build();
+
+            List<BoardDtoProjection> expectedBoards = List.of(
+                    new BoardDtoProjection(1, "Backend Board"),
+                    new BoardDtoProjection(2, "Frontend Board")
+            );
+
+            when(workspaceAuth.getCurrentUserId()).thenReturn(userId);
+            when(workspaceRepository.findById(workspaceId)).thenReturn(Optional.of(workspace));
+            when(workspaceMemberRepository.findByUserIdAndWorkspaceId(userId, workspaceId))
+                    .thenReturn(Optional.of(member));
+            when(boardService.getAllBoardsByWorkspace(workspace)).thenReturn(expectedBoards);
+
+            List<BoardDtoProjection> result = workspaceService.getAllWorkspaceBoards(workspaceId);
+
+            assertThat(result.containsAll(expectedBoards));
+
+            verify(workspaceAuth).getCurrentUserId();
+            verify(workspaceRepository).findById(workspaceId);
+            verify(workspaceMemberRepository).findByUserIdAndWorkspaceId(userId, workspaceId);
+            verify(boardService).getAllBoardsByWorkspace(workspace);
+            verify(boardService, never()).getMemberAndPublicBoards(anyInt(), any());
+        }
+
+        @Test
+        void shouldReturnMemberAndPublicBoards_WhenUserIsMember() {
+            Integer workspaceId = 20;
+            Integer userId = 6;
+
+            User user = User.builder().id(userId).build();
+
+            Workspace workspace = Workspace.builder().id(workspaceId).name("Design Workspace").build();
+
+            WorkspaceMember member = WorkspaceMember.builder().workspace(workspace).user(user).role(WorkspaceRole.MEMBER).build();
+
+            List<BoardDtoProjection> expectedBoards = List.of(
+                    new BoardDtoProjection(10, "UI Board")
+            );
+
+            when(workspaceAuth.getCurrentUserId()).thenReturn(userId);
+            when(workspaceRepository.findById(workspaceId)).thenReturn(Optional.of(workspace));
+            when(workspaceMemberRepository.findByUserIdAndWorkspaceId(userId, workspaceId))
+                    .thenReturn(Optional.of(member));
+            when(boardService.getMemberAndPublicBoards(userId, workspace)).thenReturn(expectedBoards);
+
+            List<BoardDtoProjection> result = workspaceService.getAllWorkspaceBoards(workspaceId);
+
+            assertThat(result.containsAll(expectedBoards));
+
+            verify(workspaceAuth).getCurrentUserId();
+            verify(workspaceRepository).findById(workspaceId);
+            verify(workspaceMemberRepository).findByUserIdAndWorkspaceId(userId, workspaceId);
+            verify(boardService).getMemberAndPublicBoards(userId, workspace);
+            verify(boardService, never()).getAllBoardsByWorkspace(any());
         }
     }
 }

@@ -4,11 +4,13 @@ import io.github.ggabriel67.kanvas.authorization.board.BoardAuthorization;
 import io.github.ggabriel67.kanvas.authorization.board.BoardRole;
 import io.github.ggabriel67.kanvas.board.invitation.BoardInvitationRepository;
 import io.github.ggabriel67.kanvas.board.member.BoardMember;
+import io.github.ggabriel67.kanvas.board.member.BoardMemberDto;
 import io.github.ggabriel67.kanvas.board.member.BoardMemberMapper;
 import io.github.ggabriel67.kanvas.board.member.BoardMemberRepository;
 import io.github.ggabriel67.kanvas.exception.BoardNotFoundException;
 import io.github.ggabriel67.kanvas.exception.NameAlreadyInUseException;
 import io.github.ggabriel67.kanvas.exception.WorkspaceNotFoundException;
+import io.github.ggabriel67.kanvas.feign.ColumnDto;
 import io.github.ggabriel67.kanvas.feign.TaskClient;
 import io.github.ggabriel67.kanvas.kafka.producer.BoardEventProducer;
 import io.github.ggabriel67.kanvas.user.User;
@@ -26,6 +28,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -43,7 +46,6 @@ class BoardServiceTest
     @Mock private WorkspaceRepository workspaceRepository;
     @Mock private BoardMemberRepository boardMemberRepository;
     @Mock private BoardMemberMapper boardMemberMapper;
-    @Mock private BoardAuthorization boardAuth;
     @Mock private BoardInvitationRepository boardInvitationRepository;
     @Mock private BoardEventProducer boardEventProducer;
     @Mock private TaskClient taskClient;
@@ -278,6 +280,65 @@ class BoardServiceTest
 
             verifyNoInteractions(boardMemberRepository, boardInvitationRepository, boardEventProducer);
             verify(boardRepository, never()).delete(any());
+        }
+    }
+
+    @Nested
+    class GetBoardTests {
+        @Test
+        void shouldReturnBoardDto_WithMembersAndColumns() {
+            Integer boardId = 10;
+
+            Board board = Board.builder().id(boardId).name("Engineering Board").description("Backend tasks and bugs").createdAt(LocalDateTime.now()).visibility(BoardVisibility.PRIVATE).build();
+
+            BoardMember member = BoardMember.builder().id(1).board(board).role(BoardRole.EDITOR).build();
+
+            BoardMemberDto memberDto1 = new BoardMemberDto(
+                    1, 5, "John", "Doe", "johndoe", "#FFF", BoardRole.EDITOR, LocalDateTime.now()
+            );
+            BoardMemberDto memberDto2 = new BoardMemberDto(
+                    2, 10, "Alice", "Wong", "alicewong", "#AA33FF", BoardRole.ADMIN, LocalDateTime.now()
+            );
+
+            List<BoardMember> members = List.of(member);
+            List<BoardMemberDto> memberDtos = List.of(memberDto1, memberDto2);
+
+            List<ColumnDto> columns = List.of(
+                    new ColumnDto(1, 1.0, "To Do", List.of()),
+                    new ColumnDto(2, 2.0, "In Progress", List.of()),
+                    new ColumnDto(3, 3.0, "Done", List.of())
+            );
+
+            when(boardRepository.findById(boardId)).thenReturn(Optional.of(board));
+            when(boardMemberRepository.findByBoard(board)).thenReturn(members);
+            when(taskClient.getAllBoardColumns(boardId)).thenReturn(columns);
+
+            BoardDto result = boardService.getBoard(boardId);
+
+            assertThat(result.boardId()).isEqualTo(boardId);
+            assertThat(result.name()).isEqualTo("Engineering Board");
+            assertThat(result.description()).isEqualTo("Backend tasks and bugs");
+            assertThat(result.visibility()).isEqualTo(BoardVisibility.PRIVATE);
+            assertThat(result.boardMembers().containsAll(memberDtos));
+            assertThat(result.columns().containsAll(columns));
+
+            verify(boardRepository).findById(boardId);
+            verify(boardMemberRepository).findByBoard(board);
+            verify(boardMemberMapper).toBoardMemberDto(member);
+            verify(taskClient).getAllBoardColumns(boardId);
+        }
+
+        @Test
+        void shouldThrowException_WhenBoardNotFound() {
+            Integer boardId = 99;
+            when(boardRepository.findById(boardId)).thenReturn(Optional.empty());
+
+            assertThatThrownBy(() -> boardService.getBoard(boardId))
+                    .isInstanceOf(BoardNotFoundException.class)
+                    .hasMessageContaining("Board not found");
+
+            verify(boardRepository).findById(boardId);
+            verifyNoInteractions(boardMemberRepository, taskClient);
         }
     }
 }

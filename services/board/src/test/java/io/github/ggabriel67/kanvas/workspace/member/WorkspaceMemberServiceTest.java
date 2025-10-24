@@ -6,6 +6,7 @@ import io.github.ggabriel67.kanvas.exception.WorkspaceNotFoundException;
 import io.github.ggabriel67.kanvas.user.User;
 import io.github.ggabriel67.kanvas.workspace.Workspace;
 import io.github.ggabriel67.kanvas.workspace.WorkspaceRepository;
+import io.github.ggabriel67.kanvas.workspace.invitation.WorkspaceInvitationRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -29,6 +30,7 @@ class WorkspaceMemberServiceTest
     @Mock private WorkspaceMemberRepository memberRepository;
     @Mock private WorkspaceRepository workspaceRepository;
     @Mock private WorkspaceMemberMapper memberMapper;
+    @Mock private WorkspaceInvitationRepository workspaceInvitationRepository;
 
     @InjectMocks
     private WorkspaceMemberService workspaceMemberService;
@@ -99,11 +101,13 @@ class WorkspaceMemberServiceTest
         @Test
         void shouldRemoveMember_WhenMemberExists() {
             WorkspaceMemberRemoveRequest request = new WorkspaceMemberRemoveRequest(5, 10);
-            WorkspaceMember member = WorkspaceMember.builder().id(5).role(WorkspaceRole.MEMBER).build();
+            User user = User.builder().id(1).username("john").build();
+            WorkspaceMember member = WorkspaceMember.builder().id(5).user(user).role(WorkspaceRole.MEMBER).build();
             when(memberRepository.findById(5)).thenReturn(Optional.of(member));
 
             workspaceMemberService.removeMember(request);
 
+            verify(workspaceInvitationRepository).deleteAllByInvitee(member.getUser());
             verify(memberRepository).delete(member);
         }
 

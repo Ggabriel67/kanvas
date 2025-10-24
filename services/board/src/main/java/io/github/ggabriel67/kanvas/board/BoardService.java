@@ -114,12 +114,6 @@ public class BoardService
                 .map(boardMemberMapper::toBoardMemberDto)
                 .toList();
 
-        Integer userId = boardAuth.getCurrentUserId();
-        Optional<BoardMember> boardMember = boardMemberRepository.findByUserIdAndBoardId(userId, boardId);
-
-        BoardRole role = boardMember.map(BoardMember::getRole).orElse(null);
-        boolean readonly = boardMember.isEmpty() || role == BoardRole.VIEWER;
-
         List<ColumnDto> columns = taskClient.getAllBoardColumns(boardId);
         return new BoardDto(
                 board.getId(),
@@ -127,8 +121,6 @@ public class BoardService
                 board.getDescription(),
                 board.getCreatedAt(),
                 board.getVisibility(),
-                role,
-                readonly,
                 boardMembers,
                 columns
         );

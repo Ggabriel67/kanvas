@@ -20,8 +20,6 @@ export interface BoardDto {
 	description: string;
 	createdAt: string;
 	visibility: "WORKSPACE_PUBLIC" | "PRIVATE";
-	boardRole: "ADMIN" | "EDITOR" | "VIEWER";
-	readonly: boolean;
 	boardMembers: BoardMember[];
 	columns: ColumnDto[];
 }

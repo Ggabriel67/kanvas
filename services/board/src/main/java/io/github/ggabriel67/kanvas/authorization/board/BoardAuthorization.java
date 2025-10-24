@@ -44,10 +44,6 @@ public class BoardAuthorization
         return hasRole(getCurrentUserId(), boardId, BoardRole.ADMIN);
     }
 
-    public boolean canEdit(Integer boardId) {
-        return hasRole(getCurrentUserId(), boardId, BoardRole.EDITOR);
-    }
-
     public boolean canView(Integer boardId) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new BoardNotFoundException("Board not found"));
@@ -90,10 +86,6 @@ public class BoardAuthorization
 
         return callerBoardRole == BoardRole.ADMIN &&
                 (targetBoardRole == BoardRole.EDITOR || targetBoardRole == BoardRole.VIEWER);
-    }
-
-    public boolean canUpdate(Integer boardId) {
-        return hasRole(getCurrentUserId(), boardId, BoardRole.ADMIN);
     }
 
     public boolean canDelete(Integer boardId) {

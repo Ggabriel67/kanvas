@@ -13,8 +13,6 @@ public record BoardDto(
         String description,
         LocalDateTime createdAt,
         BoardVisibility visibility,
-        BoardRole boardRole,
-        boolean readonly,
         List<BoardMemberDto> boardMembers,
         List<ColumnDto> columns
 ) {
