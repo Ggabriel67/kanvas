@@ -1,0 +1,36 @@
+spring:
+  application:
+    name: user-service-test
+  config:
+    import: optional:configserver:http://localhost:8888
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
+
+  datasource:
+    url: jdbc:tc:postgresql:16:///user-postgres-test
+    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
+    username: test
+    password: test
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: false
+
+  main:
+    allow-bean-definition-overriding: true
+
+eureka:
+  client:
+    enabled: false
+
+application:
+  security:
+    jwt:
+      secret-key: acd57fe63f11c84ca7ba1da03d3a99bceb7427ccbb6103488397a84c04f2894b
+      access-expiration: 900000 # 15 min
+      refresh-expiration: 604800000 # 7 days

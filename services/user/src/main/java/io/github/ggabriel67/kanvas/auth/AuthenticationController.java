@@ -18,10 +18,10 @@ public class AuthenticationController
     private final AuthenticationService authService;
 
     @PostMapping("/register")
-    @ResponseStatus(HttpStatus.ACCEPTED)
+    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> register(@RequestBody @Valid RegistrationRequest request) {
         authService.register(request);
-        return ResponseEntity.accepted().build();
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PostMapping("/authenticate")
