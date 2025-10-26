@@ -61,10 +61,10 @@ public class UserServiceIntegrationTest
                 "John", "Doe", "johndoe@email.com", "johndoe", "password"
         );
 
-            mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/auth/register")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isCreated());
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/auth/register")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(request)))
+            .andExpect(status().isCreated());
 
         var savedUser = userRepository.findByEmail("johndoe@email.com").orElseThrow();
         assertThat(savedUser.getId()).isNotNull();

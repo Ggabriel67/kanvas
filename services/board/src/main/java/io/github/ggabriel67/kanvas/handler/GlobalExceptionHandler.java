@@ -40,7 +40,7 @@ public class GlobalExceptionHandler
 
     @ExceptionHandler(NameAlreadyInUseException.class)
     public ResponseEntity<String> handle(NameAlreadyInUseException exp) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(exp.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exp.getMessage());
     }
 
     @ExceptionHandler(UserNotFoundException.class)
