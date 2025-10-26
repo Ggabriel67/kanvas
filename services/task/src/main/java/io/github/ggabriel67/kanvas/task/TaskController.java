@@ -46,7 +46,7 @@ public class TaskController
     @PreAuthorize("@boardAuth.canEdit()")
     public ResponseEntity<Void> assignTask(@RequestBody AssignmentRequest request) {
         taskAssigneeService.assignTask(request);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @DeleteMapping("/assignees")
