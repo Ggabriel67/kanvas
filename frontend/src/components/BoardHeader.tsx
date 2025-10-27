@@ -10,6 +10,7 @@ import toast from 'react-hot-toast';
 import { updateBoard } from '../api/boards';
 import { useQueryClient } from '@tanstack/react-query';
 import BoardSettingsModal from './BoardSettingsModal';
+import useAuth from '../hooks/useAuth';
 
 interface BoardHeaderProps {
   board: BoardDto;
@@ -20,10 +21,13 @@ const BoardHeader: React.FC<BoardHeaderProps> = ({ board }) => {
   const [hoveredMemberId, setHoveredMemberId] = useState<number | null>(null);
   const [isEditingName, setIsEditingName] = useState(false);
   const [editedName, setEditedName] = useState(board.name);
-
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState<boolean>(false);
 
-  const isAdmin = board.boardRole === "ADMIN";
+  const { user } = useAuth();
+
+  const currentMember = board.boardMembers.find((bm) => bm.userId === user?.id);
+  const currentMemberRole = currentMember?.boardRole || "VIEWER";
+  const isAdmin = currentMemberRole === "ADMIN";
 
   const queryClient = useQueryClient();
 
@@ -131,7 +135,7 @@ const BoardHeader: React.FC<BoardHeaderProps> = ({ board }) => {
         <BoardVisibilitySelector
           boardId={board.boardId}
           visibility={board.visibility}
-          boardRole={board.boardRole}
+          boardRole={currentMemberRole}
         />
 
         {/* Add member */}

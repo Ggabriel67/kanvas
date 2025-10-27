@@ -31,8 +31,6 @@ const BoardSettingsModal: React.FC<WorkspaceSettingsModalProps> = ({ isOpen, onC
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  
-
   const currentMember = board.boardMembers.find((bm) => bm.userId === user?.id);
   const currentMemberRole = currentMember?.boardRole || "VIEWER";
 
