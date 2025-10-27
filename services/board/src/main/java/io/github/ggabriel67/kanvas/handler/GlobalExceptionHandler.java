@@ -3,6 +3,7 @@ package io.github.ggabriel67.kanvas.handler;
 import io.github.ggabriel67.kanvas.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -76,5 +77,10 @@ public class GlobalExceptionHandler
     @ExceptionHandler(BoardRoleNotFoundException.class)
     public ResponseEntity<String> handleException(BoardRoleNotFoundException exception) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
+    }
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<String> handle(AuthorizationDeniedException exp) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(exp.getMessage());
     }
 }

@@ -6,6 +6,7 @@ import io.github.ggabriel67.kanvas.exception.MemberAlreadyAssignedException;
 import io.github.ggabriel67.kanvas.exception.TaskNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -49,5 +50,10 @@ public class GlobalExceptionHandler
     @ExceptionHandler(MemberAlreadyAssignedException.class)
     public ResponseEntity<String> handle(MemberAlreadyAssignedException exp) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exp.getMessage());
+    }
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<String> handle(AuthorizationDeniedException exp) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(exp.getMessage());
     }
 }

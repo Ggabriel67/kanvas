@@ -54,7 +54,12 @@ public class AuthGatewayFilter implements GlobalFilter
         Integer userId = jwtService.extractUserId(accessToken);
         if (service.equals("BOARD-SERVICE")) {
             ServerWebExchange mutated = exchange.mutate()
-                    .request(r -> r.header("X-User-Id", userId.toString()))
+                    .request(r -> r
+                            .headers(headers -> {
+                                headers.remove("X-User-Id");
+                                headers.add("X-User-Id", userId.toString());
+                            })
+                    )
                     .build();
             return chain.filter(mutated);
         }
@@ -69,7 +74,12 @@ public class AuthGatewayFilter implements GlobalFilter
                     .bodyToMono(String.class)
                     .flatMap(boardRole -> {
                         ServerWebExchange mutated = exchange.mutate()
-                                .request(r -> r.header("X-Board-Role", boardRole))
+                                .request(r -> r
+                                        .headers(headers -> {
+                                            headers.remove("X-Board-Role");
+                                            headers.add("X-Board-Role", boardRole);
+                                        })
+                                )
                                 .build();
                         return chain.filter(mutated);
                     });
