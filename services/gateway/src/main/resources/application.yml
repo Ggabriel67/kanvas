@@ -19,3 +19,11 @@ application:
 logging:
   level:
     org.springframework.cloud.gateway: DEBUG
+
+#server:
+#  ssl:
+#    enabled: true
+#    key-store-type: PKCS12
+#    key-store: classpath:keystore/kanvas.p12
+#    key-store-password: kanvas
+#    key-alias: kanvas
