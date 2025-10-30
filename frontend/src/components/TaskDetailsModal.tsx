@@ -15,6 +15,7 @@ import PriorityDropdown from './PriorityDropdown';
 import { useQueryClient } from '@tanstack/react-query';
 import AssigneeSelector from './AssigneeSelector';
 import { FaRegCheckCircle } from "react-icons/fa";
+import LoadingSpinner from './LoadingSpinner';
 
 interface TaskDetailsModalProps {
   isOpen: boolean;
@@ -200,7 +201,6 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ isOpen, onClose, bo
     if (!task) return;
     try {
       await deleteTask(task.taskId, boardId);
-      toast.success("Task deleted");
       onClose();
       queryClient.setQueryData<BoardDto>(["board", boardId], (old) => {
         if (!old) return old;
@@ -227,7 +227,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ isOpen, onClose, bo
       <div className="fixed inset-0 z-50 flex items-center justify-center">
         <div className="fixed inset-0 bg-black/75" onClick={onClose} />
         <div className="relative bg-[#1e1e1e] text-gray-200 rounded-xl w-full max-w-2xl p-6 shadow-xl z-10">
-          <p>Loading task...</p>
+          <LoadingSpinner message='Loading task'/>
         </div>
       </div>
     );
@@ -239,7 +239,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ isOpen, onClose, bo
       <div className="fixed inset-0 bg-black/75" onClick={onClose} />
 
       {/* Modal content */}
-      <div className="relative bg-[#1e1e1e] text-gray-200 rounded-xl min-h-[750px] max-h-[750px] overflow-y-auto shadow-xl w-full max-w-3xl p-6 z-10 pb-8">
+      <div className="relative bg-[#1e1e1e] text-gray-200 rounded-xl min-h-[700px] max-h-[750px] overflow-y-auto shadow-xl w-full max-w-3xl p-6 z-10 pb-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-5">
           <h2 className="text-xl font-semibold">Task Details</h2>
@@ -412,7 +412,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = ({ isOpen, onClose, bo
 
         {/* Delete button */}
         {!readonly && (
-          <div className="flex justify-end">
+          <div className="absolute bottom-5 right-5">
             <button
               onClick={handleDelete}
               className="flex items-center gap-2 bg-[#4a4a4a] hover:bg-red-700 text-white px-4 py-2 rounded font-medium cursor-pointer"

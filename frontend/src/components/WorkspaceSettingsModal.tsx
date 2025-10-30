@@ -8,6 +8,7 @@ import { useForm, type SubmitHandler } from 'react-hook-form';
 import { updateWorkspace } from '../api/workspaces';
 import toast from 'react-hot-toast';
 import { useWorkspaceStore } from '../hooks/useWorkspaceStore';
+import { FaRegTrashAlt } from "react-icons/fa";
 
 interface WorkspaceSettingsModalProps {
 	isOpen: boolean;
@@ -192,13 +193,15 @@ const WorkspaceSettingsModal: React.FC<WorkspaceSettingsModalProps> = ({
               {isOwner && (
                 <div>
                   <div className="border-t border-gray-700 mb-4"></div>
-                  <button
-                    className="flex items-center space-x-1 bg-[#4a4a4a] hover:bg-red-700 text-white px-4 py-2 rounded  cursor-pointer"
-                    // onClick={handleDeleteWorkspace} TODO
-                  >
-                    <IoMdClose size={18}/>
-                    <span>Delete Workspace</span>
-                  </button>
+                  <div className="absolute bottom-5 right-5">
+                    <button
+                      className="flex items-center space-x-2 bg-[#4a4a4a] hover:bg-red-700 text-white px-4 py-2 rounded  cursor-pointer"
+                      // onClick={handleDeleteWorkspace} TODO
+                    >
+                      <FaRegTrashAlt size={18}/>
+                      <span>Delete Workspace</span>
+                    </button>
+                  </div>
                 </div>
               )}
             </div>

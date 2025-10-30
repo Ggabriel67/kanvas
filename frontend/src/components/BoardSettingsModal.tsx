@@ -9,6 +9,7 @@ import { deleteBoard, updateBoard } from '../api/boards';
 import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import BoardMembersTab from './BoardMembersTab';
+import { FaRegTrashAlt } from "react-icons/fa";
 
 interface WorkspaceSettingsModalProps {
   isOpen: boolean;
@@ -91,7 +92,7 @@ const BoardSettingsModal: React.FC<WorkspaceSettingsModalProps> = ({ isOpen, onC
       />
 
       {/* Modal */}
-      <div className="relative bg-[#1e1e1e] text-gray-200 rounded-xl min-h-[750px] max-h-[750px] overflow-y-auto shadow-xl w-full max-w-4xl p-6 z-10 pb-8">
+      <div className="relative bg-[#1e1e1e] text-gray-200 rounded-xl h-[650px] overflow-y-auto shadow-xl w-full max-w-4xl p-6 z-10 pb-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-5">
           <h2 className="text-xl font-semibold">Board Settings</h2>
@@ -200,13 +201,15 @@ const BoardSettingsModal: React.FC<WorkspaceSettingsModalProps> = ({ isOpen, onC
               {isAdmin && (
                 <div>
                   <div className="border-t border-gray-700 mb-4"></div>
-                  <button
-                    className="flex items-center space-x-1 bg-[#4a4a4a] hover:bg-red-700 text-white px-4 py-2 rounded font-medium cursor-pointer"
-                    onClick={handleDeleteBoard}
-                  >
-                    <IoMdClose size={18}/>
-                    <span>Delete Board</span>
-                  </button>
+                  <div className="absolute bottom-5 right-5">
+                    <button
+                      className="flex items-center space-x-2 bg-[#4a4a4a] hover:bg-red-700 text-white px-4 py-2 rounded font-medium cursor-pointer"
+                      onClick={handleDeleteBoard}
+                    >
+                      <FaRegTrashAlt size={18}/>
+                      <span>Delete Board</span>
+                    </button>
+                  </div>
                 </div>
               )}
              </div>

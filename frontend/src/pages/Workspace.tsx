@@ -12,6 +12,7 @@ import InviteUserModal from '../components/InviteUserModal';
 import WorkspaceMembersModal from '../components/WorkspaceMembersModal';
 import WorkspaceSettingsModal from '../components/WorkspaceSettingsModal';
 import CreateBoardModal from '../components/CreateBoardModal';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const Workspace = () => {
   const { workspaceId } = useParams<{ workspaceId: string }>();
@@ -40,7 +41,7 @@ const Workspace = () => {
     fetchWorkspace();
   }, [wsId])
 
-  if (!workspace) return <div>Loading workspace...</div>;
+  if (!workspace) return <LoadingSpinner message='Loading workspace'/>;
   
   return (
     <div className="pr-15 pl-15 pt-5">

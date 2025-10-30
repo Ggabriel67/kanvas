@@ -51,7 +51,7 @@ const SignUp = () => {
     <div className="flex items-center justify-center min-h-screen">
       <form 
         onSubmit={handleSubmit(onSubmit)}
-        className="bg-[#1e1e1e] text-gray-100 p-10 rounded-lg shadow-lg w-[25vw] max-w-3xl space-y-5"
+        className="bg-[#1e1e1e] text-gray-100 p-10 rounded-lg shadow-lg w-[500px] space-y-5"
       >
         <div className="flex items-center justify-center">
           <MdLockOutline size={30} />
@@ -135,7 +135,7 @@ const SignUp = () => {
         <button
           disabled={isSubmitting}
           type="submit"
-          className="w-full bg-purple-700 text-white font-semibold p-3 rounded hover:bg-purple-800 disabled:bg-gray-500 transition-colors"
+          className="w-full bg-purple-700 text-white font-semibold p-3 rounded hover:bg-purple-800 disabled:bg-gray-500 cursor-pointer"
         >
           {isSubmitting ? "Submitting..." : "SIGN UP"}
         </button>

@@ -5,6 +5,7 @@ import { MdLockOutline } from "react-icons/md";
 import useAuth from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
+import appLogo from '../assets/appLogo.png'
 
 type FormFields = {
   email: string;
@@ -38,11 +39,24 @@ const SignIn = () => {
   }, [auth.user, navigate]);
   
   return (
-    <div className="flex items-center justify-center min-h-screen">
+    <div className="flex flex-col -mt-30 items-center justify-center min-h-screen bg-[#121212] text-gray-100 px-4">
+      {/* Header / Logo Section */}
+      <div className="flex flex-col items-center mb-5 text-center">
+        <div className="flex items-center space-x-2 mb-2">
+          <img src={appLogo} alt="Kanvas logo" width="30" height="30" />
+          <span className="text-3xl font-bold tracking-wide">Kanvas</span>
+        </div>
+        <p className="max-w-lg text-gray-400 text-sm sm:text-base">
+          Kanvas is a project and task management collaboration tool, 
+          helping your team to visualise work through Kanban boards.
+        </p>
+      </div>
+          
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="bg-[#1e1e1e] text-gray-100 p-10 rounded-lg shadow-lg w-[25vw] max-w-3xl space-y-5"
+        className="bg-[#1e1e1e] text-gray-100 p-10 rounded-lg shadow-lg w-[500px] space-y-5"
       >
+        
         <div className="flex items-center justify-center">
           <MdLockOutline size={30} />
         </div>
@@ -80,7 +94,7 @@ const SignIn = () => {
         <button
           disabled={isSubmitting}
           type="submit"
-          className="w-full bg-purple-700 text-white font-semibold p-3 rounded hover:bg-purple-800 disabled:bg-gray-500 transition-colors"
+          className="w-full bg-purple-700 text-white font-semibold p-3 rounded hover:bg-purple-800 disabled:bg-gray-500 transition-colors cursor-pointer"
         >
           {isSubmitting ? "Submitting..." : "SIGN IN"}
         </button>

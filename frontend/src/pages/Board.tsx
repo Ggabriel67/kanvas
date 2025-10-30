@@ -6,6 +6,7 @@ import ColumnsContainer from '../components/ColumnsContainer';
 import useBoardSocket from '../hooks/useBoardSocket';
 import toast from 'react-hot-toast';
 import useAuth from '../hooks/useAuth';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const Board = () => {
   const { boardId } = useParams<{ boardId: string }>();
@@ -20,7 +21,8 @@ const Board = () => {
     navigate("/app", { replace: true });
   }
   useBoardSocket(bId);
-  if (isLoading) return <div>Loading board...</div>;
+  // if (isLoading) return <div>Loading board...</div>;
+  if (isLoading) return <LoadingSpinner message="Loading board"/>;
   if (!board) return <div>Board not found</div>;
 
   if (!user) return;

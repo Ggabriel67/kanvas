@@ -111,11 +111,11 @@ const Navbar = () => {
   };
 
   return (
-    <div className="h-16 bg-[#1a1a1a] border-b border-gray-600 flex items-center justify-between px-3">
+    <div className="h-16 bg-[#1a1a1a] border-b border-gray-600 flex items-center justify-between px-2">
       {/* Logo */}
       <NavLink
         to="/app"
-        className="flex px-2 items-center space-x-3 text-3xl font-bold hover:bg-[#2a2a2a] py-2 rounded-lg"
+        className="flex px-2 items-center space-x-3 text-3xl font-bold hover:bg-[#2a2a2a] py-1 rounded-lg"
       >
         <img src={appLogo} width="30" height="30" />
         <span>Kanvas</span>
