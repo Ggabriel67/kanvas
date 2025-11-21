@@ -157,6 +157,14 @@ public class ColumnService
         List<Column> columns = columnRepository.findAllByBoardId(boardId);
         taskAssigneeRepository.deleteByColumnIn(columns);
         taskRepository.deleteByColumnIn(columns);
-        columnRepository.deleteAllByBoardId(boardId);
+        columnRepository.deleteAll(columns);
+    }
+
+    @Transactional
+    public void deleteAllByBoardIds(List<Integer> boardIds) {
+        List<Column> columns = columnRepository.findAllByBoardIdIn(boardIds);
+        taskAssigneeRepository.deleteByColumnIn(columns);
+        taskRepository.deleteByColumnIn(columns);
+        columnRepository.deleteAll(columns);
     }
 }

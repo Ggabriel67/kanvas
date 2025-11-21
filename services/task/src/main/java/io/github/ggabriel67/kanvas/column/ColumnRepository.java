@@ -30,4 +30,6 @@ WHERE c.boardId = :boardId
     void deleteAllByBoardId(Integer boardId);
 
     List<Column> findAllByBoardId(Integer boardId);
+
+    List<Column> findAllByBoardIdIn(List<Integer> boardIds);
 }
