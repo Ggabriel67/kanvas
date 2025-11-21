@@ -2,17 +2,24 @@ package io.github.ggabriel67.kanvas.workspace;
 
 import io.github.ggabriel67.kanvas.authorization.workspace.WorkspaceAuthorization;
 import io.github.ggabriel67.kanvas.authorization.workspace.WorkspaceRole;
+import io.github.ggabriel67.kanvas.board.Board;
 import io.github.ggabriel67.kanvas.board.BoardDtoProjection;
 import io.github.ggabriel67.kanvas.board.BoardRepository;
 import io.github.ggabriel67.kanvas.board.BoardService;
+import io.github.ggabriel67.kanvas.board.invitation.BoardInvitationRepository;
+import io.github.ggabriel67.kanvas.board.member.BoardMemberRepository;
+import io.github.ggabriel67.kanvas.event.workspace.WorkspaceDeleted;
 import io.github.ggabriel67.kanvas.exception.WorkspaceNotFoundException;
+import io.github.ggabriel67.kanvas.kafka.producer.WorkspaceEventProducer;
 import io.github.ggabriel67.kanvas.user.User;
 import io.github.ggabriel67.kanvas.user.UserService;
+import io.github.ggabriel67.kanvas.workspace.invitation.WorkspaceInvitationRepository;
 import io.github.ggabriel67.kanvas.workspace.member.WorkspaceMember;
 import io.github.ggabriel67.kanvas.workspace.member.WorkspaceMemberRepository;
 import jakarta.ws.rs.ForbiddenException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -28,6 +35,10 @@ public class WorkspaceService
     private final UserService userService;
     private final BoardService boardService;
     private final BoardRepository boardRepository;
+    private final BoardMemberRepository boardMemberRepository;
+    private final WorkspaceEventProducer workspaceEventProducer;
+    private final WorkspaceInvitationRepository workspaceInvitationRepository;
+    private final BoardInvitationRepository boardInvitationRepository;
 
     public Integer createWorkspace(WorkspaceRequest request) {
         User user = userService.getUserById(request.creatorId());
@@ -132,5 +143,25 @@ public class WorkspaceService
                     return new GuestWorkspaceDto(workspaceId, workspaceName, boardProjections);
                 })
                 .toList();
+    }
+
+    @Transactional
+    public void deleteWorkspace(Integer workspaceId) {
+        Workspace workspace = getWorkspaceById(workspaceId);
+
+        List<Board> boards = boardRepository.findAllByWorkspace(workspace);
+        List<Integer> boardIds = boards.stream().map(Board::getId).toList();
+
+        WorkspaceDeleted workspaceDeleted = new WorkspaceDeleted(boardIds);
+
+        boardInvitationRepository.deleteAllWhereBoardIn(boards);
+        boardMemberRepository.deleteAllWhereBoardIn(boards);
+        boardRepository.deleteAll(boards);
+
+        workspaceInvitationRepository.deleteAllByWorkspace(workspace);
+        workspaceMemberRepository.deleteAllByWorkspace(workspace);
+        workspaceRepository.delete(workspace);
+
+        workspaceEventProducer.sendWorkspaceDeleted(workspaceDeleted);
     }
 }

@@ -17,4 +17,9 @@ public class KafkaTopicConfig
     public NewTopic boardEventsTopic() {
         return TopicBuilder.name("board.events").build();
     }
+
+    @Bean
+    public NewTopic workspaceEventsTopic() {
+        return TopicBuilder.name("workspace.events").build();
+    }
 }

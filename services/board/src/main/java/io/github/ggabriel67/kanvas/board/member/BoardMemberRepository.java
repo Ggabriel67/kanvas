@@ -3,6 +3,7 @@ package io.github.ggabriel67.kanvas.board.member;
 import io.github.ggabriel67.kanvas.authorization.board.BoardRole;
 import io.github.ggabriel67.kanvas.board.Board;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -24,4 +25,10 @@ SELECT bm.role FROM BoardMember bm
 WHERE bm.user.id = :userId AND bm.board.id = :boardId
 """)
     Optional<BoardRole> findRoleByUserIdAndBoardId(@Param("userId") Integer userId, @Param("boardId") Integer boardId);
+
+    @Modifying
+    @Query("""
+DELETE FROM BoardMember bm WHERE bm.board IN :boards
+""")
+    void deleteAllWhereBoardIn(@Param("boards") List<Board> boards);
 }

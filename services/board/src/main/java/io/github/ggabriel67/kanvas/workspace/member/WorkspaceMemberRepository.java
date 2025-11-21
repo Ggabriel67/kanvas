@@ -1,8 +1,9 @@
 package io.github.ggabriel67.kanvas.workspace.member;
 
-import io.github.ggabriel67.kanvas.board.Board;
 import io.github.ggabriel67.kanvas.workspace.Workspace;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
@@ -13,4 +14,10 @@ public interface WorkspaceMemberRepository extends JpaRepository<WorkspaceMember
     List<WorkspaceMember> findAllByWorkspace(@Param("workspace") Workspace workspace);
 
     Optional<WorkspaceMember> findByUserIdAndWorkspaceId(Integer userId, Integer workspaceId);
+
+    @Modifying
+    @Query("""
+DELETE FROM WorkspaceMember wm WHERE wm.workspace = :workspace
+""")
+    void deleteAllByWorkspace(@Param("workspace") Workspace workspace);
 }

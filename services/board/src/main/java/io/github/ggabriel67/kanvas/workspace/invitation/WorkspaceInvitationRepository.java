@@ -2,7 +2,9 @@ package io.github.ggabriel67.kanvas.workspace.invitation;
 
 import io.github.ggabriel67.kanvas.invitation.InvitationStatus;
 import io.github.ggabriel67.kanvas.user.User;
+import io.github.ggabriel67.kanvas.workspace.Workspace;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -23,4 +25,10 @@ AND i.status = :status
             @Param("inviteeId") Integer inviteeId,
             @Param("workspaceId") Integer workspaceId,
             @Param("status") InvitationStatus status);
+
+    @Modifying
+    @Query("""
+DELETE FROM WorkspaceInvitation wi WHERE wi.workspace = :workspace
+""")
+    void deleteAllByWorkspace(@Param("workspace") Workspace workspace);
 }

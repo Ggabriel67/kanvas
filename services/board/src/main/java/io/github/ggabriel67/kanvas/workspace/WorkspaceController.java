@@ -81,4 +81,11 @@ public class WorkspaceController
         workspaceMemberService.leaveWorkspace(request);
         return ResponseEntity.ok().build();
     }
+
+    @DeleteMapping("/{workspaceId}")
+    @PreAuthorize("@workspaceAuth.isOwner(#workspaceId)")
+    public ResponseEntity<Void> deleteWorkspace(@PathVariable("workspaceId") Integer workspaceId) {
+        workspaceService.deleteWorkspace(workspaceId);
+        return ResponseEntity.ok().build();
+    }
 }

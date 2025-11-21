@@ -31,9 +31,9 @@ public class WorkspaceAuthorization
                 .orElse(false);
     }
 
-//    public boolean isOwner(Integer workspaceId) {
-//        return hasRole(getCurrentUserId(), workspaceId, WorkspaceRole.OWNER);
-//    }
+    public boolean isOwner(Integer workspaceId) {
+        return hasRole(getCurrentUserId(), workspaceId, WorkspaceRole.OWNER);
+    }
 
     public boolean isAdminOrOwner(Integer workspaceId) {
         return hasRole(getCurrentUserId(), workspaceId, WorkspaceRole.ADMIN);
