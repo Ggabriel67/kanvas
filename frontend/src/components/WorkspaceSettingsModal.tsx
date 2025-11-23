@@ -10,6 +10,7 @@ import toast from 'react-hot-toast';
 import { useWorkspaceStore } from '../hooks/useWorkspaceStore';
 import { FaRegTrashAlt } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom';
+import BoardListTab from './BoardListTab';
 
 interface WorkspaceSettingsModalProps {
 	isOpen: boolean;
@@ -113,7 +114,7 @@ const WorkspaceSettingsModal: React.FC<WorkspaceSettingsModalProps> = ({
         <div className="flex space-x-6 mb-6">
           {[
             { id: "workspace", label: "Workspace details" },
-            { id: "boards", label: "Boards" },
+            { id: "boards", label: "Board list" },
             { id: "permissions", label: "Rules & Permissions" },
           ].map((tab) => (
             <button
@@ -222,17 +223,17 @@ const WorkspaceSettingsModal: React.FC<WorkspaceSettingsModalProps> = ({
 
           {activeTab === "boards" && (
             <div>
-              <h3 className="text-xl font-semibold mb-4">Workspace Boards</h3>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                {[1, 2, 3].map((i) => (
-                  <div
-                    key={i}
-                    className="bg-[#2a2a2a] p-6 rounded-lg text-center hover:bg-[#3a3a3a] transition-colors"
-                  >
-                    Board Placeholder {i}
-                  </div>
-                ))}
+              <div className="text-gray-300 ">This section is mainly dedicated for
+                <span className="font-semibold text-purple-400 relative top-[1px]">&nbsp;Administrators</span> 
+                 &nbsp;to manage board and their users.
               </div>
+              <div className="border-t border-gray-700 mb-4 mt-4"></div>
+
+              <BoardListTab 
+                workspaceId={workspace.id}
+                workspaceRole={workspace.workspaceRole}
+              />
+
             </div>
           )}
 

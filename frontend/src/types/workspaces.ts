@@ -9,7 +9,7 @@ export interface WorkspaceDto {
   name: string;
   description: string;
   createdAt: string;
-  workspaceRole: string;
+  workspaceRole: "OWNER" | "ADMIN" | "MEMBER";
   boardProjections: BoardProjection[];
 };
 
@@ -31,7 +31,7 @@ export interface WorkspaceMember {
   lastname: string;
   username: string;
   avatarColor: string;
-  role: string;
+  role: "OWNER" | "ADMIN" | "MEMBER";
   joinedAt: string
 }
 

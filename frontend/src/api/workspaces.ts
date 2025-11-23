@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { WorkspaceDto, WorkspaceMember, WorkspaceProjection, WorkspaceRequest, WorkspaceRoleChangeRequest, WorkspaceMemberRemoveRequest, GuestWorkspace } from "../types/workspaces";
+import type { WorkspaceDto, WorkspaceMember, WorkspaceProjection, WorkspaceRequest, WorkspaceRoleChangeRequest, WorkspaceMemberRemoveRequest, GuestWorkspace, BoardProjection } from "../types/workspaces";
 
 const api = axios.create({
   baseURL: "http://localhost:8222/api/v1/workspaces",
@@ -32,6 +32,18 @@ export async function updateWorkspace(workspaceId: number, request: WorkspaceReq
 export async function getWorkspace(workspaceId: number) {
   try {
     const response = await api.get<WorkspaceDto>(`/${workspaceId}`);
+    return response.data;
+  } catch (error: any) {
+    if (error.response) {
+      throw new Error(error.response.data);
+    }
+    throw error;
+  }
+}
+
+export async function getAllWorkspaceBoards(workspaceId: number) {
+  try {
+    const response = await api.get<BoardProjection[]>(`/${workspaceId}/boards`);
     return response.data;
   } catch (error: any) {
     if (error.response) {

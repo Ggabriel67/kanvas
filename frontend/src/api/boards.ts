@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { BoardDto, BoardMemberRemoveRequest, BoardRequest, BoardRoleChangeRequest, BoardUpdateRequest } from "../types/boards";
+import type { BoardDto, BoardMemberRemoveRequest, BoardRequest, BoardRoleChangeRequest, BoardUpdateRequest, Member } from "../types/boards";
 import { useQuery } from "@tanstack/react-query"
 import toast from "react-hot-toast";
 
@@ -91,4 +91,16 @@ export const useBoardQuery = (boardId: number | null) => {
     },
     enabled: !!boardId,
   });
+}
+
+export async function getBoardMembers(boardId: number) {
+  try {
+    const response = await api.get<Member[]>(`/${boardId}/members`);
+    return response.data;
+  } catch (error: any) {  
+    if (error.response) {
+      throw new Error(error.response.data);
+    }
+    throw error;
+  } 
 }

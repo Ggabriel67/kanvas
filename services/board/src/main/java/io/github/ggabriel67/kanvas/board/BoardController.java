@@ -74,7 +74,6 @@ public class BoardController
     }
 
     @GetMapping("/{boardId}/members")
-    @PreAuthorize("@workspaceAuth.isMember(#boardId)")
     public ResponseEntity<List<MemberDto>> getBoardMembers(@PathVariable("boardId") Integer boardId) {
         return ResponseEntity.ok(boardMemberService.getBoardMembers(boardId));
     }

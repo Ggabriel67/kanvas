@@ -45,3 +45,16 @@ export interface BoardMemberRemoveRequest {
 	targetMemberId: number;
 	boardId: number;
 }
+
+export interface Member {
+	memberId: number;
+	userId: number;
+	firstname: string;
+	lastname: string;
+	username: string;
+	avatarColor: string;
+	boardRole: "ADMIN" | "EDITOR" | "VIEWER";
+	workspaceRole: "OWNER" | "ADMIN" | "MEMBER" | null;
+	joinedAt: string;
+}
+

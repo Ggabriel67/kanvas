@@ -27,7 +27,7 @@ const SettingsRulesTab = () => {
 					<div className="leading-snug">
 						<span className="font-semibold text-purple-400 relative top-[1px]">Owner:</span>
 						<span className="align-middle">
-							&nbsp;Full control, can edit, delete, and manage roles.
+							&nbsp;Full control, can edit, delete and manage roles.
 						</span>
 					</div>
 				</li>

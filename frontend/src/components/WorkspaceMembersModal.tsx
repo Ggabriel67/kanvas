@@ -5,6 +5,7 @@ import { changeWorkspaceMemberRole, getAllWorkspaceMembers, leaveWorkspace, remo
 import { IoMdClose } from "react-icons/io";
 import useAuth from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
+import { useWorkspaceStore } from '../hooks/useWorkspaceStore';
 
 interface WorkspaceMembersModalProps {
 	isOpen: boolean;
@@ -38,6 +39,8 @@ const WorkspaceMembersModal: React.FC<WorkspaceMembersModalProps> = ({
 
 	const navigate = useNavigate();
 	const { user } = useAuth();
+
+	const { triggerSideBarRefresh } = useWorkspaceStore();
 
 	const fetchMembers = async () => {
 		try {
@@ -75,6 +78,7 @@ const WorkspaceMembersModal: React.FC<WorkspaceMembersModalProps> = ({
 				workspaceId: workspaceId,
 			}
 			await leaveWorkspace(request);
+			triggerSideBarRefresh();
 			navigate("/app", { replace: true });
 		} catch (error: any) {
 			toast.error(error.message);
