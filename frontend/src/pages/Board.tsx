@@ -21,7 +21,6 @@ const Board = () => {
     navigate("/app", { replace: true });
   }
   useBoardSocket(bId);
-  // if (isLoading) return <div>Loading board...</div>;
   if (isLoading) return <LoadingSpinner message="Loading board"/>;
   if (!board) return <div>Board not found</div>;
 

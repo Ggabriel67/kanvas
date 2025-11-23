@@ -17,7 +17,7 @@ public interface WorkspaceMemberRepository extends JpaRepository<WorkspaceMember
 
     Optional<WorkspaceMember> findByUserIdAndWorkspaceId(Integer userId, Integer workspaceId);
 
-    @Modifying
+    @Modifying(clearAutomatically = true)
     @Query("""
 DELETE FROM WorkspaceMember wm WHERE wm.workspace = :workspace
 """)

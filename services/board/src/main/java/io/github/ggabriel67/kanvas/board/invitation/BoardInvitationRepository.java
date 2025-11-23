@@ -29,7 +29,7 @@ AND i.status = :status
             @Param("boardId") Integer boardId,
             @Param("status") InvitationStatus status);
 
-    @Modifying
+    @Modifying(clearAutomatically = true)
     @Query("""
 DELETE FROM BoardInvitation bi WHERE bi.board IN :boards
 """)

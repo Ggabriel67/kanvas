@@ -27,7 +27,7 @@ WHERE bm.user.id = :userId AND bm.board.id = :boardId
 """)
     Optional<BoardRole> findRoleByUserIdAndBoardId(@Param("userId") Integer userId, @Param("boardId") Integer boardId);
 
-    @Modifying
+    @Modifying(clearAutomatically = true)
     @Query("""
 DELETE FROM BoardMember bm WHERE bm.board IN :boards
 """)

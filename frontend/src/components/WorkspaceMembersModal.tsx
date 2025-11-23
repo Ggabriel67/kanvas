@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import type { WorkspaceMember, WorkspaceMemberRemoveRequest, WorkspaceRoleChangeRequest } from '../types/workspaces';
 import toast from 'react-hot-toast';
-import { changeWorkspaceMemberRole, getAllWorkspaceMembers, removeWorkspaceMember } from '../api/workspaces';
+import { changeWorkspaceMemberRole, getAllWorkspaceMembers, leaveWorkspace, removeWorkspaceMember } from '../api/workspaces';
 import { IoMdClose } from "react-icons/io";
 import useAuth from '../hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
 
 interface WorkspaceMembersModalProps {
 	isOpen: boolean;
@@ -35,6 +36,7 @@ const WorkspaceMembersModal: React.FC<WorkspaceMembersModalProps> = ({
  }) => {
 	const [members, setMembers] = useState<WorkspaceMember[]>([]);
 
+	const navigate = useNavigate();
 	const { user } = useAuth();
 
 	const fetchMembers = async () => {
@@ -61,6 +63,19 @@ const WorkspaceMembersModal: React.FC<WorkspaceMembersModalProps> = ({
 			}
 			await changeWorkspaceMemberRole(request);
 			fetchMembers();
+		} catch (error: any) {
+			toast.error(error.message);
+		}
+	}
+
+	const handleLeaveWorkspace = async (memberId: number) => {
+		try {
+			let request: WorkspaceMemberRemoveRequest = {
+				targetMemberId: memberId,
+				workspaceId: workspaceId,
+			}
+			await leaveWorkspace(request);
+			navigate("/app", { replace: true });
 		} catch (error: any) {
 			toast.error(error.message);
 		}
@@ -162,6 +177,8 @@ const WorkspaceMembersModal: React.FC<WorkspaceMembersModalProps> = ({
 							{user?.id === m.userId ? (
 								<button
 									className="min-w-[150px] flex items-center justify-center space-x-1 px-3 py-1.5 text-base bg-[#4a4a4a] rounded hover:bg-red-700 cursor-pointer"
+									onClick={() => handleLeaveWorkspace(m.memberId)}
+									disabled={m.role === "OWNER"}
 								>
 									<IoMdClose size={18}/>
 									<span>Leave workspace</span>

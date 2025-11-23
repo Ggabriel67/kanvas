@@ -5,10 +5,11 @@ import { IoMdClose } from "react-icons/io";
 import { CiEdit } from "react-icons/ci";
 import SettingsRulesTab from './SettingsRulesTab';
 import { useForm, type SubmitHandler } from 'react-hook-form';
-import { updateWorkspace } from '../api/workspaces';
+import { deleteWorkspace, updateWorkspace } from '../api/workspaces';
 import toast from 'react-hot-toast';
 import { useWorkspaceStore } from '../hooks/useWorkspaceStore';
 import { FaRegTrashAlt } from "react-icons/fa";
+import { useNavigate } from 'react-router-dom';
 
 interface WorkspaceSettingsModalProps {
 	isOpen: boolean;
@@ -30,6 +31,7 @@ const WorkspaceSettingsModal: React.FC<WorkspaceSettingsModalProps> = ({
   const [activeTab, setActiveTab] = useState<"workspace" | "boards" | "permissions">("workspace");
   const [isEditing, setIsEditing] = useState(false);
   
+  const navigate = useNavigate();
   const { user } = useAuth();
   const { triggerSideBarRefresh } = useWorkspaceStore();
 
@@ -63,6 +65,17 @@ const WorkspaceSettingsModal: React.FC<WorkspaceSettingsModalProps> = ({
     }
     setWorkspace(updatedWorkspace);
     handleReset();
+  }
+
+  const handleDeleteWorkspace = async () => {
+    try {
+      await deleteWorkspace(workspace.id);
+      toast.success("Workspace deleted");
+      triggerSideBarRefresh();
+      navigate("/app", { replace: true });
+    } catch(error: any) {
+      toast.error(error.message);
+    }
   }
 
   const handleReset = () => {reset();};
@@ -196,7 +209,7 @@ const WorkspaceSettingsModal: React.FC<WorkspaceSettingsModalProps> = ({
                   <div className="absolute bottom-5 right-5">
                     <button
                       className="flex items-center space-x-2 bg-[#4a4a4a] hover:bg-red-700 text-white px-4 py-2 rounded  cursor-pointer"
-                      // onClick={handleDeleteWorkspace} TODO
+                      onClick={handleDeleteWorkspace}
                     >
                       <FaRegTrashAlt size={18}/>
                       <span>Delete Workspace</span>

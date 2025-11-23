@@ -58,4 +58,10 @@ AND NOT EXISTS (
     List<WorkspaceBoardFlatDto> findGuestWorkspacesBoardData(@Param("user") User user);
 
     List<Board> findAllByWorkspace(Workspace workspace);
+
+    @Modifying(clearAutomatically = true)
+    @Query("""
+DELETE FROM Board b WHERE b.workspace = :workspace
+""")
+    void deleteAllByWorkspace(@Param("workspace") Workspace workspace);
 }

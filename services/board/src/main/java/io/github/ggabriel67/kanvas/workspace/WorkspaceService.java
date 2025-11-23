@@ -156,7 +156,7 @@ public class WorkspaceService
 
         boardInvitationRepository.deleteAllWhereBoardIn(boards);
         boardMemberRepository.deleteAllWhereBoardIn(boards);
-        boardRepository.deleteAll(boards);
+        boardRepository.deleteAllByWorkspace(workspace);
 
         workspaceInvitationRepository.deleteAllByWorkspace(workspace);
         workspaceMemberRepository.deleteAllByWorkspace(workspace);

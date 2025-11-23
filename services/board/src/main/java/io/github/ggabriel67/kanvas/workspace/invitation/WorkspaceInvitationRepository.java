@@ -26,7 +26,7 @@ AND i.status = :status
             @Param("workspaceId") Integer workspaceId,
             @Param("status") InvitationStatus status);
 
-    @Modifying
+    @Modifying(clearAutomatically = true)
     @Query("""
 DELETE FROM WorkspaceInvitation wi WHERE wi.workspace = :workspace
 """)

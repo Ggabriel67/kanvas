@@ -76,7 +76,7 @@ public class WorkspaceController
     }
 
     @DeleteMapping("/leave")
-    @PreAuthorize("@workspaceAuth.isMember(#request.targetMemberId())")
+    @PreAuthorize("@workspaceAuth.isMember(#request.workspaceId())")
     public ResponseEntity<Void> leaveWorkspace(@RequestBody WorkspaceMemberRemoveRequest request) {
         workspaceMemberService.leaveWorkspace(request);
         return ResponseEntity.ok().build();

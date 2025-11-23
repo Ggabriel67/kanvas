@@ -98,3 +98,25 @@ export async function getGuestWorkspaces(userId: number) {
     throw error;
   }
 }
+
+export async function leaveWorkspace(request: WorkspaceMemberRemoveRequest) {
+  try {
+    await api.delete("/leave", {data: request});
+  } catch (error: any) {
+    if (error.response) {
+      throw new Error(error.response.data);
+    }
+    throw error;
+  }
+}
+
+export async function deleteWorkspace(workspaceId: number) {
+  try {
+    await api.delete(`/${workspaceId}`);
+  } catch (error: any) {
+    if (error.response) {
+      throw new Error(error.response.data);
+    }
+    throw error;
+  }
+}
