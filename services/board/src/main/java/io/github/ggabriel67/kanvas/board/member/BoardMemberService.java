@@ -21,6 +21,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class BoardMemberService
@@ -31,6 +33,7 @@ public class BoardMemberService
     private final BoardAuthorization boardAuthorization;
     private final BoardInvitationRepository boardInvitationRepository;
     private final WorkspaceMemberRepository workspaceMemberRepository;
+    private final BoardMemberRepository boardMemberRepository;
 
     public void addBoardMember(Board board, User invitee, BoardRole role) {
         BoardMember member = memberRepository.save(
@@ -116,5 +119,12 @@ public class BoardMemberService
         boardEventProducer.sendMemberLeft(memberRemoved);
 
         memberRepository.delete(member);
+    }
+
+    public List<MemberDto> getBoardMembers(Integer boardId) {
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new BoardNotFoundException("Board not found"));
+
+        return boardMemberRepository.findMembersWithWorkspaceRole(board, board.getWorkspace());
     }
 }

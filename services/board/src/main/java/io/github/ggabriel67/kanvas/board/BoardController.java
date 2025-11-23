@@ -3,12 +3,15 @@ package io.github.ggabriel67.kanvas.board;
 import io.github.ggabriel67.kanvas.board.member.BoardMemberRemoveRequest;
 import io.github.ggabriel67.kanvas.board.member.BoardMemberService;
 import io.github.ggabriel67.kanvas.board.member.BoardRoleChangeRequest;
+import io.github.ggabriel67.kanvas.board.member.MemberDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/boards")
@@ -68,5 +71,11 @@ public class BoardController
     public ResponseEntity<Void> leaveBoard(@RequestBody BoardMemberRemoveRequest request) {
         boardMemberService.leaveBoard(request);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{boardId}/members")
+    @PreAuthorize("@workspaceAuth.isMember(#boardId)")
+    public ResponseEntity<List<MemberDto>> getBoardMembers(@PathVariable("boardId") Integer boardId) {
+        return ResponseEntity.ok(boardMemberService.getBoardMembers(boardId));
     }
 }
